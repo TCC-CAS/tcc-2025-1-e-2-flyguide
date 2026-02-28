@@ -1,0 +1,70 @@
+/*
+  Página: Criar Roteiro
+  --------------------------------------------------
+  - Formulário principal
+  - Blocos de atividades e dicas (listas)
+*/
+
+.page-head{
+  padding: 18px 22px;
+  display:flex;
+  justify-content:center;
+}
+.page-head .back-center{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#0f172a;
+  font-weight: 800;
+}
+
+.form-card{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 18px;
+  box-shadow: var(--fg-shadow-soft);
+  padding: 18px;
+}
+.form-card .form-control,
+.form-card .form-select{
+  border-radius: 12px;
+  border-color: #e5e7eb;
+  height: 44px;
+}
+.form-card textarea.form-control{ height: auto; }
+
+.helper{ color: var(--fg-muted); font-size: .85rem; margin-top:6px; }
+
+.soft-strip{
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  border-radius: 14px;
+  padding: 14px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 12px;
+}
+.soft-strip .label{ font-weight: 800; }
+.soft-strip .desc{ color: var(--fg-muted); font-size: .9rem; margin-top: 2px; }
+
+.big-box{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 18px;
+  box-shadow: var(--fg-shadow-soft);
+  padding: 18px;
+  margin-top: 16px;
+}
+.big-box .empty{
+  color: var(--fg-muted);
+  text-align:center;
+  padding: 22px 12px;
+}
+
+.footer-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap: 12px;
+  padding: 16px 0 26px 0;
+}

@@ -1,0 +1,40 @@
+/*
+  Página: Feed (index)
+  --------------------------------------------------
+  - Barra de busca + filtros
+  - Correção de camadas: a barra sobe no hero sem ser coberta
+*/
+
+/* Search bar (fica logo abaixo do hero, "subindo" um pouco com margin negativo) */
+.searchbar{
+  margin-top: -44px;
+  padding: 0 22px;
+
+  /* Importante: garante que a barra fique ACIMA do hero (background) */
+  position: relative;
+  z-index: 5;
+}
+
+.searchbar .panel{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  box-shadow: var(--fg-shadow);
+  padding: 16px;
+
+  position: relative;
+  z-index: 6;
+}
+
+.searchbar .form-control,
+.searchbar .form-select{
+  border-radius: 12px;
+  border-color: #e5e7eb;
+  height: 46px;
+}
+
+.searchbar .btn{
+  border-radius: 12px;
+  height: 46px;
+  font-weight: 700;
+}

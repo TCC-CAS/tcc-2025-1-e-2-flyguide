@@ -1,0 +1,31 @@
+/*
+  FlyGuide - Base styles
+  --------------------------------------------------
+  - CSS variables (tema)
+  - Tipografia padrão
+  - Estilos globais simples
+*/
+
+:root{
+  --fg-orange:#f97316;
+  --fg-orange-2:#fb923c;
+  --fg-blue:#3b82f6;
+  --fg-ink:#0f172a;
+  --fg-muted:#64748b;
+  --fg-bg:#f8fafc;
+  --fg-card:#ffffff;
+  --fg-border:#e5e7eb;
+  --fg-shadow: 0 10px 24px rgba(15,23,42,.08);
+  --fg-shadow-soft: 0 8px 18px rgba(15,23,42,.06);
+  --sidebar-w: 280px;
+
+  /* Você pode trocar essas URLs para imagens específicas do seu projeto */
+  --hero-feed: url("https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=2400&q=70");
+  --hero-details: url("https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=2400&q=70");
+}
+
+*{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+body{ background: #fff; color: var(--fg-ink); }
+
+a{ text-decoration:none; }
+.small-muted{ color: var(--fg-muted); font-size: .9rem; }

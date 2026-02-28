@@ -1,0 +1,124 @@
+/*
+  FlyGuide - Layout
+  --------------------------------------------------
+  - Estrutura principal (sidebar + main)
+  - Sidebar (brand, nav, profile)
+  - Topbar no mobile
+  - Regras responsivas para abrir/fechar menu
+*/
+
+/* Layout base */
+.app-shell{
+  min-height: 100vh;
+  display:flex;
+  background: linear-gradient(180deg, #fff 0%, #fff 40%, #fff 100%);
+}
+
+/* Sidebar */
+.sidebar{
+  width: var(--sidebar-w);
+  background: #fff;
+  border-right: 1px solid #f1f5f9;
+  padding: 18px 16px;
+  position: sticky;
+  top:0;
+  height: 100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand{
+  display:flex; align-items:center; gap:10px;
+  padding: 6px 6px 14px 6px;
+}
+.brand-badge{
+  width: 34px; height: 34px; border-radius: 10px;
+  background: var(--fg-orange);
+  display:grid; place-items:center;
+  color:#fff; font-weight:800;
+  box-shadow: 0 10px 18px rgba(249,115,22,.25);
+}
+.brand-title{ font-weight: 800; line-height: 1; }
+.brand-sub{ color: var(--fg-muted); font-size: .78rem; margin-top: 2px; }
+
+.navlist{ margin-top: 10px; }
+.navlist a{
+  display:flex; align-items:center; gap:10px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  color: #111827;
+  font-weight: 500;
+}
+.navlist a:hover{ background:#f8fafc; }
+.navlist a.active{
+  background: rgba(59,130,246,.08);
+  color: #ea580c;
+}
+.navlist i{ color:#111827; opacity:.75; }
+.navlist a.active i{ color:#ea580c; opacity:1; }
+
+.sidebar .btn-new{
+  margin: 18px 6px 0 6px;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-weight: 700;
+  background: var(--fg-orange);
+  border: none;
+  box-shadow: 0 12px 20px rgba(249,115,22,.22);
+}
+.sidebar .btn-new:hover{ background: #ea580c; }
+
+.profile{
+  margin-top:auto;
+  padding: 14px 8px 6px 8px;
+  display:flex; align-items:center; gap:12px;
+}
+.avatar{
+  width: 42px; height: 42px; border-radius: 999px;
+  background: #2563eb;
+  display:grid; place-items:center; color:#fff; font-weight:800;
+}
+.profile .name{ font-weight:700; font-size:.92rem; }
+.profile .email{ color: var(--fg-muted); font-size:.78rem; margin-top: 1px; }
+
+/* Conteúdo principal */
+.main{
+  flex:1;
+  background: radial-gradient(80% 120% at 20% 0%, rgba(249,115,22,.07), transparent 60%),
+              radial-gradient(80% 120% at 100% 0%, rgba(59,130,246,.07), transparent 60%),
+              #fff;
+}
+
+/* Topbar mobile (só aparece em telas pequenas) */
+.mobile-topbar{
+  display:none; /* liberado no @media abaixo */
+}
+
+/* Responsive */
+@media (max-width: 992px){
+  .sidebar{
+    position: fixed;
+    left: 0; top:0; bottom:0;
+    transform: translateX(-105%);
+    z-index: 1040;
+    box-shadow: var(--fg-shadow);
+  }
+  .sidebar.open{ transform: translateX(0); }
+  .main{ margin-left: 0; }
+
+  .mobile-topbar{
+    position: sticky;
+    top:0;
+    z-index: 1030;
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 10px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+}
+
+@media (min-width: 992px){
+  .mobile-topbar{ display:none; }
+}
