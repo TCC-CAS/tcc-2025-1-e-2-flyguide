@@ -1,0 +1,87 @@
+/*
+  Página: Atividades do Roteiro (Etapa 2)
+  --------------------------------------------------
+  - Lista de atividades (adicionadas via modal no JS)
+  - Botões finais (Cancelar / Criar Roteiro)
+*/
+
+.page-head{
+  padding: 18px 22px;
+  display:flex;
+  justify-content:center;
+}
+.page-head .back-center{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#0f172a;
+  font-weight: 800;
+}
+
+.big-box{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 18px;
+  box-shadow: var(--fg-shadow-soft);
+  padding: 18px;
+  margin-top: 16px;
+}
+.big-box .empty{
+  color: var(--fg-muted);
+  text-align:center;
+  padding: 22px 12px;
+}
+
+.footer-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap: 12px;
+  padding: 16px 0 26px 0;
+}
+
+/* Resumo do rascunho da etapa 1 (preenchido via JS) */
+.draft-summary{
+  display:inline-flex;
+  gap: 10px;
+  align-items:center;
+  justify-content:center;
+  background: #fff;
+  border: 1px solid #eef2f7;
+  border-radius: 999px;
+  padding: 10px 14px;
+  box-shadow: var(--fg-shadow-soft);
+  color: #0f172a;
+}
+.draft-summary .pill{
+  display:inline-flex;
+  gap: 8px;
+  align-items:center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+/* Melhorias visuais da lista de atividades */
+#boxActivities [data-list]{
+  margin-top: 14px;
+}
+#boxActivities .day-item{
+  box-shadow: var(--fg-shadow-soft);
+}
+
+/* Cabeçalho + divisórias para ficar mais "app" */
+.big-box > .d-flex{
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.footer-actions{
+  border-top: 1px solid #f1f5f9;
+  margin-top: 16px;
+  padding-top: 16px;
+  padding-bottom: 6px;
+}

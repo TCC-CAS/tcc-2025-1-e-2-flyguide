@@ -1,0 +1,150 @@
+/*
+  Página: Detalhes do Roteiro
+  --------------------------------------------------
+  - Cards de estatística (duração, orçamento, curtidas)
+  - Seções (sobre, roteiro dia a dia, dicas)
+  - Correção do bug: conteúdo abaixo do hero ficando "por baixo" da imagem
+*/
+
+/* Container logo abaixo do hero (usa margin negativo para sobrepor) */
+.details-top{
+  margin-top: -62px;
+  padding: 0 22px;
+
+  /* FIX: garante que os cards/sections fiquem acima do hero */
+  position: relative;
+  z-index: 5;
+}
+
+/* Botões sobre a imagem do hero */
+.details-actions{
+  position:absolute;
+  top: 16px; right: 16px;
+  display:flex;
+  gap:10px;
+  z-index: 2;
+}
+
+.icon-btn{
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(226,232,240,.9);
+  background: rgba(255,255,255,.92);
+  display:grid; place-items:center;
+  cursor:pointer;
+}
+.icon-btn i{ color:#0f172a; opacity:.85; }
+.icon-btn.danger i{ color:#ef4444; }
+
+.back-btn{
+  position:absolute;
+  top: 16px; left: 16px;
+  border-radius: 12px;
+  padding: 9px 14px;
+  font-weight: 700;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(226,232,240,.9);
+  display:flex; align-items:center; gap:8px;
+  z-index: 2;
+}
+
+.details-badges{ display:flex; gap:10px; justify-content:center; margin-bottom: 10px; }
+.details-meta{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  color:#e2e8f0;
+  margin-top: 10px;
+}
+.details-meta i{ opacity:.9; }
+
+.stats-cards{ margin-top: 18px; }
+
+.stat-card{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  box-shadow: var(--fg-shadow-soft);
+  padding: 18px;
+  min-height: 120px;
+}
+
+.stat-icon{
+  width: 36px; height: 36px; border-radius: 12px;
+  display:grid; place-items:center;
+  background:#fff7ed;
+  border: 1px solid #ffedd5;
+  color:#f97316;
+  margin: 0 auto 10px auto;
+}
+
+.stat-title{ text-align:center; color: var(--fg-muted); font-weight:600; font-size:.95rem; }
+.stat-big{ text-align:center; font-weight: 800; font-size: 1.6rem; margin-top: 6px; }
+.stat-sub{ text-align:center; color: var(--fg-muted); font-size:.85rem; margin-top: 2px; }
+
+.btn-liked{
+  width:100%;
+  background:#ef4444;
+  border:none;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color:#fff;
+  font-weight:800;
+  display:flex; justify-content:center; align-items:center; gap:10px;
+}
+.btn-liked:hover{ background:#dc2626; }
+.liked-note{ text-align:center; color: var(--fg-muted); font-size:.85rem; margin-top: 8px; }
+
+.section-card{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  box-shadow: var(--fg-shadow-soft);
+  padding: 18px;
+  margin-top: 16px;
+}
+.section-title{ font-weight: 800; margin-bottom: 12px; }
+
+.day-item{
+  border-radius: 14px;
+  background:#fff7ed;
+  border: 1px solid #ffedd5;
+  padding: 14px 14px;
+  display:flex; gap:14px; align-items:flex-start;
+  margin-top: 12px;
+}
+
+.day-bubble{
+  width: 44px; height: 44px; border-radius: 999px;
+  background: var(--fg-orange);
+  color:#fff;
+  font-weight: 900;
+  display:grid; place-items:center;
+}
+
+.day-main{ flex:1; }
+.day-main .topline{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.day-main .name{ font-weight: 800; font-size: 1.05rem; }
+
+.time-pill{
+  border: 1px solid #e5e7eb;
+  background:#fff;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 700;
+  font-size: .78rem;
+  display:flex; align-items:center; gap:6px;
+}
+
+.costline{ color: var(--fg-muted); font-size:.9rem; margin-top: 6px; display:flex; align-items:center; gap:8px; }
+.costline i{ color:#f59e0b; }
+
+.tip-item{
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  padding: 12px 14px;
+  display:flex; align-items:center; gap:10px;
+  margin-top: 12px;
+}
+.tip-item i{ color:#f59e0b; }

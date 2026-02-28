@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <title>FlyGuide - Criar Novo Roteiro</title>
+  
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- CSS do projeto (separado por responsabilidade) -->
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/criar-roteiro.css" rel="stylesheet">
+</head>
+<body>
+  <!-- =========================================================
+       FlyGuide Front-end - FlyGuide - Criar Novo Roteiro
+       Esta página é estática (HTML/CSS/Bootstrap). O arquivo
+       ../assets/js/app.js cuida apenas de interações de UI
+       (menu mobile, curtidas, etc.).
+       ========================================================= -->
+  <div class="app-shell">
+    
+<!-- ===================== SIDEBAR (menu lateral) ===================== -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-badge"><i class="bi bi-compass"></i></div>
+    <div>
+      <div class="brand-title">Roteiros</div>
+      <div class="brand-sub">Suas viagens inesquecíveis</div>
+    </div>
+    <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="navlist">
+    <a class="" href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+    <a class="" href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+    <a class="" href="planos-premium.html"><i class="bi bi-crown"></i><span>Planos Premium</span></a>
+    <a class="" href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+  </div>
+
+  <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100"><i class="bi bi-plus-lg me-2"></i>Novo Roteiro</a>
+
+  <div class="profile">
+    <div class="avatar">K</div>
+    <div>
+      <div class="name">Kauã Dias</div>
+      <div class="email">kauadias2901@gmail.com</div>
+    </div>
+  </div>
+</div>
+
+    <!-- ===================== CONTEÚDO PRINCIPAL ===================== -->
+    <div class="main">
+      
+<div class="mobile-topbar">
+  <button class="btn btn-outline-soft" data-sidebar-open><i class="bi bi-list"></i></button>
+  <div class="fw-bold">Criar Roteiro</div>
+  <div style="width:44px"></div>
+</div>
+<div class="d-lg-none position-fixed top-0 start-0 w-100 h-100" data-sidebar-backdrop style="display:none; z-index:1035;"></div>
+<script>
+  (function(){
+    const sidebar=document.querySelector('.sidebar');
+    const backdrop=document.querySelector('[data-sidebar-backdrop]');
+    const show=()=>{ if(backdrop) backdrop.style.display='block'; };
+    const hide=()=>{ if(backdrop) backdrop.style.display='none'; };
+    document.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-sidebar-open]')) show();
+      if(e.target.closest('[data-sidebar-close]')) hide();
+      if(e.target.matches('[data-sidebar-backdrop]')) hide();
+    });
+    // also hide backdrop when sidebar closes
+    const obs = new MutationObserver(()=>{
+      if(!sidebar) return;
+      if(sidebar.classList.contains('open')) show(); else hide();
+    });
+    if(sidebar) obs.observe(sidebar, {attributes:true, attributeFilter:['class']});
+  })();
+</script>
+
+      <!-- Cabeçalho da página (voltar) -->
+      <div class="page-head">
+        <a class="back-center" href="meus-roteiros.html"><i class="bi bi-arrow-left"></i>Voltar</a>
+      </div>
+
+      <div class="grid-wrap pt-2">
+        <!-- ===================== TÍTULO / CONTEXTO ===================== -->
+        <div class="text-center mb-4">
+          <h1 class="fw-bold" style="font-weight:900; font-size: clamp(2rem, 3.5vw, 3rem);">Criar Novo Roteiro</h1>
+          <div class="small-muted">Compartilhe sua experiência de viagem com outros viajantes</div>
+          <div class="small text-secondary mt-2">Etapa 1 de 2 — informações básicas</div>
+        </div>
+
+        <!-- ===================== FORMULÁRIO: INFORMAÇÕES BÁSICAS ===================== -->
+        <div class="form-card mx-auto" style="max-width: 980px;">
+          <h5 class="fw-bold mb-3">Informações Básicas</h5>
+
+          <div class="row g-3">
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-bold">Título do Roteiro *</label>
+              <input class="form-control" id="itTitle" placeholder="Ex: 10 dias mágicos em Paris">
+            </div>
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-bold">Destino *</label>
+              <input class="form-control" id="itDestination" placeholder="Ex: Paris">
+            </div>
+
+            <div class="col-12 col-lg-4">
+              <label class="form-label fw-bold">País</label>
+              <input class="form-control" id="itCountry" placeholder="Ex: França">
+            </div>
+            <div class="col-12 col-lg-4">
+              <label class="form-label fw-bold">Data Início *</label>
+              <div class="input-group">
+                <input class="form-control" id="itStart" placeholder="dd/mm/aaaa">
+                <span class="input-group-text bg-white"><i class="bi bi-calendar3"></i></span>
+              </div>
+            </div>
+            <div class="col-12 col-lg-4">
+              <label class="form-label fw-bold">Data Fim *</label>
+              <div class="input-group">
+                <input class="form-control" id="itEnd" placeholder="dd/mm/aaaa">
+                <span class="input-group-text bg-white"><i class="bi bi-calendar3"></i></span>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-bold">Tipo de Viagem</label>
+              <select class="form-select" id="itType">
+                <option selected>Cidade</option>
+                <option>Aventura</option>
+                <option>Cultural</option>
+                <option>Praia</option>
+                <option>Natureza</option>
+                <option>Gastronomia</option>
+                <option>Mochilão</option>
+                <option>Luxo</option>
+              </select>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <label class="form-label fw-bold">Orçamento Estimado (R$)</label>
+              <input class="form-control" id="itBudget" placeholder="Ex: 5000">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-bold">Descrição</label>
+              <textarea class="form-control" id="itDescription" rows="4" placeholder="Conte sobre sua viagem..."></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-bold">URL da Imagem de Capa</label>
+              <input class="form-control" id="itCoverUrl" placeholder="https://images.unsplash.com/...">
+              <div class="helper">Cole o link de uma imagem do Unsplash ou outra fonte</div>
+            </div>
+
+            <div class="col-12">
+              <div class="soft-strip">
+                <div>
+                  <div class="label">Compartilhar no Feed Público</div>
+                  <div class="desc">Outras pessoas poderão ver seu roteiro</div>
+                </div>
+                <div class="form-check form-switch m-0">
+                  <input class="form-check-input" id="itPublic" type="checkbox" role="switch">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== AÇÕES DA ETAPA 1 ===================== -->
+        <!-- Aqui a gente apenas salva os dados básicos e avança para a etapa 2 (atividades). -->
+        <div class="mx-auto" style="max-width: 980px;">
+          <div class="footer-actions">
+            <a class="btn btn-outline-gray" href="meus-roteiros.html">Cancelar</a>
+            <a class="btn btn-primary-orange" href="atividades-roteiro.html" data-save-draft>
+              Avançar <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/app.js"></script>
+
+</body>
+</html>
