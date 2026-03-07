@@ -12,7 +12,7 @@ import com.TCC.FlyGuide.services.exceptions.UnauthorizedException;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthResources {
+public class AuthResource {
 
     @Autowired
     private AuthService authService;

@@ -20,7 +20,7 @@ import com.TCC.FlyGuide.services.RoteiroService;
 
 @RestController
 @RequestMapping(value = "/roteiros")
-public class RoteiroResources {
+public class RoteiroResource {
 
     @Autowired
     private RoteiroService service;
