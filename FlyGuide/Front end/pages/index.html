@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <!-- Título da aba do navegador -->
+  <title>FlyGuide - Feed</title>
+
+  <!-- Configuração básica de charset e responsividade -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Fonte Inter (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS (layout, grids, componentes) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons (ícones: bi bi-...) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- Seu CSS principal (estilização do layout, cores, cards etc.) -->
+  <!-- CSS do projeto (separado por responsabilidade) -->
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/feed.css" rel="stylesheet">
+</head>
+
+<body>
+  <!-- app-shell: “casca” principal (sidebar + área principal).
+       Geralmente é um container com display flex no CSS -->
+  <div class="app-shell">
+
+    <!-- ===================== SIDEBAR (menu lateral) ===================== -->
+    <div class="sidebar">
+      <!-- Cabeçalho da marca (logo + nome + botão fechar no mobile) -->
+      <div class="brand">
+        <div class="brand-badge"><i class="bi bi-compass"></i></div>
+        <div>
+          <div class="brand-title">Roteiros</div>
+          <div class="brand-sub">Suas viagens inesquecíveis</div>
+        </div>
+
+        <!-- Botão de fechar sidebar APENAS no mobile (d-lg-none) -->
+        <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none"
+                data-sidebar-close
+                title="Fechar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- Links de navegação -->
+      <div class="navlist">
+        <!-- active indica a página atual -->
+        <a class="active" href="index.html">
+          <i class="bi bi-globe"></i><span>Feed de Roteiros</span>
+        </a>
+        <a class="" href="meus-roteiros.html">
+          <i class="bi bi-map"></i><span>Meus Roteiros</span>
+        </a>
+        <a class="" href="planos-premium.html">
+          <i class="bi bi-crown"></i><span>Planos Premium</span>
+        </a>
+        <a class="" href="ajuda.html">
+          <i class="bi bi-question-circle"></i><span>Ajuda</span>
+        </a>
+      </div>
+
+      <!-- CTA principal (chamada para ação) -->
+      <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100">
+        <i class="bi bi-plus-lg me-2"></i>Novo Roteiro
+      </a>
+
+      <!-- Bloco do usuário logado (atual está estático) -->
+      <div class="profile">
+        <div class="avatar">K</div>
+        <div>
+          <div class="name">Kauã Dias</div>
+          <div class="email">kauadias2901@gmail.com</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== CONTEÚDO PRINCIPAL ===================== -->
+    <div class="main">
+
+      <!-- Topbar no mobile: botão hamburger + título -->
+      <div class="mobile-topbar">
+        <!-- Abre sidebar no mobile (evento tratado no script abaixo) -->
+        <button class="btn btn-outline-soft" data-sidebar-open>
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="fw-bold">Feed</div>
+        <!-- Espaço para manter alinhamento -->
+        <div style="width:44px"></div>
+      </div>
+
+      <!-- Backdrop (fundo escuro) para quando a sidebar estiver aberta no mobile -->
+      <div class="d-lg-none position-fixed top-0 start-0 w-100 h-100"
+           data-sidebar-backdrop
+           style="display:none; z-index:1035;">
+      </div>
+
+      <script>
+        /**
+         * Script simples para controlar o backdrop da sidebar no mobile.
+         * - Quando clicar no botão [data-sidebar-open], mostra backdrop.
+         * - Quando clicar em [data-sidebar-close] ou no backdrop, esconde.
+         *
+         * Observação: a abertura/fechamento real da sidebar (classe .open)
+         * normalmente é aplicada no CSS/app.js. Aqui você controla o backdrop.
+         */
+        (function(){
+          const sidebar = document.querySelector('.sidebar');
+          const backdrop = document.querySelector('[data-sidebar-backdrop]');
+
+          const show = () => { if (backdrop) backdrop.style.display = 'block'; };
+          const hide = () => { if (backdrop) backdrop.style.display = 'none'; };
+
+          document.addEventListener('click', (e) => {
+            if (e.target.closest('[data-sidebar-open]')) show();
+            if (e.target.closest('[data-sidebar-close]')) hide();
+            if (e.target.matches('[data-sidebar-backdrop]')) hide();
+          });
+
+          // Observa mudanças de classe na sidebar para sincronizar o backdrop
+          const obs = new MutationObserver(() => {
+            if (!sidebar) return;
+            if (sidebar.classList.contains('open')) show();
+            else hide();
+          });
+
+          if (sidebar) obs.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+        })();
+      </script>
+
+      <!-- ===================== HERO (cabeçalho/introdução do feed) ===================== -->
+      <section class="hero">
+        <div class="hero-inner">
+          <div>
+            <h1>Inspire-se para sua próxima viagem</h1>
+            <p>Explore roteiros incríveis compartilhados por viajantes do mundo todo</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== BARRA DE BUSCA E FILTROS ===================== -->
+      <div class="searchbar">
+        <div class="panel">
+          <div class="row g-3 align-items-center">
+
+            <!-- Campo de busca por texto -->
+            <div class="col-12 col-lg-7">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0"
+                      style="border-radius:12px 0 0 12px;">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input class="form-control border-start-0"
+                       style="border-radius:0 12px 12px 0;"
+                       placeholder="Buscar por destino, título...">
+              </div>
+            </div>
+
+            <!-- Select de tipo de roteiro -->
+            <div class="col-12 col-lg-3">
+              <div class="input-group">
+                <span class="input-group-text bg-white"
+                      style="border-radius:12px 0 0 12px;">
+                  <i class="bi bi-funnel"></i>
+                </span>
+                <select class="form-select" id="typeSelect" style="border-radius:0 12px 12px 0;">
+                  <option selected>Todos os tipos</option>
+                  <option>Aventura</option>
+                  <option>Cultural</option>
+                  <option>Praia</option>
+                  <option>Cidade</option>
+                  <option>Natureza</option>
+                  <option>Gastronomia</option>
+                  <option>Mochilão</option>
+                  <option>Luxo</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Botão que abre o Offcanvas de filtros avançados -->
+            <div class="col-12 col-lg-2 d-grid">
+              <!-- data-bs-toggle / data-bs-target são do Bootstrap 5 -->
+              <button class="btn btn-outline-soft"
+                      data-bs-toggle="offcanvas"
+                      data-bs-target="#offcanvasFilters">
+                <i class="bi bi-funnel"></i> Filtros Avançados
+                <i class="bi bi-crown-fill premium-crown"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== GRID DE CARDS (roteiros) ===================== -->
+      <div class="grid-wrap">
+        <div class="row g-4">
+
+          <!-- CARD 1 -->
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="trip-card h-100">
+
+              <!-- Capa do card (imagem no background) -->
+              <div class="trip-cover"
+                   style="background-image:url('https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1200&q=70')">
+
+                <!-- Categoria do roteiro -->
+                <span class="badge-pill badge-green">Aventura</span>
+
+                <!-- Botão “curtir” (provável evento em app.js usando data-like) -->
+                <div class="like-btn" data-like title="Curtir"><i class="bi bi-heart"></i></div>
+
+                <!-- Título e localização -->
+                <div class="trip-title">
+                  <h5>Aventura na Patagônia Argentina</h5>
+                  <div class="loc"><i class="bi bi-geo-alt-fill"></i>El Calafate e El Chaltén, Argentina</div>
+                </div>
+              </div>
+
+              <!-- Corpo do card (resumo + metadados) -->
+              <div class="trip-body">
+                <div class="small text-secondary">
+                  Trekking pelas montanhas mais impressionantes da América do Sul. Glaciares de tirar o fôlego, lagos azul-...
+                </div>
+                <div class="meta-row mt-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar-event"></i><span>11 dias</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 money">
+                    <i class="bi bi-currency-dollar"></i><span>R$ 12.000</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 heart">
+                    <i class="bi bi-heart-fill"></i><span>29</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Rodapé (data + link para detalhes) -->
+              <div class="trip-footer">
+                <div>14 de março</div>
+                <a href="detalhes-roteiro.html"><i class="bi bi-eye"></i>Ver Detalhes</a>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- CARD 2 -->
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="trip-card h-100">
+              <div class="trip-cover"
+                   style="background-image:url('https://images.unsplash.com/photo-1526481280695-3c687fd5432c?auto=format&fit=crop&w=1200&q=70')">
+                <span class="badge-pill badge-purple">Cultural</span>
+                <div class="like-btn" data-like title="Curtir"><i class="bi bi-heart"></i></div>
+                <div class="trip-title">
+                  <h5>15 dias inesquecíveis na Itália</h5>
+                  <div class="loc"><i class="bi bi-geo-alt-fill"></i>Roma, Florença e Veneza, Itália</div>
+                </div>
+              </div>
+              <div class="trip-body">
+                <div class="small text-secondary">
+                  Uma viagem mágica pela Itália, explorando as cidades mais históricas e românticas. Visitamos museus incríveis,...
+                </div>
+                <div class="meta-row mt-3">
+                  <div class="d-flex align-items-center gap-2"><i class="bi bi-calendar-event"></i><span>16 dias</span></div>
+                  <div class="d-flex align-items-center gap-2 money"><i class="bi bi-currency-dollar"></i><span>R$ 18.000</span></div>
+                  <div class="d-flex align-items-center gap-2 heart"><i class="bi bi-heart-fill"></i><span>12</span></div>
+                </div>
+              </div>
+              <div class="trip-footer">
+                <div>9 de maio</div>
+                <a href="detalhes-roteiro.html"><i class="bi bi-eye"></i>Ver Detalhes</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 3 -->
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="trip-card h-100">
+              <div class="trip-cover"
+                   style="background-image:url('https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=70')">
+                <span class="badge-pill badge-yellow">Mochilão</span>
+                <div class="like-btn" data-like title="Curtir"><i class="bi bi-heart"></i></div>
+                <div class="trip-title">
+                  <h5>Mochilão pelo Sudeste Asiático</h5>
+                  <div class="loc"><i class="bi bi-geo-alt-fill"></i>Tailândia, Vietnã e Camboja, Tailândia</div>
+                </div>
+              </div>
+              <div class="trip-body">
+                <div class="small text-secondary">
+                  Um mês explorando templos antigos, praias paradisíacas e a culinária mais incrível. Conheci viajantes do mundo...
+                </div>
+                <div class="meta-row mt-3">
+                  <div class="d-flex align-items-center gap-2"><i class="bi bi-calendar-event"></i><span>30 dias</span></div>
+                  <div class="d-flex align-items-center gap-2 money"><i class="bi bi-currency-dollar"></i><span>R$ 8.000</span></div>
+                  <div class="d-flex align-items-center gap-2 heart"><i class="bi bi-heart-fill"></i><span>46</span></div>
+                </div>
+              </div>
+              <div class="trip-footer">
+                <div>30 de junho</div>
+                <a href="detalhes-roteiro.html"><i class="bi bi-eye"></i>Ver Detalhes</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div> <!-- /main -->
+  </div> <!-- /app-shell -->
+
+  <!-- ===================== OFFCANVAS (FILTROS AVANÇADOS - PREMIUM) ===================== -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilters">
+    <div class="offcanvas-header">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-funnel"></i>
+        <h5 class="offcanvas-title mb-0">Filtros Avançados</h5>
+      </div>
+      <!-- Botão fechar do offcanvas (Bootstrap) -->
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+      <!-- Mensagem indicando que precisa do premium -->
+      <div class="small text-secondary mb-3">Assine o Premium para desbloquear estes filtros</div>
+
+      <!-- Card de bloqueio do premium -->
+      <div class="premium-lock-card mb-3">
+        <div class="lock"><i class="bi bi-lock-fill"></i></div>
+        <div class="fw-black fw-bold mb-1">Filtros Premium Bloqueados</div>
+        <div class="small text-secondary mb-3">
+          Assine o plano Premium para acessar filtros por orçamento, duração e época do ano
+        </div>
+        <a class="btn btn-primary-orange" href="planos-premium.html">
+          <i class="bi bi-crown-fill me-2"></i>Ver Planos
+        </a>
+      </div>
+
+      <!-- Slider de orçamento (disabled porque é premium) -->
+      <div class="range-row">
+        <div class="locked-label"><span>Orçamento (R$)</span> <i class="bi bi-lock-fill"></i></div>
+        <input type="range" min="0" max="50000" value="0" disabled>
+        <div class="range-caption"><span>R$ 0</span><span>R$ 50.000</span></div>
+      </div>
+
+      <!-- Slider de duração (disabled porque é premium) -->
+      <div class="range-row mt-4">
+        <div class="locked-label"><span>Duração (dias)</span> <i class="bi bi-lock-fill"></i></div>
+        <input type="range" min="1" max="30" value="1" disabled>
+        <div class="range-caption"><span>1 dia</span><span>30 dias</span></div>
+      </div>
+
+      <!-- Select de época do ano (disabled porque é premium) -->
+      <div class="mt-4">
+        <div class="locked-label mb-2"><span>Época do Ano</span> <i class="bi bi-lock-fill"></i></div>
+        <select class="form-select" disabled>
+          <option selected>Todos os meses</option>
+          <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
+          <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
+          <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle: necessário para offcanvas, dropdown, modal etc. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Seu JS principal (ex: likes, abrir sidebar, interações) -->
+  <script src="../assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <title>FlyGuide - Ajuda</title>
+  
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- CSS do projeto (separado por responsabilidade) -->
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/ajuda.css" rel="stylesheet">
+</head>
+<body>
+  <!-- =========================================================
+       FlyGuide Front-end - FlyGuide - Ajuda
+       Esta página é estática (HTML/CSS/Bootstrap). O arquivo
+       ../assets/js/app.js cuida apenas de interações de UI
+       (menu mobile, curtidas, etc.).
+       ========================================================= -->
+  <div class="app-shell">
+    
+<!-- ===================== SIDEBAR (menu lateral) ===================== -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-badge"><i class="bi bi-compass"></i></div>
+    <div>
+      <div class="brand-title">Roteiros</div>
+      <div class="brand-sub">Suas viagens inesquecíveis</div>
+    </div>
+    <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="navlist">
+    <a class="" href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+    <a class="" href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+    <a class="" href="planos-premium.html"><i class="bi bi-crown"></i><span>Planos Premium</span></a>
+    <a class="active" href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+  </div>
+
+  <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100"><i class="bi bi-plus-lg me-2"></i>Novo Roteiro</a>
+
+  <div class="profile">
+    <div class="avatar">K</div>
+    <div>
+      <div class="name">Kauã Dias</div>
+      <div class="email">kauadias2901@gmail.com</div>
+    </div>
+  </div>
+</div>
+
+    <!-- ===================== CONTEÚDO PRINCIPAL ===================== -->
+    <div class="main">
+      
+<div class="mobile-topbar">
+  <button class="btn btn-outline-soft" data-sidebar-open><i class="bi bi-list"></i></button>
+  <div class="fw-bold">Ajuda</div>
+  <div style="width:44px"></div>
+</div>
+<div class="d-lg-none position-fixed top-0 start-0 w-100 h-100" data-sidebar-backdrop style="display:none; z-index:1035;"></div>
+<script>
+  (function(){
+    const sidebar=document.querySelector('.sidebar');
+    const backdrop=document.querySelector('[data-sidebar-backdrop]');
+    const show=()=>{ if(backdrop) backdrop.style.display='block'; };
+    const hide=()=>{ if(backdrop) backdrop.style.display='none'; };
+    document.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-sidebar-open]')) show();
+      if(e.target.closest('[data-sidebar-close]')) hide();
+      if(e.target.matches('[data-sidebar-backdrop]')) hide();
+    });
+    // also hide backdrop when sidebar closes
+    const obs = new MutationObserver(()=>{
+      if(!sidebar) return;
+      if(sidebar.classList.contains('open')) show(); else hide();
+    });
+    if(sidebar) obs.observe(sidebar, {attributes:true, attributeFilter:['class']});
+  })();
+</script>
+
+      <section class="hero hero-premium" style="height: 300px;">
+        <div class="hero-inner">
+          <div style="max-width: 900px;">
+            <div class="hero-icon"><i class="bi bi-question-circle" style="font-size:22px;"></i></div>
+            <h1>Como podemos ajudar?</h1>
+            <p>Encontre respostas para as perguntas mais comuns</p>
+            <div class="mt-3">
+              <div class="input-group mx-auto" style="max-width: 640px;">
+                <span class="input-group-text bg-white border-end-0" style="border-radius:12px 0 0 12px;"><i class="bi bi-search"></i></span>
+                <input class="form-control border-start-0" style="border-radius:0 12px 12px 0; height: 46px;" placeholder="Buscar por pergunta...">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid-wrap">
+        <!-- Tabs de categorias (filtra seções via JS) -->
+        <div class="help-tabs">
+          <div class="tab-pill active" data-help-tab="all">Todas</div>
+          <div class="tab-pill" data-help-tab="gerais"><i class="bi bi-question-circle"></i>Perguntas Gerais</div>
+          <div class="tab-pill" data-help-tab="criando"><i class="bi bi-book"></i>Criando Roteiros</div>
+          <div class="tab-pill" data-help-tab="feed"><i class="bi bi-globe"></i>Feed e Interações</div>
+          <div class="tab-pill" data-help-tab="priv"><i class="bi bi-lock"></i>Privacidade e Segurança</div>
+          <div class="tab-pill" data-help-tab="dicas"><i class="bi bi-camera"></i>Dicas de Uso</div>
+        </div>
+
+        <!-- Conteúdo de FAQ (accordion simples) -->
+        <div class="help-accordion">
+          <div data-help-section="gerais" class="cat-card">
+            <div class="cat-head cat-beige">
+              <div class="left"><i class="bi bi-question-circle"></i><span>Perguntas Gerais</span></div>
+              <span class="count">3 perguntas</span>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>O que é o app Roteiros?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">O FlyGuide ajuda você a criar, organizar e compartilhar roteiros de viagem (públicos ou privados) com uma experiência simples e visual.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Preciso pagar para usar o app?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Não. Você pode usar o plano gratuito. O Premium libera filtros avançados e benefícios extras.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Como funciona a diferença entre roteiros públicos e privados?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Roteiros públicos aparecem no feed para outros viajantes. Roteiros privados ficam visíveis apenas para você.</div>
+            </div>
+          </div>
+
+          <div data-help-section="criando" class="cat-card">
+            <div class="cat-head cat-blue">
+              <div class="left"><i class="bi bi-book"></i><span>Criando Roteiros</span></div>
+              <span class="count">5 perguntas</span>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Como criar um novo roteiro?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Clique em <b>Novo Roteiro</b>, preencha as informações básicas e adicione atividades e dicas.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Posso adicionar fotos aos meus roteiros?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Você pode informar uma URL de imagem de capa (ex.: Unsplash) para personalizar o seu roteiro.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Como organizar as atividades do roteiro?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Adicione atividades informando o dia e horário. Você pode editar/remover atividades a qualquer momento.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Posso editar um roteiro depois de criá-lo?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Sim. Na tela de detalhes você terá botões de editar e excluir (quando conectado ao backend).</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Qual é o limite de roteiros que posso criar?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">No front não há limite. No backend você pode definir limites por plano se desejar.</div>
+            </div>
+          </div>
+
+          <div data-help-section="feed" class="cat-card">
+            <div class="cat-head cat-purple">
+              <div class="left"><i class="bi bi-globe"></i><span>Feed e Interações</span></div>
+              <span class="count">4 perguntas</span>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Como funciona o feed de roteiros?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">O feed mostra roteiros públicos compartilhados por viajantes, com busca e filtros para encontrar inspirações.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Como curtir um roteiro?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Clique no ícone de coração no card ou no botão Curtido na página de detalhes.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Posso descurtir um roteiro?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Sim. Basta clicar novamente no coração para alternar o estado.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Como encontrar roteiros específicos?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Use a barra de busca por destino ou título e selecione o tipo de viagem.</div>
+            </div>
+          </div>
+
+          <div data-help-section="priv" class="cat-card">
+            <div class="cat-head cat-green">
+              <div class="left"><i class="bi bi-lock"></i><span>Privacidade e Segurança</span></div>
+              <span class="count">3 perguntas</span>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Minhas informações pessoais ficam visíveis?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">O aplicativo pode expor somente informações mínimas (ex.: nome) conforme sua política. Dados sensíveis não devem ser exibidos.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Posso mudar um roteiro de público para privado?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Sim. Você controla a visibilidade ao criar ou editar o roteiro.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Quem pode ver meus roteiros privados?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Apenas você (e o sistema) — roteiros privados não aparecem no feed público.</div>
+            </div>
+          </div>
+
+          <div data-help-section="dicas" class="cat-card">
+            <div class="cat-head cat-pink">
+              <div class="left"><i class="bi bi-camera"></i><span>Dicas de Uso</span></div>
+              <span class="count">4 perguntas</span>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Como fazer um bom roteiro?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Inclua dias, horários, custos aproximados e dicas práticas. Isso ajuda outros viajantes a replicarem a experiência.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Devo incluir o orçamento no roteiro?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Se possível, sim. Mesmo um valor estimado ajuda na tomada de decisão.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Quantas dicas devo adicionar?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">O suficiente para evitar problemas comuns: clima, horários, transporte, segurança e reservas.</div>
+            </div>
+            <div class="faq-item">
+              <button class="faq-btn"><span>Posso usar o app no celular?</span><i class="bi bi-chevron-down"></i></button>
+              <div class="faq-body">Sim. Todas as telas foram feitas responsivas com Bootstrap.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="help-cta">
+          <div class="display-6 mb-1"><i class="bi bi-chat-dots" style="color:#f97316;"></i></div>
+          <h3>Não encontrou sua resposta?</h3>
+          <p>Estamos aqui para ajudar! Entre em contato conosco e responderemos o mais rápido possível.</p>
+          <div class="actions">
+            <button class="btn btn-primary-orange"><i class="bi bi-envelope me-2"></i>Enviar Mensagem</button>
+            <button class="btn btn-outline-gray"><i class="bi bi-chat-left-text me-2"></i>Chat ao Vivo</button>
+          </div>
+        </div>
+
+        <!-- Cards rápidos com links/atalhos -->
+        <div class="help-mini">
+          <div class="mini-card">
+            <div class="ic"><i class="bi bi-book"></i></div>
+            <div class="fw-bold">Crie Roteiros Detalhados</div>
+            <div class="small-muted mt-1">Quanto mais informação, melhor para outros viajantes</div>
+          </div>
+          <div class="mini-card">
+            <div class="ic" style="background:#eff6ff; border-color:#dbeafe; color:#2563eb;"><i class="bi bi-heart"></i></div>
+            <div class="fw-bold">Compartilhe Experiências</div>
+            <div class="small-muted mt-1">Inspire outros com suas aventuras pelo mundo</div>
+          </div>
+          <div class="mini-card">
+            <div class="ic" style="background:#ede9fe; border-color:#ddd6fe; color:#7c3aed;"><i class="bi bi-globe"></i></div>
+            <div class="fw-bold">Explore o Feed</div>
+            <div class="small-muted mt-1">Descubra destinos incríveis e planeje sua próxima viagem</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/app.js"></script>
+
+</body>
+</html>
