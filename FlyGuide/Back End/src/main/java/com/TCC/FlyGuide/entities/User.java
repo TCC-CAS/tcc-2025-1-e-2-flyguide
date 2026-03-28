@@ -3,7 +3,7 @@ package com.TCC.FlyGuide.entities;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,8 +22,14 @@ public class User implements Serializable {
 
     private String primeiroNome;
     private String ultimoNome;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
     private String senha;
+
+    @Column(length = 11, unique = true)
+    private String cpf;
 
     private String cep;
     private String endereco;
@@ -38,7 +44,7 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(Long idUsuario, String primeiroNome, String ultimoNome, String email, String senha, String cep, String endereco, String cidade,
+    public User(Long idUsuario, String primeiroNome, String ultimoNome, String email, String senha, String cpf, String cep, String endereco, String cidade,
                 String pais, LocalDate dataCadastro, String tipoConta) {
         super();
         this.idUsuario = idUsuario;
@@ -46,6 +52,7 @@ public class User implements Serializable {
         this.ultimoNome = ultimoNome;
         this.email = email;
         this.senha = senha;
+        this.cpf = cpf;
         this.cep = cep;
         this.endereco = endereco;
         this.cidade = cidade;
@@ -142,6 +149,9 @@ public class User implements Serializable {
         this.tipoConta = tipoConta;
     }
 
+    public String getCpf() {return cpf;}
+
+    public void setCpf(String cpf) {this.cpf = cpf;}
 
     @Override
     public int hashCode() {

@@ -36,7 +36,22 @@ public class UserService {
     }
 
     public User insert(User obj) {
-        obj.setSenha(passwordEncoder.encode(obj.getSenha())); // hash aqui
+
+        // Normaliza (recomendado): email minúsculo e sem espaços
+        String emailNormalizado = obj.getEmail() == null ? null : obj.getEmail().trim().toLowerCase();
+        obj.setEmail(emailNormalizado);
+
+        // CPF (se você já está normalizando)
+        // obj.setCpf(normalizarCpf(obj.getCpf()));
+
+        if (obj.getCpf() != null && repository.existsByCpf(obj.getCpf())) {
+            throw new DatabaseException("CPF já cadastrado.");
+        }
+
+        if (obj.getEmail() != null && repository.existsByEmail(obj.getEmail())) {
+            throw new DatabaseException("E-mail já cadastrado.");
+        }
+
         return repository.save(obj);
     }
 
@@ -63,20 +78,19 @@ public class UserService {
     private void updateData(User entity, User obj) {
         entity.setPrimeiroNome(obj.getPrimeiroNome());
         entity.setUltimoNome(obj.getUltimoNome());
-        entity.setEmail(obj.getEmail());
-
         entity.setCep(obj.getCep());
         entity.setEndereco(obj.getEndereco());
         entity.setCidade(obj.getCidade());
-        entity.setPais(obj.getPais());
-
-        entity.setDataCadastro(obj.getDataCadastro());
-        entity.setTipoConta(obj.getTipoConta());
+        entity.setPais(obj.getPais());;
 
         // só troca senha se vier uma nova
         if (obj.getSenha() != null && !obj.getSenha().isBlank()) {
             entity.setSenha(passwordEncoder.encode(obj.getSenha()));
         }
+    }
+
+    private String normalizarCpf(String cpf){
+        return cpf == null ? null : cpf.replaceAll("\\D", "");
     }
 
 }
