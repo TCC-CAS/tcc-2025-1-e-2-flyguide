@@ -17,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.TCC.FlyGuide.DTO.RoteiroDTO;
 import com.TCC.FlyGuide.services.RoteiroService;
+import com.TCC.FlyGuide.DTO.RoteiroCompletoDTO;
 
 @RestController
 @RequestMapping(value = "/roteiros")
@@ -67,5 +68,11 @@ public class RoteiroResource {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/{id}/completo")
+    public ResponseEntity<RoteiroCompletoDTO> findCompletoById(@PathVariable Long id) {
+        RoteiroCompletoDTO dto = service.findCompletoById(id);
+        return ResponseEntity.ok().body(dto);
     }
 }

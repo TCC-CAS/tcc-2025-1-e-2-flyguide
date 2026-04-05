@@ -4,10 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.TCC.FlyGuide.DTO.RoteiroCompletoDTO;
+import com.TCC.FlyGuide.DTO.RoteiroLocalDTO;
+import com.TCC.FlyGuide.entities.RoteiroLocal;
+import com.TCC.FlyGuide.repositories.RoteiroLocalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.TCC.FlyGuide.DTO.RoteiroDTO;
 import com.TCC.FlyGuide.entities.Roteiro;
@@ -27,6 +32,9 @@ public class RoteiroService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoteiroLocalRepository roteiroLocalRepository;
 
     public List<RoteiroDTO> findAll() {
         List<Roteiro> list = roteiroRepository.findAll();
@@ -95,4 +103,20 @@ public class RoteiroService {
         entity.setDiasTotais(dto.getDiasTotais());
         entity.setOrcamento(dto.getOrcamento());
     }
+
+    @Transactional(readOnly = true)
+    public RoteiroCompletoDTO findCompletoById(Long idRoteiro) {
+
+        Roteiro roteiro = roteiroRepository.findById(idRoteiro)
+                .orElseThrow(() -> new ResourceNotFoundException(idRoteiro));
+
+        List<RoteiroLocal> vinculos = roteiroLocalRepository.buscarPorRoteiroComLocal(idRoteiro);
+
+        List<RoteiroLocalDTO> locaisDTO = vinculos.stream()
+                .map(RoteiroLocalDTO::new)
+                .collect(Collectors.toList());
+
+        return new RoteiroCompletoDTO(new RoteiroDTO(roteiro), locaisDTO);
+    }
+
 }
