@@ -18,6 +18,7 @@ import com.TCC.FlyGuide.repositories.PessoaJuridicaRepository;
 import com.TCC.FlyGuide.repositories.UserRepository;
 import com.TCC.FlyGuide.services.exceptions.DatabaseException;
 import com.TCC.FlyGuide.services.exceptions.ResourceNotFoundException;
+import com.TCC.FlyGuide.DTO.AtualizarUsuarioDTO;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -123,9 +124,19 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
+    @Transactional
     public void delete(Long id) {
         try {
+            if (pessoaFisicaRepository.existsById(id)) {
+                pessoaFisicaRepository.deleteById(id);
+            }
+            if (pessoaJuridicaRepository.existsById(id)) {
+                pessoaJuridicaRepository.deleteById(id);
+            }
             userRepository.deleteById(id);
+
+            userRepository.flush();
+
         } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException(id);
         } catch (DataIntegrityViolationException e) {
@@ -133,27 +144,22 @@ public class UserService {
         }
     }
 
-    public User update(Long id, User obj) {
+    public User update(Long id, AtualizarUsuarioDTO dto) {
         try {
             User entity = userRepository.getReferenceById(id);
-            updateData(entity, obj);
+            updateData(entity, dto);
             return userRepository.save(entity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }
     }
 
-    private void updateData(User entity, User obj) {
-        entity.setCep(obj.getCep());
-        entity.setEndereco(obj.getEndereco());
-        entity.setCidade(obj.getCidade());
-        entity.setPais(obj.getPais());
-        entity.setTipoConta(obj.getTipoConta());
-
-        // só troca senha se vier uma nova
-        if (obj.getSenha() != null && !obj.getSenha().isBlank()) {
-            entity.setSenha(passwordEncoder.encode(obj.getSenha()));
-        }
+    private void updateData(User entity, AtualizarUsuarioDTO dto) {
+        entity.setCep(dto.getCep());
+        entity.setEndereco(dto.getEndereco());
+        entity.setCidade(dto.getCidade());
+        entity.setPais(dto.getPais());
+        entity.setTipoConta(dto.getTipoConta());
     }
 
     private String normalizarEmail(String email) {
@@ -177,6 +183,62 @@ public class UserService {
                 pj != null ? new PessoaJuridicaDTO(pj) : null,
                 new UserDTO(user)
         );
+    }
+
+    @Transactional
+    public void updatePF(Long idUsuario, AtualizarPessoaFisicaDTO dto) {
+
+        User user = userRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(idUsuario));
+
+        if (!"PF".equalsIgnoreCase(user.getTipoPessoa())) {
+            throw new DatabaseException("Este usuário não é do tipo PF.");
+        }
+
+        // tb_user (endereço)
+        if (dto.getCep() != null) user.setCep(dto.getCep());
+        if (dto.getEndereco() != null) user.setEndereco(dto.getEndereco());
+        if (dto.getCidade() != null) user.setCidade(dto.getCidade());
+        if (dto.getPais() != null) user.setPais(dto.getPais());
+
+        userRepository.save(user);
+
+        // tb_pessoa_fisica (nome)
+        PessoaFisica pf = pessoaFisicaRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Pessoa Física não encontrada para o usuário " + idUsuario));
+
+        if (dto.getPrimeiroNome() != null) pf.setPrimeiroNome(dto.getPrimeiroNome());
+        if (dto.getUltimoNome() != null) pf.setUltimoNome(dto.getUltimoNome());
+
+        pessoaFisicaRepository.save(pf);
+    }
+
+    @Transactional
+    public void updatePJ(Long idUsuario, AtualizarPessoaJuridicaDTO dto) {
+
+        User user = userRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(idUsuario));
+
+        if (!"PJ".equalsIgnoreCase(user.getTipoPessoa())) {
+            throw new DatabaseException("Este usuário não é do tipo PJ.");
+        }
+
+        // tb_user (endereço)
+        if (dto.getCep() != null) user.setCep(dto.getCep());
+        if (dto.getEndereco() != null) user.setEndereco(dto.getEndereco());
+        if (dto.getCidade() != null) user.setCidade(dto.getCidade());
+        if (dto.getPais() != null) user.setPais(dto.getPais());
+
+        userRepository.save(user);
+
+        // tb_pessoa_juridica
+        PessoaJuridica pj = pessoaJuridicaRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Pessoa Jurídica não encontrada para o usuário " + idUsuario));
+
+        if (dto.getRazaoSocial() != null) pj.setRazaoSocial(dto.getRazaoSocial());
+        if (dto.getNomeFantasia() != null) pj.setNomeFantasia(dto.getNomeFantasia());
+
+        pessoaJuridicaRepository.save(pj);
     }
 
     private static final String REGEX_SENHA_FORTE = "^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$";

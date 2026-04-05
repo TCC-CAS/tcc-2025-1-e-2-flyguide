@@ -18,6 +18,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.TCC.FlyGuide.entities.User;
 import com.TCC.FlyGuide.services.UserService;
+import com.TCC.FlyGuide.DTO.AtualizarPessoaFisicaDTO;
+import com.TCC.FlyGuide.DTO.AtualizarPessoaJuridicaDTO;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -66,11 +68,18 @@ public class UserResource {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(value = "/update/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User obj) {
-        obj = service.update(id, obj);
-        return ResponseEntity.ok().body(obj);
+    @PutMapping(value = "/update/pf/{id}")
+    public ResponseEntity<Void> updatePF(@PathVariable Long id, @RequestBody AtualizarPessoaFisicaDTO dto) {
+        service.updatePF(id, dto);
+        return ResponseEntity.noContent().build();
     }
+
+    @PutMapping(value = "/update/pj/{id}")
+    public ResponseEntity<Void> updatePJ(@PathVariable Long id, @RequestBody AtualizarPessoaJuridicaDTO dto) {
+        service.updatePJ(id, dto);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @GetMapping(value = "/search-completo/{id}")
     public ResponseEntity<UserCompleteDTO> findCompletoById(@PathVariable Long id) {
