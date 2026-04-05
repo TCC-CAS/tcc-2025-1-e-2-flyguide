@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <title>FlyGuide - Planos Premium</title>
+  
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- CSS do projeto (separado por responsabilidade) -->
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/planos.css" rel="stylesheet">
+</head>
+<body>
+  <!-- =========================================================
+       FlyGuide Front-end - FlyGuide - Planos Premium
+       Esta página é estática (HTML/CSS/Bootstrap). O arquivo
+       ../assets/js/app.js cuida apenas de interações de UI
+       (menu mobile, curtidas, etc.).
+       ========================================================= -->
+  <div class="app-shell">
+    
+<!-- ===================== SIDEBAR (menu lateral) ===================== -->
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-badge"><i class="bi bi-compass"></i></div>
+    <div>
+      <div class="brand-title">Roteiros</div>
+      <div class="brand-sub">Suas viagens inesquecíveis</div>
+    </div>
+    <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="navlist">
+    <a class="" href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+    <a class="" href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+    <a class="active" href="planos-premium.html"><i class="bi bi-crown"></i><span>Planos Premium</span></a>
+    <a class="" href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+  </div>
+
+  <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100"><i class="bi bi-plus-lg me-2"></i>Novo Roteiro</a>
+
+  <div class="profile">
+    <div class="avatar">K</div>
+    <div>
+      <div class="name">Kauã Dias</div>
+      <div class="email">kauadias2901@gmail.com</div>
+    </div>
+  </div>
+</div>
+
+    <!-- ===================== CONTEÚDO PRINCIPAL ===================== -->
+    <div class="main">
+      
+<div class="mobile-topbar">
+  <button class="btn btn-outline-soft" data-sidebar-open><i class="bi bi-list"></i></button>
+  <div class="fw-bold">Planos Premium</div>
+  <div style="width:44px"></div>
+</div>
+<div class="d-lg-none position-fixed top-0 start-0 w-100 h-100" data-sidebar-backdrop style="display:none; z-index:1035;"></div>
+<script>
+  (function(){
+    const sidebar=document.querySelector('.sidebar');
+    const backdrop=document.querySelector('[data-sidebar-backdrop]');
+    const show=()=>{ if(backdrop) backdrop.style.display='block'; };
+    const hide=()=>{ if(backdrop) backdrop.style.display='none'; };
+    document.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-sidebar-open]')) show();
+      if(e.target.closest('[data-sidebar-close]')) hide();
+      if(e.target.matches('[data-sidebar-backdrop]')) hide();
+    });
+    // also hide backdrop when sidebar closes
+    const obs = new MutationObserver(()=>{
+      if(!sidebar) return;
+      if(sidebar.classList.contains('open')) show(); else hide();
+    });
+    if(sidebar) obs.observe(sidebar, {attributes:true, attributeFilter:['class']});
+  })();
+</script>
+
+      <!-- Hero (banner) da página de planos -->
+      <section class="hero hero-premium">
+        <div class="hero-inner">
+          <div>
+            <div class="hero-icon"><i class="bi bi-crown" style="font-size:22px;"></i></div>
+            <h1>Desbloqueie Todo o Potencial</h1>
+            <p>Filtros avançados, estatísticas e muito mais para tornar suas viagens ainda melhores</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid-wrap">
+        <div class="pill-card mx-auto" style="max-width: 980px;">
+          <div class="d-flex align-items-center gap-3">
+            <div class="ico"><i class="bi bi-star-fill" style="color:#64748b;"></i></div>
+            <div>
+              <div class="fw-bold" style="font-size:1.2rem;">Plano Gratuito</div>
+              <div class="small-muted">Faça upgrade para desbloquear recursos exclusivos</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="text-center mt-5 mb-3" style="font-weight:900;">Recursos Exclusivos Premium</h2>
+        <div class="row g-4 justify-content-center">
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="premium-feature">
+              <div class="circle"><i class="bi bi-funnel"></i></div>
+              <div class="fw-bold">Filtros Avançados</div>
+              <div class="small-muted mt-1">Encontre roteiros por orçamento, duração e época do ano</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="premium-feature">
+              <div class="circle"><i class="bi bi-bar-chart"></i></div>
+              <div class="fw-bold">Estatísticas Detalhadas</div>
+              <div class="small-muted mt-1">Visualize análises completas dos seus roteiros e viagens</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="premium-feature">
+              <div class="circle"><i class="bi bi-bell"></i></div>
+              <div class="fw-bold">Notificações Personalizadas</div>
+              <div class="small-muted mt-1">Receba alertas sobre novos destinos que combinam com você</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="premium-feature">
+              <div class="circle"><i class="bi bi-lightning-charge"></i></div>
+              <div class="fw-bold">Experiência Premium</div>
+              <div class="small-muted mt-1">Interface sem anúncios e suporte prioritário</div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="text-center mt-5 mb-3" style="font-weight:900;">Escolha Seu Plano</h2>
+        <div class="row g-4 justify-content-center">
+          <div class="col-12 col-xl-5">
+            <!-- Card do plano Free (exemplo) -->
+            <div class="plan-card">
+              <div class="plan-ico"><i class="bi bi-star-fill"></i></div>
+              <div class="text-center fw-bold fs-3">Gratuito</div>
+              <div class="text-center small-muted">Perfeito para começar sua jornada</div>
+              <div class="plan-price">R$ 0<small>/para sempre</small></div>
+
+              <div class="plan-list">
+                <div class="it ok"><i class="bi bi-check2"></i> Criar roteiros ilimitados</div>
+                <div class="it ok"><i class="bi bi-check2"></i> Compartilhar no feed público</div>
+                <div class="it ok"><i class="bi bi-check2"></i> Curtir roteiros de outros viajantes</div>
+                <div class="it ok"><i class="bi bi-check2"></i> Busca básica por destino</div>
+                <div class="it ok"><i class="bi bi-check2"></i> Filtro por tipo de viagem</div>
+                <div class="it ok"><i class="bi bi-check2"></i> Visualizar roteiros públicos</div>
+              </div>
+
+              <div class="text-center mt-4 fw-bold text-secondary">Plano atual</div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-5">
+            <!-- Card do plano Premium (destaque) -->
+            <div class="plan-card premium">
+              <div class="badge-popular"><i class="bi bi-stars"></i>Mais Popular</div>
+              <div class="plan-ico" style="background:#fff7ed; border:1px solid #ffedd5; color:#f97316;"><i class="bi bi-crown-fill"></i></div>
+              <div class="text-center fw-bold fs-3">Premium</div>
+              <div class="text-center small-muted">Para viajantes que querem mais</div>
+              <div class="plan-price">R$ 19,90<small>/por mês</small></div>
+
+              <div class="plan-list">
+                <div class="it ok"><i class="bi bi-check2"></i> Tudo do plano gratuito</div>
+                <div class="it prem"><i class="bi bi-check"></i> Filtros avançados por orçamento</div>
+                <div class="it prem"><i class="bi bi-check"></i> Filtro por duração da viagem</div>
+                <div class="it prem"><i class="bi bi-check"></i> Filtro por época do ano</div>
+                <div class="it prem"><i class="bi bi-check"></i> Estatísticas dos seus roteiros</div>
+                <div class="it prem"><i class="bi bi-check"></i> Recomendações personalizadas</div>
+                <div class="it prem"><i class="bi bi-check"></i> Notificações de novos destinos</div>
+                <div class="it prem"><i class="bi bi-check"></i> Exportar roteiros em PDF</div>
+                <div class="it prem"><i class="bi bi-check"></i> Sem anúncios</div>
+                <div class="it prem"><i class="bi bi-check"></i> Suporte prioritário</div>
+              </div>
+
+              <button class="btn btn-primary-orange w-100 mt-4" data-subscribe><i class="bi bi-crown-fill me-2"></i>Assinar Premium</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner final de chamada para assinatura -->
+        <div class="banner-cta mx-auto" style="max-width: 980px;">
+          <div class="icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h2>Planeje Viagens Melhores com Premium</h2>
+          <p>Tenha acesso a ferramentas avançadas que vão transformar a forma como você planeja e registra suas viagens</p>
+          <a class="btn btn-light px-4 py-2" href="#"><i class="bi bi-crown-fill text-warning me-2"></i>Começar Agora</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/app.js"></script>
+
+</body>
+</html>
