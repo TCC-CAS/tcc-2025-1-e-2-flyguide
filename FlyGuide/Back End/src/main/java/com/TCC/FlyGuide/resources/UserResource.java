@@ -3,6 +3,7 @@ package com.TCC.FlyGuide.resources;
 import java.net.URI;
 import java.util.List;
 
+import com.TCC.FlyGuide.DTO.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,14 +38,26 @@ public class UserResource {
         return ResponseEntity.ok().body(obj);
     }
 
-    @PostMapping(value = "/insert")
-    public ResponseEntity<User> insert(@RequestBody User obj) {
-        obj = service.insert(obj);
+    @PostMapping(value = "/insert/pf")
+    public ResponseEntity<User> insertPessoaFisica(@RequestBody CadastroPessoaFisicaDTO dto) {
+        User created = service.cadastrarPessoaFisica(dto);
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(obj.getIdUsuario())
+                .buildAndExpand(created.getIdUsuario())
                 .toUri();
-        return ResponseEntity.created(uri).body(obj);
+
+        return ResponseEntity.created(uri).body(created);
+    }
+
+    @PostMapping(value = "/insert/pj")
+    public ResponseEntity<User> insertPessoaJuridica(@RequestBody CadastroPessoaJuridicaDTO dto) {
+        User created = service.cadastrarPessoaJuridica(dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getIdUsuario())
+                .toUri();
+        return ResponseEntity.created(uri).body(created);
     }
 
     @DeleteMapping(value = "/delete/{id}")
@@ -57,5 +70,11 @@ public class UserResource {
     public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User obj) {
         obj = service.update(id, obj);
         return ResponseEntity.ok().body(obj);
+    }
+
+    @GetMapping(value = "/search-completo/{id}")
+    public ResponseEntity<UserCompleteDTO> findCompletoById(@PathVariable Long id) {
+        UserCompleteDTO dto = service.findCompletoById(id);
+        return ResponseEntity.ok().body(dto);
     }
 }

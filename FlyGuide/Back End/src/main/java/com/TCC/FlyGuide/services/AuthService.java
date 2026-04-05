@@ -19,12 +19,20 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public void login(LoginRequestDTO req) {
-        User user = (User) userRepository.findByEmail(req.getEmail())
+
+        String email = req.getEmail() == null ? null : req.getEmail().trim().toLowerCase();
+        String senha = req.getSenha();
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("login ou senha invalida"));
 
-        if (!passwordEncoder.matches(req.getSenha(), user.getSenha())) {
+        // evita NPE e também bloqueia contas antigas com senha nula
+        if (user.getSenha() == null || senha == null) {
             throw new UnauthorizedException("login ou senha invalida");
         }
 
+        if (!passwordEncoder.matches(senha, user.getSenha())) {
+            throw new UnauthorizedException("login ou senha invalida");
+        }
     }
 }

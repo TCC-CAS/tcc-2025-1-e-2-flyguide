@@ -1,15 +1,20 @@
 package com.TCC.FlyGuide.services;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
 
+import com.TCC.FlyGuide.DTO.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.TCC.FlyGuide.entities.PessoaFisica;
+import com.TCC.FlyGuide.entities.PessoaJuridica;
 import com.TCC.FlyGuide.entities.User;
+import com.TCC.FlyGuide.repositories.PessoaFisicaRepository;
+import com.TCC.FlyGuide.repositories.PessoaJuridicaRepository;
 import com.TCC.FlyGuide.repositories.UserRepository;
 import com.TCC.FlyGuide.services.exceptions.DatabaseException;
 import com.TCC.FlyGuide.services.exceptions.ResourceNotFoundException;
@@ -20,44 +25,105 @@ import jakarta.persistence.EntityNotFoundException;
 public class UserService {
 
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private PessoaFisicaRepository pessoaFisicaRepository;
+
+    @Autowired
+    private PessoaJuridicaRepository pessoaJuridicaRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Transactional
+    public User cadastrarPessoaFisica(CadastroPessoaFisicaDTO dto) {
 
-    public List<User> findAll() {
-        return repository.findAll();
-    }
+        String email = normalizarEmail(dto.getEmail());
+        String cpf = normalizarDocumento(dto.getCpf());
 
-    public User findById(Long id) {
-        Optional<User> obj = repository.findById(id);
-        return obj.orElseThrow(() -> new ResourceNotFoundException(id));
-    }
-
-    public User insert(User obj) {
-
-        // Normaliza (recomendado): email minúsculo e sem espaços
-        String emailNormalizado = obj.getEmail() == null ? null : obj.getEmail().trim().toLowerCase();
-        obj.setEmail(emailNormalizado);
-
-        // CPF (se você já está normalizando)
-        // obj.setCpf(normalizarCpf(obj.getCpf()));
-
-        if (obj.getCpf() != null && repository.existsByCpf(obj.getCpf())) {
-            throw new DatabaseException("CPF já cadastrado.");
-        }
-
-        if (obj.getEmail() != null && repository.existsByEmail(obj.getEmail())) {
+        if (email != null && userRepository.existsByEmail(email)) {
             throw new DatabaseException("E-mail já cadastrado.");
         }
 
-        return repository.save(obj);
+        if (cpf != null && pessoaFisicaRepository.existsByCpf(cpf)) {
+            throw new DatabaseException("CPF já cadastrado.");
+        }
+
+        User user = new User();
+        user.setTipoPessoa("PF");
+        user.setEmail(email);
+        user.setSenha(passwordEncoder.encode(dto.getSenha()));
+        user.setCep(dto.getCep());
+        user.setEndereco(dto.getEndereco());
+        user.setCidade(dto.getCidade());
+        user.setPais(dto.getPais());
+        user.setTipoConta(dto.getTipoConta());
+        user.setDataCadastro(LocalDate.now());
+
+        user = userRepository.save(user);
+
+        PessoaFisica pf = new PessoaFisica();
+        pf.setUsuario(user); // @MapsId usa o id do user
+        pf.setPrimeiroNome(dto.getPrimeiroNome());
+        pf.setUltimoNome(dto.getUltimoNome());
+        pf.setCpf(cpf);
+
+        pessoaFisicaRepository.save(pf);
+
+        return user;
+    }
+
+    @Transactional
+    public User cadastrarPessoaJuridica(CadastroPessoaJuridicaDTO dto) {
+
+        String email = normalizarEmail(dto.getEmail());
+        String cnpj = normalizarDocumento(dto.getCnpj());
+
+        if (email != null && userRepository.existsByEmail(email)) {
+            throw new DatabaseException("E-mail já cadastrado.");
+        }
+
+        if (cnpj != null && pessoaJuridicaRepository.existsByCnpj(cnpj)) {
+            throw new DatabaseException("CNPJ já cadastrado.");
+        }
+
+        User user = new User();
+        user.setTipoPessoa("PJ");
+        user.setEmail(email);
+        user.setSenha(passwordEncoder.encode(dto.getSenha()));
+        user.setCep(dto.getCep());
+        user.setEndereco(dto.getEndereco());
+        user.setCidade(dto.getCidade());
+        user.setPais(dto.getPais());
+        user.setTipoConta(dto.getTipoConta());
+        user.setDataCadastro(LocalDate.now());
+
+        user = userRepository.save(user);
+
+        PessoaJuridica pj = new PessoaJuridica();
+        pj.setUsuario(user); // @MapsId usa o id do user
+        pj.setCnpj(cnpj);
+        pj.setRazaoSocial(dto.getRazaoSocial());
+        pj.setNomeFantasia(dto.getNomeFantasia());
+
+        pessoaJuridicaRepository.save(pj);
+
+        return user;
+    }
+
+    // ===== CRUD do User (Conta) =====
+    public java.util.List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     public void delete(Long id) {
         try {
-            repository.deleteById(id);
+            userRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException(id);
         } catch (DataIntegrityViolationException e) {
@@ -67,21 +133,20 @@ public class UserService {
 
     public User update(Long id, User obj) {
         try {
-            User entity = repository.getReferenceById(id);
+            User entity = userRepository.getReferenceById(id);
             updateData(entity, obj);
-            return repository.save(entity);
+            return userRepository.save(entity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }
     }
 
     private void updateData(User entity, User obj) {
-        entity.setPrimeiroNome(obj.getPrimeiroNome());
-        entity.setUltimoNome(obj.getUltimoNome());
         entity.setCep(obj.getCep());
         entity.setEndereco(obj.getEndereco());
         entity.setCidade(obj.getCidade());
-        entity.setPais(obj.getPais());;
+        entity.setPais(obj.getPais());
+        entity.setTipoConta(obj.getTipoConta());
 
         // só troca senha se vier uma nova
         if (obj.getSenha() != null && !obj.getSenha().isBlank()) {
@@ -89,8 +154,26 @@ public class UserService {
         }
     }
 
-    private String normalizarCpf(String cpf){
-        return cpf == null ? null : cpf.replaceAll("\\D", "");
+    private String normalizarEmail(String email) {
+        return email == null ? null : email.trim().toLowerCase();
     }
 
+    private String normalizarDocumento(String doc) {
+        return doc == null ? null : doc.replaceAll("\\D", "");
+    }
+
+    public UserCompleteDTO findCompletoById(Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+
+        PessoaFisica pf = pessoaFisicaRepository.findById(id).orElse(null);
+        PessoaJuridica pj = pessoaJuridicaRepository.findById(id).orElse(null);
+
+        return new UserCompleteDTO(
+                pf != null ? new PessoaFisicaDTO(pf) : null,
+                pj != null ? new PessoaJuridicaDTO(pj) : null,
+                new UserDTO(user)
+        );
+    }
 }

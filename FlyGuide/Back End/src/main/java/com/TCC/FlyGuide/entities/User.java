@@ -20,16 +20,15 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUsuario;
 
-    private String primeiroNome;
-    private String ultimoNome;
 
     @Column(nullable = false, unique = true)
     private String email;
 
     private String senha;
 
-    @Column(length = 11, unique = true)
-    private String cpf;
+    private String tipoPessoa;
+
+
 
     private String cep;
     private String endereco;
@@ -44,15 +43,13 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(Long idUsuario, String primeiroNome, String ultimoNome, String email, String senha, String cpf, String cep, String endereco, String cidade,
+    public User(Long idUsuario, String email, String senha, String tipoPessoa, String cep, String endereco, String cidade,
                 String pais, LocalDate dataCadastro, String tipoConta) {
         super();
         this.idUsuario = idUsuario;
-        this.primeiroNome = primeiroNome;
-        this.ultimoNome = ultimoNome;
         this.email = email;
         this.senha = senha;
-        this.cpf = cpf;
+        this.tipoPessoa = tipoPessoa;
         this.cep = cep;
         this.endereco = endereco;
         this.cidade = cidade;
@@ -69,25 +66,7 @@ public class User implements Serializable {
         this.idUsuario = idUsuario;
     }
 
-    public String getPrimeiroNome() {
-        return primeiroNome;
-    }
-
-    public void setPrimeiroNome(String primeiroNome) {
-        this.primeiroNome = primeiroNome;
-    }
-
-    public String getUltimoNome() {
-        return ultimoNome;
-    }
-
-    public void setUltimoNome(String ultimoNome) {
-        this.ultimoNome = ultimoNome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() {return email;}
 
     public void setEmail(String email) {
         this.email = email;
@@ -100,6 +79,10 @@ public class User implements Serializable {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    public String getTipoPessoa() {return tipoPessoa;}
+
+    public void setTipoPessoa(String tipoPessoa) {this.tipoPessoa = tipoPessoa;}
 
     public String getCep() {
         return cep;
@@ -149,9 +132,6 @@ public class User implements Serializable {
         this.tipoConta = tipoConta;
     }
 
-    public String getCpf() {return cpf;}
-
-    public void setCpf(String cpf) {this.cpf = cpf;}
 
     @Override
     public int hashCode() {
