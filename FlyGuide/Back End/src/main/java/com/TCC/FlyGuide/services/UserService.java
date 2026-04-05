@@ -241,6 +241,32 @@ public class UserService {
         pessoaJuridicaRepository.save(pj);
     }
 
+    @Transactional
+    public void upgradePremium(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+
+        if ("premium".equalsIgnoreCase(user.getTipoConta())) {
+            throw new DatabaseException("Usuário já possui conta premium.");
+        }
+
+        user.setTipoConta("PREMIUM");
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void downgradeFree(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+
+        if ("free".equalsIgnoreCase(user.getTipoConta())) {
+            throw new DatabaseException("Usuário já possui conta free.");
+        }
+
+        user.setTipoConta("FREE");
+        userRepository.save(user);
+    }
+
     private static final String REGEX_SENHA_FORTE = "^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$";
 
     private void validarSenhaForte(String senha) {
