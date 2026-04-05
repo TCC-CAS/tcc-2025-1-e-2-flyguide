@@ -53,6 +53,7 @@ public class UserService {
         User user = new User();
         user.setTipoPessoa("PF");
         user.setEmail(email);
+        validarSenhaForte(dto.getSenha());
         user.setSenha(passwordEncoder.encode(dto.getSenha()));
         user.setCep(dto.getCep());
         user.setEndereco(dto.getEndereco());
@@ -91,6 +92,7 @@ public class UserService {
         User user = new User();
         user.setTipoPessoa("PJ");
         user.setEmail(email);
+        validarSenhaForte(dto.getSenha());
         user.setSenha(passwordEncoder.encode(dto.getSenha()));
         user.setCep(dto.getCep());
         user.setEndereco(dto.getEndereco());
@@ -175,5 +177,15 @@ public class UserService {
                 pj != null ? new PessoaJuridicaDTO(pj) : null,
                 new UserDTO(user)
         );
+    }
+
+    private static final String REGEX_SENHA_FORTE = "^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$";
+
+    private void validarSenhaForte(String senha) {
+        if (senha == null || !senha.matches(REGEX_SENHA_FORTE)) {
+            throw new DatabaseException(
+                    "Senha inválida. Deve ter no mínimo 8 caracteres, 1 letra maiúscula e 1 caractere especial."
+            );
+        }
     }
 }
