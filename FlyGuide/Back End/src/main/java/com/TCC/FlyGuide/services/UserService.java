@@ -44,7 +44,9 @@ public class UserService {
         String cpf = normalizarDocumento(dto.getCpf());
         String rg = normalizarRg(dto.getRg());
 
-        if (email != null && userRepository.existsByEmail(email)) {
+        validarEmail(email);
+
+        if (userRepository.existsByEmail(email)) {
             throw new DatabaseException("E-mail já cadastrado.");
         }
 
@@ -92,7 +94,9 @@ public class UserService {
         String cnpj = normalizarDocumento(dto.getCnpj());
         String ie = normalizarIe(dto.getIe());
 
-        if (email != null && userRepository.existsByEmail(email)) {
+        validarEmail(email);
+
+        if (userRepository.existsByEmail(email)) {
             throw new DatabaseException("E-mail já cadastrado.");
         }
 
@@ -311,6 +315,15 @@ public class UserService {
 
         user.setTipoConta("FREE");
         userRepository.save(user);
+    }
+
+
+    private static final String REGEX_EMAIL = "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9\\-]{2,}(\\.[a-zA-Z0-9\\-]{2,})*\\.[a-zA-Z]{2,63}$";
+
+    private void validarEmail(String email) {
+        if (email == null || !email.matches(REGEX_EMAIL)) {
+            throw new DatabaseException("E-mail inválido. Informe um endereço no formato usuario@dominio.extensao.");
+        }
     }
 
     private static final String REGEX_SENHA_FORTE = "^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$";
