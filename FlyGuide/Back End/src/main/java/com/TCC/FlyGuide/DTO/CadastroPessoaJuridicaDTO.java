@@ -21,6 +21,7 @@ public class CadastroPessoaJuridicaDTO implements Serializable {
     private String cnpj;
     private String razaoSocial;
     private String nomeFantasia;
+    private String ie;
 
     public CadastroPessoaJuridicaDTO() {
     }
@@ -103,5 +104,13 @@ public class CadastroPessoaJuridicaDTO implements Serializable {
 
     public void setNomeFantasia(String nomeFantasia) {
         this.nomeFantasia = nomeFantasia;
+    }
+
+    public String getIe() {
+        return ie;
+    }
+
+    public void setIe(String ie) {
+        this.ie = ie;
     }
 }

@@ -42,6 +42,7 @@ public class UserService {
 
         String email = normalizarEmail(dto.getEmail());
         String cpf = normalizarDocumento(dto.getCpf());
+        String rg = normalizarRg(dto.getRg());
 
         if (email != null && userRepository.existsByEmail(email)) {
             throw new DatabaseException("E-mail já cadastrado.");
@@ -49,6 +50,13 @@ public class UserService {
 
         if (cpf != null && pessoaFisicaRepository.existsByCpf(cpf)) {
             throw new DatabaseException("CPF já cadastrado.");
+        }
+
+        if (rg != null) {
+            validarRg(rg);
+            if (pessoaFisicaRepository.existsByRg(rg)) {
+                throw new DatabaseException("RG já cadastrado.");
+            }
         }
 
         User user = new User();
@@ -70,6 +78,7 @@ public class UserService {
         pf.setPrimeiroNome(dto.getPrimeiroNome());
         pf.setUltimoNome(dto.getUltimoNome());
         pf.setCpf(cpf);
+        pf.setRg(rg);
 
         pessoaFisicaRepository.save(pf);
 
@@ -81,6 +90,7 @@ public class UserService {
 
         String email = normalizarEmail(dto.getEmail());
         String cnpj = normalizarDocumento(dto.getCnpj());
+        String ie = normalizarIe(dto.getIe());
 
         if (email != null && userRepository.existsByEmail(email)) {
             throw new DatabaseException("E-mail já cadastrado.");
@@ -88,6 +98,13 @@ public class UserService {
 
         if (cnpj != null && pessoaJuridicaRepository.existsByCnpj(cnpj)) {
             throw new DatabaseException("CNPJ já cadastrado.");
+        }
+
+        if (ie != null) {
+            validarIe(ie);
+            if (!"ISENTO".equals(ie) && pessoaJuridicaRepository.existsByIe(ie)) {
+                throw new DatabaseException("Inscrição Estadual já cadastrada.");
+            }
         }
 
         User user = new User();
@@ -109,6 +126,7 @@ public class UserService {
         pj.setCnpj(cnpj);
         pj.setRazaoSocial(dto.getRazaoSocial());
         pj.setNomeFantasia(dto.getNomeFantasia());
+        pj.setIe(ie);
 
         pessoaJuridicaRepository.save(pj);
 
@@ -168,6 +186,34 @@ public class UserService {
 
     private String normalizarDocumento(String doc) {
         return doc == null ? null : doc.replaceAll("\\D", "");
+    }
+
+    // Remove pontuação do RG mas preserva letras (ex: MG-12.345 → MG12345)
+    private String normalizarRg(String rg) {
+        return rg == null ? null : rg.replaceAll("[.\\-/ ]", "").toUpperCase();
+    }
+
+    // RG: 7 a 9 caracteres alfanuméricos
+    private void validarRg(String rg) {
+        if (!rg.matches("[A-Z0-9]{7,9}")) {
+            throw new DatabaseException("RG inválido. Deve conter entre 7 e 9 caracteres alfanuméricos.");
+        }
+    }
+
+    // IE "ISENTO" passa direto; caso contrário remove pontuação e valida 8-14 dígitos
+    private String normalizarIe(String ie) {
+        if (ie == null) return null;
+        String upper = ie.trim().toUpperCase();
+        if ("ISENTO".equals(upper)) return upper;
+        return upper.replaceAll("[.\\-/ ]", "");
+    }
+
+    // IE: "ISENTO" ou 8 a 14 dígitos numéricos
+    private void validarIe(String ie) {
+        if ("ISENTO".equals(ie)) return;
+        if (!ie.matches("\\d{8,14}")) {
+            throw new DatabaseException("Inscrição Estadual inválida. Deve conter entre 8 e 14 dígitos ou ser \"ISENTO\".");
+        }
     }
 
     public UserCompleteDTO findCompletoById(Long id) {

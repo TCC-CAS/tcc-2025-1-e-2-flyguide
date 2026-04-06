@@ -33,17 +33,21 @@ public class PessoaJuridica implements Serializable {
     @Column(length = 200)
     private String nomeFantasia;
 
+    @Column(length = 20)
+    private String ie;
+
 
     public PessoaJuridica() {
     }
 
-    public PessoaJuridica(Long idUsuario, User usuario, String cnpj, String razaoSocial, String nomeFantasia) {
+    public PessoaJuridica(Long idUsuario, User usuario, String cnpj, String razaoSocial, String nomeFantasia, String ie) {
         super();
         this.idUsuario = idUsuario;
         this.usuario = usuario;
         this.cnpj = cnpj;
         this.razaoSocial = razaoSocial;
         this.nomeFantasia = nomeFantasia;
+        this.ie = ie;
     }
 
     public Long getIdUsuario() {
@@ -86,6 +90,13 @@ public class PessoaJuridica implements Serializable {
         this.nomeFantasia = nomeFantasia;
     }
 
+    public String getIe() {
+        return ie;
+    }
+
+    public void setIe(String ie) {
+        this.ie = ie;
+    }
 
     @Override
     public int hashCode() {

@@ -30,17 +30,21 @@ public class PessoaFisica implements Serializable {
     @Column(length = 11, nullable = false, unique = true)
     private String cpf;
 
+    @Column(length = 9, unique = true)
+    private String rg;
+
 
     public PessoaFisica() {
     }
 
-    public PessoaFisica(Long idUsuario, User usuario, String primeiroNome, String ultimoNome, String cpf) {
+    public PessoaFisica(Long idUsuario, User usuario, String primeiroNome, String ultimoNome, String cpf, String rg) {
         super();
         this.idUsuario = idUsuario;
         this.usuario = usuario;
         this.primeiroNome = primeiroNome;
         this.ultimoNome = ultimoNome;
         this.cpf = cpf;
+        this.rg = rg;
     }
 
     public Long getIdUsuario() {
@@ -81,6 +85,14 @@ public class PessoaFisica implements Serializable {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
+    }
+
+    public String getRg() {
+        return rg;
+    }
+
+    public void setRg(String rg) {
+        this.rg = rg;
     }
 
     @Override

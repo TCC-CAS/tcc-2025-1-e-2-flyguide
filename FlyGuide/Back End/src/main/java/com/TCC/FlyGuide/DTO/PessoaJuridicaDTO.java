@@ -10,6 +10,7 @@ public class PessoaJuridicaDTO implements Serializable {
 
     private Long idUsuario;
     private String cnpj;
+    private String ie;
     private String razaoSocial;
     private String nomeFantasia;
 
@@ -19,6 +20,7 @@ public class PessoaJuridicaDTO implements Serializable {
     public PessoaJuridicaDTO(PessoaJuridica entity) {
         this.idUsuario = entity.getIdUsuario();
         this.cnpj = entity.getCnpj();
+        this.ie = entity.getIe();
         this.razaoSocial = entity.getRazaoSocial();
         this.nomeFantasia = entity.getNomeFantasia();
     }
@@ -28,6 +30,9 @@ public class PessoaJuridicaDTO implements Serializable {
 
     public String getCnpj() { return cnpj; }
     public void setCnpj(String cnpj) { this.cnpj = cnpj; }
+
+    public String getIe() { return ie; }
+    public void setIe(String ie) { this.ie = ie; }
 
     public String getRazaoSocial() { return razaoSocial; }
     public void setRazaoSocial(String razaoSocial) { this.razaoSocial = razaoSocial; }
