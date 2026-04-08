@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <title>FlyGuide - Meu Perfil</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/perfil.css" rel="stylesheet">
+</head>
+
+<body data-pagina="perfil">
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="brand">
+        <div class="brand-badge"><i class="bi bi-compass"></i></div>
+        <div>
+          <div class="brand-title">Roteiros</div>
+          <div class="brand-sub">Suas viagens inesquecíveis</div>
+        </div>
+        <button class="btn btn-sm ms-auto d-lg-none" data-sidebar-close>
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="navlist">
+        <a href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+        <a href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+        <a href="planos-premium.html"><i class="bi bi-crown"></i><span>Planos Premium</span></a>
+        <a href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+      </div>
+
+      <a href="criar-roteiro.html" class="btn btn-new w-100">
+        <i class="bi bi-plus-lg me-2"></i>Novo Roteiro
+      </a>
+
+      <div class="profile" id="sidebarProfile" title="Meu Perfil">
+        <div class="avatar" id="sidebarAvatar">?</div>
+        <div>
+          <div class="name" id="sidebarNome">Carregando...</div>
+          <div class="email" id="sidebarEmail"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main">
+      <div class="mobile-topbar">
+        <button class="btn" data-sidebar-open><i class="bi bi-list fs-5"></i></button>
+        <div class="fw-bold">Meu Perfil</div>
+        <div style="width:36px"></div>
+      </div>
+
+      <div style="max-width: 780px; margin: 0 auto;">
+
+        <h1 class="perfil-page-title">Meu Perfil</h1>
+        <p class="perfil-page-sub">Gerencie suas informações pessoais e preferências</p>
+
+        <!-- CARD PRINCIPAL -->
+        <div class="perfil-card">
+
+          <!-- Cabeçalho -->
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="perfil-avatar" id="perfilAvatar">?</div>
+              <div>
+                <div class="perfil-nome" id="perfilNome">Carregando...</div>
+                <div class="d-flex gap-2 flex-wrap mt-2" id="perfilBadges"></div>
+              </div>
+            </div>
+            <button class="btn-editar" id="btnEditar">
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+          </div>
+
+          <!-- Grid de campos -->
+          <div class="perfil-grid" id="perfilGrid">
+            <!-- preenchido via JS -->
+          </div>
+
+          <!-- Botões salvar/cancelar (aparecem no modo edição) -->
+          <div class="edit-actions" id="editActions">
+            <button class="btn btn-primary d-flex align-items-center gap-2" id="btnSalvar"
+              style="border-radius:10px; font-weight:700; background:var(--fg-orange); border-color:var(--fg-orange);">
+              <i class="bi bi-check-lg"></i> Salvar alterações
+            </button>
+            <button class="btn btn-outline-secondary" id="btnCancelar"
+              style="border-radius:10px; font-weight:600;">
+              Cancelar
+            </button>
+          </div>
+
+          <!-- Alerta de feedback -->
+          <div id="perfilAlerta" class="alert mt-3" style="display:none;"></div>
+
+        </div>
+
+        <!-- AÇÕES DA CONTA -->
+        <div class="perfil-card">
+          <div class="perfil-card-title">Ações da Conta</div>
+          <p class="small-muted mb-2">Gerencie sua conta e dados</p>
+          <div class="acao-item">
+            <div class="acao-info">
+              <div class="acao-icone"><i class="bi bi-box-arrow-right"></i></div>
+              <div>
+                <div class="acao-titulo">Sair da conta</div>
+                <div class="acao-desc">Encerrar sua sessão atual</div>
+              </div>
+            </div>
+            <button id="btnSair" class="btn btn-outline-secondary" style="border-radius:10px; font-weight:600;">
+              Sair
+            </button>
+          </div>
+        </div>
+
+        <!-- ZONA DE PERIGO -->
+        <div class="danger-zone">
+          <div class="danger-title">
+            <i class="bi bi-exclamation-triangle-fill"></i> Zona de Perigo
+          </div>
+          <div class="danger-desc">
+            Excluir sua conta é uma ação permanente e irreversível. Todos os seus roteiros serão deletados.
+          </div>
+          <button id="btnExcluirConta" class="btn btn-danger d-flex align-items-center gap-2"
+            style="border-radius:10px; font-weight:700;">
+            <i class="bi bi-trash"></i> Excluir Conta
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmação exclusão -->
+  <div class="modal fade" id="modalConfirmar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:16px; border: 1px solid #fecaca;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold text-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>Excluir conta
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Tem certeza que deseja excluir sua conta?</p>
+          <p><strong>Essa ação não pode ser desfeita.</strong> Todos os seus roteiros e dados serão permanentemente removidos.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius:10px;">
+            Cancelar
+          </button>
+          <button type="button" id="btnConfirmarExclusao" class="btn btn-danger" style="border-radius:10px; font-weight:700;">
+            <i class="bi bi-trash me-1"></i> Sim, excluir minha conta
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/app.js"></script>
+</body>
+</html>

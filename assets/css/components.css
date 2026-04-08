@@ -1,0 +1,273 @@
+/*
+  FlyGuide - Components
+  --------------------------------------------------
+  - Hero (banner superior)
+  - Botões reutilizáveis
+  - Cards de roteiro (feed e meus roteiros)
+  - Offcanvas (filtros premium)
+*/
+
+/* Hero (banner) */
+.hero{
+  position: relative;
+  z-index: 0;            /* Mantém o hero atrás das seções que "sobem" com margin negativo */
+  overflow: hidden;      /* Evita que efeitos/elementos internos do hero vazem */
+
+  height: 290px;
+  background-image:
+    linear-gradient(90deg, rgba(249,115,22,.55), rgba(59,130,246,.45)),
+    var(--hero-feed);
+  background-size: cover;
+  background-position:center;
+  border-bottom: 1px solid #f1f5f9;
+}
+.hero.details{
+  height: 320px;
+  background-image:
+    linear-gradient(90deg, rgba(15,23,42,.55), rgba(15,23,42,.35)),
+    var(--hero-details);
+}
+.hero .hero-inner{
+  position: relative;
+  z-index: 1; /* Garante que o texto fique acima do background */
+
+  height: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#fff;
+  padding: 18px;
+}
+.hero h1{
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin:0;
+  text-shadow: 0 10px 20px rgba(0,0,0,.25);
+}
+.hero p{
+  margin: 12px 0 0 0;
+  font-size: 1.05rem;
+  opacity: .92;
+}
+
+/* Botões/estilos utilitários */
+.btn-outline-soft{
+  border: 1px solid #e5e7eb;
+  background:#fff;
+}
+.btn-outline-soft:hover{ background:#f8fafc; }
+
+.premium-crown{
+  color: #f97316;
+  margin-left: 6px;
+}
+
+.btn-primary-orange{
+  background: var(--fg-orange);
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 800;
+  box-shadow: 0 12px 20px rgba(249,115,22,.22);
+}
+.btn-primary-orange:hover{ background:#ea580c; }
+
+.btn-outline-gray{
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 800;
+  background:#fff;
+}
+.btn-outline-gray:hover{ background:#f8fafc; }
+
+/* Grid / Cards */
+.grid-wrap{ padding: 20px 22px 32px 22px; }
+
+.trip-card{
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  overflow:hidden;
+  box-shadow: var(--fg-shadow-soft);
+  background:#fff;
+}
+.trip-cover{
+  height: 155px;
+  background-size: cover;
+  background-position:center;
+  position:relative;
+}
+.trip-cover::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.0) 20%, rgba(0,0,0,.55) 100%);
+}
+.trip-title{
+  position:absolute;
+  left: 16px; right: 16px; bottom: 14px;
+  color:#fff;
+  z-index:2;
+}
+.trip-title h5{ margin:0; font-weight:800; }
+.trip-title .loc{ opacity:.9; font-size:.9rem; display:flex; align-items:center; gap:6px; }
+
+.badge-pill{
+  position:absolute; top: 12px; left: 12px; z-index:2;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: .78rem;
+  background:#e2e8f0;
+  color:#0f172a;
+}
+.badge-green{ background:#dcfce7; color:#166534; }
+.badge-purple{ background:#ede9fe; color:#5b21b6; }
+.badge-yellow{ background:#fef9c3; color:#854d0e; }
+
+.like-btn{
+  position:absolute; top: 12px; right: 12px; z-index:2;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(226,232,240,.9);
+  display:grid; place-items:center;
+  cursor:pointer;
+}
+.like-btn i{ color:#94a3b8; }
+.like-btn.liked{ background: rgba(255,255,255,.96); }
+.like-btn.liked i{ color:#ef4444; }
+
+.trip-body{ padding: 14px 16px 12px 16px; }
+.meta-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; color: var(--fg-muted); font-size:.9rem; }
+.meta-row i{ color:#f97316; }
+.meta-row .money i{ color:#22c55e; }
+.meta-row .heart i{ color:#ef4444; }
+
+.trip-footer{
+  padding: 10px 16px 14px 16px;
+  border-top: 1px solid #f1f5f9;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size: .88rem;
+  color: var(--fg-muted);
+}
+.trip-footer a{
+  color: #f97316;
+  font-weight: 700;
+  display:flex; align-items:center; gap:8px;
+}
+.trip-footer a:hover{ color:#ea580c; }
+
+/* Offcanvas (filtros premium) */
+.offcanvas{ width: 420px !important; }
+
+.premium-lock-card{
+  border-radius: 14px;
+  border: 1px solid #fed7aa;
+  background:#fff7ed;
+  padding: 18px;
+  text-align:center;
+}
+.premium-lock-card .lock{
+  width: 44px; height: 44px; border-radius: 14px;
+  margin: 0 auto 10px auto;
+  display:grid; place-items:center;
+  background:#fff; border: 1px solid #fed7aa;
+  color: var(--fg-orange);
+}
+.locked-label{ display:flex; align-items:center; gap:8px; color: var(--fg-muted); font-weight: 800; }
+.locked-label i{ color: var(--fg-orange); }
+.range-row{ margin-top: 14px; }
+.range-row input[type="range"]{ width:100%; }
+.range-caption{ display:flex; justify-content:space-between; color: var(--fg-muted); font-size:.82rem; margin-top: 8px; }
+
+/* ==================================================
+   Lista de atividades (reutilizável)
+   - Usado em Detalhes do Roteiro e na Etapa 2 (Atividades)
+   ================================================== */
+.day-item{
+  border-radius: 14px;
+  background:#fff;
+  border: 1px solid #eef2f7;
+  padding: 14px 14px;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+}
+.day-item + .day-item{ margin-top: 12px; }
+
+.day-bubble{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--fg-orange);
+  color:#fff;
+  font-weight: 900;
+  display:grid;
+  place-items:center;
+  flex: 0 0 auto;
+}
+
+.day-main{ flex:1; min-width: 0; }
+.day-main .topline{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.day-main .name{
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.time-pill{
+  border: 1px solid #e5e7eb;
+  background:#fff;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 700;
+  font-size: .78rem;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.costline{
+  color: var(--fg-muted);
+  font-size:.9rem;
+  margin-top: 6px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.costline i{ color:#f59e0b; }
+
+/* Botão de ícone (ex.: lixeira) */
+.btn-icon{
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+}
+.btn-danger-soft{
+  background:#fff;
+  border: 1px solid #fee2e2;
+  color:#ef4444;
+}
+.btn-danger-soft:hover{
+  background:#fef2f2;
+  border-color:#fecaca;
+  color:#dc2626;
+}
+
+/* Harmoniza botões de remover dentro de day-item quando estiver usando Bootstrap outline-danger */
+.day-item .btn-outline-danger{
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 12px;
+  display:grid;
+  place-items:center;
+}
