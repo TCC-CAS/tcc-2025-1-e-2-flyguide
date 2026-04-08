@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.TCC.FlyGuide.DTO.LoginRequestDTO;
+import com.TCC.FlyGuide.DTO.LoginResponseDTO;
 import com.TCC.FlyGuide.services.AuthService;
 import com.TCC.FlyGuide.services.exceptions.UnauthorizedException;
 
@@ -18,10 +19,10 @@ public class AuthResource {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequestDTO req) {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO req) {
         try {
-            authService.login(req);
-            return ResponseEntity.ok(Map.of("message", "usuario logado com sucesso"));
+            LoginResponseDTO response = authService.login(req);
+            return ResponseEntity.ok(response);
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(401).body(Map.of("message", "login ou senha invalida"));
         }
