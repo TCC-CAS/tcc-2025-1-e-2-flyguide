@@ -1,0 +1,347 @@
+// assets/js/auth.js
+(function () {
+  const qs = (seletor, el = document) => el.querySelector(seletor);
+
+  const URL_API_BASE = "http://localhost:8080";
+  const SESSION_KEY  = "flyguide.userId";
+
+  // ======================== UTILITÁRIOS ========================
+
+  function apenasDigitos(valor) {
+    return String(valor || "").replace(/\D/g, "");
+  }
+
+  function cepEhValido(cep) {
+    return /^\d{8}$/.test(apenasDigitos(cep));
+  }
+
+  function formatarCEP(valor) {
+    const d = apenasDigitos(valor).slice(0, 8);
+    return d.length <= 5 ? d : `${d.slice(0, 5)}-${d.slice(5)}`;
+  }
+
+  function cpfEhValido(cpf) {
+    const c = apenasDigitos(cpf);
+    if (!/^\d{11}$/.test(c) || /^(\d)\1{10}$/.test(c)) return false;
+    const dig = (base) => {
+      let s = 0;
+      for (let i = 0; i < base.length; i++) s += parseInt(base[i]) * (base.length + 1 - i);
+      const m = s % 11; return m < 2 ? 0 : 11 - m;
+    };
+    const d1 = dig(c.slice(0, 9));
+    const d2 = dig(c.slice(0, 9) + d1);
+    return c.endsWith(`${d1}${d2}`);
+  }
+
+  function formatarCPF(valor) {
+    const d = apenasDigitos(valor).slice(0, 11);
+    if (d.length <= 3) return d;
+    if (d.length <= 6) return `${d.slice(0, 3)}.${d.slice(3)}`;
+    if (d.length <= 9) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6)}`;
+    return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+  }
+
+  function cnpjEhValido(cnpj) {
+    const c = apenasDigitos(cnpj);
+    if (c.length !== 14 || /^(\d)\1{13}$/.test(c)) return false;
+    const calc = (base, pesos) => {
+      let s = 0;
+      for (let i = 0; i < pesos.length; i++) s += parseInt(base[i]) * pesos[i];
+      const r = s % 11; return r < 2 ? 0 : 11 - r;
+    };
+    const d1 = calc(c, [5,4,3,2,9,8,7,6,5,4,3,2]);
+    const d2 = calc(c, [6,5,4,3,2,9,8,7,6,5,4,3,2]);
+    return parseInt(c[12]) === d1 && parseInt(c[13]) === d2;
+  }
+
+  function formatarCNPJ(valor) {
+    const d = apenasDigitos(valor).slice(0, 14);
+    if (d.length <= 2) return d;
+    if (d.length <= 5) return `${d.slice(0,2)}.${d.slice(2)}`;
+    if (d.length <= 8) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5)}`;
+    if (d.length <= 12) return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8)}`;
+    return `${d.slice(0,2)}.${d.slice(2,5)}.${d.slice(5,8)}/${d.slice(8,12)}-${d.slice(12)}`;
+  }
+
+  function marcarInvalido(input, msg) {
+    input.classList.add("is-invalid");
+    const f = input.closest(".auth-field")?.querySelector(".invalid-feedback");
+    if (f) f.textContent = msg;
+  }
+
+  function marcarValido(input) {
+    input.classList.remove("is-invalid");
+    const f = input.closest(".auth-field")?.querySelector(".invalid-feedback");
+    if (f) f.textContent = "";
+  }
+
+  function mostrarAlerta(tipo, texto) {
+    const caixa = qs("[data-alerta-auth]");
+    if (!caixa) return;
+    caixa.className = `alert auth-alert alert-${tipo}`;
+    caixa.textContent = texto;
+    caixa.style.display = "block";
+  }
+
+  function setBotaoCarregando(btn, carregando) {
+    if (!btn) return;
+    if (carregando) {
+      btn.disabled = true;
+      btn.dataset.textoOriginal = btn.textContent;
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Aguarde...`;
+    } else {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.textoOriginal || btn.textContent;
+    }
+  }
+
+  // ======================== VIA CEP ========================
+
+  async function buscarCEP(cep) {
+    const spinner = qs("#cepSpinner");
+    const inputEndereco = qs("#enderecoCadastro");
+    const inputCidade   = qs("#cidadeCadastro");
+    const inputCEP      = qs("#cepCadastro");
+
+    if (!cepEhValido(cep)) return;
+
+    if (spinner) spinner.style.display = "";
+
+    try {
+      const r = await fetch(`https://viacep.com.br/ws/${apenasDigitos(cep)}/json/`);
+      const dados = await r.json();
+
+      if (dados.erro) {
+        marcarInvalido(inputCEP, "CEP não encontrado.");
+        if (inputEndereco) inputEndereco.value = "";
+        if (inputCidade)   inputCidade.value   = "";
+        return;
+      }
+
+      marcarValido(inputCEP);
+
+      // Preenche endereço e cidade automaticamente
+      if (inputEndereco) {
+        const logradouro = dados.logradouro || "";
+        const bairro     = dados.bairro     || "";
+        inputEndereco.value = [logradouro, bairro].filter(Boolean).join(", ");
+      }
+      if (inputCidade) {
+        inputCidade.value = dados.localidade || "";
+      }
+
+    } catch {
+      marcarInvalido(inputCEP, "Erro ao buscar CEP. Verifique sua conexão.");
+    } finally {
+      if (spinner) spinner.style.display = "none";
+    }
+  }
+
+  // ======================== LOGIN ========================
+
+  async function processarLogin(evento) {
+    evento.preventDefault();
+
+    const email = qs("#emailLogin")?.value?.trim();
+    const senha = qs("#senhaLogin")?.value ?? "";
+    const btn   = evento.submitter || qs("#formularioLogin button[type=submit]");
+
+    if (!email) return mostrarAlerta("danger", "Informe seu e-mail.");
+    if (!senha) return mostrarAlerta("danger", "Informe sua senha.");
+
+    setBotaoCarregando(btn, true);
+
+    try {
+      const resposta = await fetch(`${URL_API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha }),
+      });
+
+      const dados = await resposta.json().catch(() => ({}));
+
+      if (!resposta.ok) {
+        mostrarAlerta("danger", dados.message || "Login ou senha inválida.");
+        return;
+      }
+
+      sessionStorage.setItem(SESSION_KEY, dados.id);
+      mostrarAlerta("success", "Usuário logado com sucesso!");
+      setTimeout(() => (window.location.href = "index.html"), 800);
+    } catch {
+      mostrarAlerta("danger", "Não foi possível conectar ao servidor. Verifique se o backend está rodando.");
+    } finally {
+      setBotaoCarregando(btn, false);
+    }
+  }
+
+  // ======================== CADASTRO ========================
+
+  let tipoPessoa = "PF";
+
+  function configurarToggleTipo() {
+    const btnPF   = qs("#btnPF");
+    const btnPJ   = qs("#btnPJ");
+    const camposPF = qs("#camposPF");
+    const camposPJ = qs("#camposPJ");
+    if (!btnPF || !btnPJ) return;
+
+    btnPF.addEventListener("click", () => {
+      tipoPessoa = "PF";
+      btnPF.classList.add("ativo");
+      btnPJ.classList.remove("ativo");
+      camposPF.style.display = "";
+      camposPJ.style.display = "none";
+    });
+
+    btnPJ.addEventListener("click", () => {
+      tipoPessoa = "PJ";
+      btnPJ.classList.add("ativo");
+      btnPF.classList.remove("ativo");
+      camposPF.style.display = "none";
+      camposPJ.style.display = "";
+    });
+  }
+
+  async function processarCadastro(evento) {
+    evento.preventDefault();
+
+    const inputEmail      = qs("#emailCadastro");
+    const inputCEP        = qs("#cepCadastro");
+    const inputEndereco   = qs("#enderecoCadastro");
+    const inputCidade     = qs("#cidadeCadastro");
+    const inputPais       = qs("#paisCadastro");
+    const inputSenha      = qs("#senhaCadastro");
+    const inputConfirmar  = qs("#confirmarSenhaCadastro");
+    const btn = evento.submitter || qs("#formularioCadastro button[type=submit]");
+
+    let valido = true;
+
+    if (!inputEmail.value.trim()) { marcarInvalido(inputEmail, "Informe um e-mail válido."); valido = false; } else marcarValido(inputEmail);
+    if (!cepEhValido(inputCEP.value)) { marcarInvalido(inputCEP, "CEP inválido. Use 00000-000."); valido = false; } else marcarValido(inputCEP);
+    if ((inputSenha.value || "").length < 8) { marcarInvalido(inputSenha, "A senha deve ter no mínimo 8 caracteres."); valido = false; } else marcarValido(inputSenha);
+    if (inputConfirmar.value !== inputSenha.value) { marcarInvalido(inputConfirmar, "As senhas não conferem."); valido = false; } else marcarValido(inputConfirmar);
+
+    let payload = {}, endpoint = "";
+
+    if (tipoPessoa === "PF") {
+      const inputPrimeiroNome = qs("#primeiroNomeCadastro");
+      const inputUltimoNome   = qs("#ultimoNomeCadastro");
+      const inputCPF          = qs("#cpfCadastro");
+
+      if (!inputPrimeiroNome.value.trim()) { marcarInvalido(inputPrimeiroNome, "Informe seu primeiro nome."); valido = false; } else marcarValido(inputPrimeiroNome);
+      if (!inputUltimoNome.value.trim()) { marcarInvalido(inputUltimoNome, "Informe seu sobrenome."); valido = false; } else marcarValido(inputUltimoNome);
+      if (!cpfEhValido(inputCPF.value)) { marcarInvalido(inputCPF, "CPF inválido."); valido = false; } else marcarValido(inputCPF);
+
+      if (!valido) return;
+
+      payload = {
+        primeiroNome: inputPrimeiroNome.value.trim(),
+        ultimoNome:   inputUltimoNome.value.trim(),
+        email:        inputEmail.value.trim(),
+        senha:        inputSenha.value,
+        cpf:          apenasDigitos(inputCPF.value),
+        cep:          apenasDigitos(inputCEP.value),
+        endereco:     inputEndereco?.value.trim() || "",
+        cidade:       inputCidade?.value.trim() || "",
+        pais:         inputPais?.value.trim() || "Brasil",
+        tipoConta:    "FREE",
+      };
+      endpoint = `${URL_API_BASE}/users/insert/pf`;
+
+    } else {
+      const inputRazaoSocial  = qs("#razaoSocialCadastro");
+      const inputNomeFantasia = qs("#nomeFantasiaCadastro");
+      const inputCNPJ         = qs("#cnpjCadastro");
+      const inputIE           = qs("#ieCadastro");
+
+      if (!inputRazaoSocial.value.trim()) { marcarInvalido(inputRazaoSocial, "Informe a razão social."); valido = false; } else marcarValido(inputRazaoSocial);
+      if (!cnpjEhValido(inputCNPJ.value)) { marcarInvalido(inputCNPJ, "CNPJ inválido."); valido = false; } else marcarValido(inputCNPJ);
+
+      if (!valido) return;
+
+      payload = {
+        email:        inputEmail.value.trim(),
+        senha:        inputSenha.value,
+        cep:          apenasDigitos(inputCEP.value),
+        endereco:     inputEndereco?.value.trim() || "",
+        cidade:       inputCidade?.value.trim() || "",
+        pais:         inputPais?.value.trim() || "Brasil",
+        tipoConta:    "FREE",
+        cnpj:         apenasDigitos(inputCNPJ.value),
+        razaoSocial:  inputRazaoSocial.value.trim(),
+        nomeFantasia: inputNomeFantasia?.value.trim() || null,
+        ie:           apenasDigitos(inputIE?.value || "") || null,
+      };
+      endpoint = `${URL_API_BASE}/users/insert/pj`;
+    }
+
+    setBotaoCarregando(btn, true);
+
+    try {
+      const resposta = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const dados = await resposta.json().catch(() => ({}));
+
+      if (!resposta.ok) {
+        mostrarAlerta("danger", dados.message || "Não foi possível criar a conta.");
+        return;
+      }
+
+      mostrarAlerta("success", "Conta criada com sucesso! Redirecionando para o login...");
+      setTimeout(() => (window.location.href = "login.html"), 1200);
+    } catch {
+      mostrarAlerta("danger", "Não foi possível conectar ao servidor. Verifique se o backend está rodando.");
+    } finally {
+      setBotaoCarregando(btn, false);
+    }
+  }
+
+  // ======================== INIT ========================
+
+  const pagina = document.body.getAttribute("data-pagina");
+
+  if (pagina === "login") {
+    qs("#formularioLogin")?.addEventListener("submit", processarLogin);
+  }
+
+  if (pagina === "cadastro") {
+    configurarToggleTipo();
+
+    const inputCPF  = qs("#cpfCadastro");
+    const inputCNPJ = qs("#cnpjCadastro");
+    const inputCEP  = qs("#cepCadastro");
+
+    inputCPF?.addEventListener("input", () => {
+      inputCPF.value = formatarCPF(inputCPF.value);
+      if (inputCPF.value && !cpfEhValido(inputCPF.value)) marcarInvalido(inputCPF, "CPF inválido.");
+      else marcarValido(inputCPF);
+    });
+
+    inputCNPJ?.addEventListener("input", () => {
+      inputCNPJ.value = formatarCNPJ(inputCNPJ.value);
+      if (inputCNPJ.value && !cnpjEhValido(inputCNPJ.value)) marcarInvalido(inputCNPJ, "CNPJ inválido.");
+      else marcarValido(inputCNPJ);
+    });
+
+    // CEP: formata e busca automaticamente quando completo
+    inputCEP?.addEventListener("input", () => {
+      inputCEP.value = formatarCEP(inputCEP.value);
+      if (cepEhValido(inputCEP.value)) {
+        buscarCEP(inputCEP.value);
+      } else {
+        // Limpa campos de endereço se CEP incompleto
+        const inputEndereco = qs("#enderecoCadastro");
+        const inputCidade   = qs("#cidadeCadastro");
+        if (inputEndereco) inputEndereco.value = "";
+        if (inputCidade)   inputCidade.value   = "";
+      }
+    });
+
+    qs("#formularioCadastro")?.addEventListener("submit", processarCadastro);
+  }
+})();
