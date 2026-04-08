@@ -8,6 +8,7 @@ import com.TCC.FlyGuide.entities.User;
 import com.TCC.FlyGuide.repositories.PessoaFisicaRepository;
 import com.TCC.FlyGuide.repositories.PessoaJuridicaRepository;
 import com.TCC.FlyGuide.repositories.UserRepository;
+import com.TCC.FlyGuide.services.exceptions.ResourceNotFoundException;
 import com.TCC.FlyGuide.services.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,8 +29,10 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public LoginResponseDTO login(LoginRequestDTO req) {
+    @Autowired
+    private OtpService otpService;
 
+    public void login(LoginRequestDTO req) {
         String email = req.getEmail() == null ? null : req.getEmail().trim().toLowerCase();
         String senha = req.getSenha();
 
@@ -44,21 +47,29 @@ public class AuthService {
             throw new UnauthorizedException("login ou senha invalida");
         }
 
+        otpService.gerarOtpLogin(email);
+    }
+
+    public LoginResponseDTO verificarLogin(String email, String codigo) {
+        String emailNormalizado = email.trim().toLowerCase();
+
+        otpService.validarOtpLogin(emailNormalizado, codigo);
+
+        User user = userRepository.findByEmail(emailNormalizado)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
         String nomeExibicao = "";
         String tipoPessoa = user.getTipoPessoa();
         String dataCadastro = user.getDataCadastro() != null ? user.getDataCadastro().toString() : "";
 
-        // Tenta buscar nome como PF
         PessoaFisica pf = pessoaFisicaRepository.findById(user.getIdUsuario()).orElse(null);
         if (pf != null) {
             String primeiro = pf.getPrimeiroNome() != null ? pf.getPrimeiroNome() : "";
             String ultimo = pf.getUltimoNome() != null ? pf.getUltimoNome() : "";
             nomeExibicao = (primeiro + " " + ultimo).trim();
         } else {
-            // Tenta buscar como PJ
             PessoaJuridica pj = pessoaJuridicaRepository.findById(user.getIdUsuario()).orElse(null);
             if (pj != null) {
-                // Usa nomeFantasia se disponível, senão razaoSocial
                 nomeExibicao = pj.getNomeFantasia() != null && !pj.getNomeFantasia().isBlank()
                         ? pj.getNomeFantasia()
                         : pj.getRazaoSocial();

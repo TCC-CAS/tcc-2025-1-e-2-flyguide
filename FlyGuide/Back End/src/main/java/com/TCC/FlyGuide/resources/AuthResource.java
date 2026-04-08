@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.TCC.FlyGuide.DTO.LoginRequestDTO;
 import com.TCC.FlyGuide.DTO.LoginResponseDTO;
+import com.TCC.FlyGuide.DTO.VerificarLoginDTO;
 import com.TCC.FlyGuide.services.AuthService;
+import com.TCC.FlyGuide.services.exceptions.ResourceNotFoundException;
 import com.TCC.FlyGuide.services.exceptions.UnauthorizedException;
 
 @RestController
@@ -21,10 +23,22 @@ public class AuthResource {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req) {
         try {
-            LoginResponseDTO response = authService.login(req);
-            return ResponseEntity.ok(response);
+            authService.login(req);
+            return ResponseEntity.ok(Map.of("message", "Código de acesso enviado para o seu e-mail"));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(401).body(Map.of("message", "login ou senha invalida"));
+        }
+    }
+
+    @PostMapping("/login/verificar")
+    public ResponseEntity<?> verificarLogin(@RequestBody VerificarLoginDTO req) {
+        try {
+            LoginResponseDTO response = authService.verificarLogin(req.getEmail(), req.getCodigo());
+            return ResponseEntity.ok(response);
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
         }
     }
 }
