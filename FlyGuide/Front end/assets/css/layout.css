@@ -68,18 +68,61 @@
 }
 .sidebar .btn-new:hover{ background: #ea580c; }
 
-.profile{
-  margin-top:auto;
-  padding: 14px 8px 6px 8px;
-  display:flex; align-items:center; gap:12px;
+.profile {
+  margin-top: auto;
+  margin-bottom: 4px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s;
+  position: relative;
 }
-.avatar{
-  width: 42px; height: 42px; border-radius: 999px;
-  background: #2563eb;
-  display:grid; place-items:center; color:#fff; font-weight:800;
+
+/* Label "PERFIL" via CSS before the block */
+.profile::before {
+  content: "PERFIL";
+  position: absolute;
+  top: -18px;
+  left: 4px;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--fg-muted);
 }
-.profile .name{ font-weight:700; font-size:.92rem; }
-.profile .email{ color: var(--fg-muted); font-size:.78rem; margin-top: 1px; }
+.profile:hover {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  box-shadow: 0 2px 10px rgba(249,115,22,.10);
+}
+.profile::after {
+  content: "›";
+  position: absolute;
+  right: 14px;
+  font-size: 1.1rem;
+  color: #cbd5e1;
+  font-weight: 300;
+  transition: color .18s;
+}
+.profile:hover::after {
+  color: #f97316;
+}
+
+.avatar {
+  width: 40px; height: 40px; border-radius: 999px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  display: grid; place-items: center;
+  color: #fff; font-weight: 800;
+  font-size: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(249,115,22,.30);
+}
+.profile .name { font-weight: 700; font-size: .88rem; line-height: 1.2; }
+.profile .email { color: var(--fg-muted); font-size: .74rem; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
 
 /* Conteúdo principal */
 .main{

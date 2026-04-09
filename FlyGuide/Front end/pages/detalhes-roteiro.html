@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
   <title>FlyGuide - Detalhes do Roteiro</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -136,6 +137,12 @@
             <div class="text-secondary" id="detalheDescricao"></div>
           </div>
 
+          <!-- MAPA DO ROTEIRO -->
+          <div class="section-card" id="secaoMapa" style="margin-top:16px;">
+            <div class="section-title"><i class="bi bi-map-fill me-2" style="color:#f97316;"></i>Mapa do Roteiro</div>
+            <div id="mapaRoteiro" style="width:100%;height:380px;border-radius:14px;overflow:hidden;background:#f1f5f9;"></div>
+          </div>
+
           <!-- Roteiro Dia a Dia (locais) -->
           <div class="section-card" id="secaoLocais" style="display:none;">
             <div class="section-title">Roteiro Dia a Dia</div>
@@ -180,5 +187,196 @@
   <script src="../assets/js/app.js"></script>
   <script src="../assets/js/imagens.js"></script>
   <script src="../assets/js/detalhes.js"></script>
+  <script src="../assets/js/maps.js"></script>
+  <script src="../assets/js/maps-edit-detalhe.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsds5wnst1kYPker-1-9bu1fej6KcSRi4&libraries=places&language=pt-BR&callback=initMapsDetalhes" async defer></script>
+
+  <!-- Modal: Editar Roteiro nos Detalhes -->
+  <div class="modal fade" id="modalEditarDetalhe" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content" style="border-radius:18px;">
+        <div class="modal-header border-0 pb-0 flex-column align-items-start gap-2">
+          <div class="d-flex w-100 align-items-center justify-content-between">
+            <h5 class="modal-title fw-bold">Editar Roteiro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <ul class="nav nav-tabs w-100" style="border-bottom:none;gap:4px;">
+            <li class="nav-item">
+              <button class="nav-link active fw-bold px-4" id="detalheTabInfoBtn"
+                      style="border-radius:10px 10px 0 0;color:#f97316;"
+                      onclick="trocarAbaDetalhe('info')">
+                <i class="bi bi-pencil me-2"></i>Informações
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link fw-bold px-4" id="detalheTabLocaisBtn"
+                      style="border-radius:10px 10px 0 0;"
+                      onclick="trocarAbaDetalhe('locais')">
+                <i class="bi bi-map me-2"></i>Locais
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-body" style="min-height:420px;">
+          <div class="alert alert-danger" id="detalheEditErro" style="display:none;"></div>
+
+          <!-- ABA: Informações -->
+          <div id="detalheAbaInfo">
+            <div class="row g-3">
+              <input type="hidden" id="detalheEditId">
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-bold">Título *</label>
+                <input class="form-control" id="detalheEditTitulo" placeholder="Título do roteiro">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-bold">Destino (Cidade) *</label>
+                <input class="form-control" id="detalheEditCidade" placeholder="Cidade">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-bold">Data Início</label>
+                <input class="form-control" id="detalheEditDataInicio" type="date">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-bold">Data Fim</label>
+                <input class="form-control" id="detalheEditDataFim" type="date">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-bold">Tipo de Viagem</label>
+                <select class="form-select" id="detalheEditTipo">
+                  <option value="Cidade">Cidade</option>
+                  <option value="Aventura">Aventura</option>
+                  <option value="Cultural">Cultural</option>
+                  <option value="Praia">Praia</option>
+                  <option value="Natureza">Natureza</option>
+                  <option value="Gastronomia">Gastronomia</option>
+                  <option value="Mochilão">Mochilão</option>
+                  <option value="Luxo">Luxo</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-bold">Orçamento (R$)</label>
+                <input class="form-control" id="detalheEditOrcamento" type="number" min="0">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-bold">Visibilidade</label>
+                <select class="form-select" id="detalheEditVis">
+                  <option value="PUBLIC">Público</option>
+                  <option value="PRIVATE">Privado</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold">Descrição</label>
+                <textarea class="form-control" id="detalheEditDesc" rows="3"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold">Imagem de Capa</label>
+                <div id="detalheImgSelector" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:6px;">
+                  <div class="text-secondary text-center py-2" style="font-size:.85rem;">
+                    <span class="spinner-border spinner-border-sm me-1"></span>Carregando...
+                  </div>
+                </div>
+                <input type="hidden" id="detalheEditImagem" value="">
+              </div>
+            </div>
+          </div>
+
+          <!-- ABA: Locais -->
+          <div id="detalheAbaLocais" style="display:none;">
+            <div class="alert" id="erroLocalDetalheEdit" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;font-size:.9rem;"></div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Buscar Local</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white" style="border-radius:12px 0 0 12px;">
+                  <i class="bi bi-search" style="color:#f97316;"></i>
+                </span>
+                <input id="buscaLocalDetalheEdit" type="text" class="form-control border-start-0"
+                       style="border-radius:0 12px 12px 0;"
+                       placeholder="Ex: Torre Eiffel, Paris...">
+              </div>
+            </div>
+            <div id="localPreviewDetalheEdit" style="display:none;" class="mb-3">
+              <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:12px 14px;">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-geo-alt-fill" style="color:#f97316;font-size:1.1rem;"></i>
+                  <div style="flex:1;">
+                    <div class="fw-bold" id="previewNomeDetalheEdit"></div>
+                    <div class="text-secondary" style="font-size:.82rem;" id="previewEnderecoDetalheEdit"></div>
+                  </div>
+                  <i class="bi bi-check-circle-fill" style="color:#22c55e;font-size:1.2rem;"></i>
+                </div>
+              </div>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-4">
+                <label class="form-label fw-bold">Dia *</label>
+                <input id="localDiaDetalheEdit" type="number" min="1" class="form-control" placeholder="Ex: 1">
+              </div>
+              <div class="col-4">
+                <label class="form-label fw-bold">Horário</label>
+                <input id="localHorarioDetalheEdit" type="text" class="form-control" placeholder="HH:MM" maxlength="5" oninput="mascHorario(this)">
+              </div>
+              <div class="col-4">
+                <label class="form-label fw-bold">Observações</label>
+                <input id="localObsDetalheEdit" type="text" class="form-control" placeholder="Ex: Chegar cedo">
+              </div>
+            </div>
+            <button class="btn btn-primary-orange w-100 fw-bold mb-3" id="btnAdicionarLocalDetalheEdit" type="button">
+              <i class="bi bi-plus-lg me-1"></i>Adicionar Local ao Roteiro
+            </button>
+            <div style="background:#f8fafc;border-radius:14px;padding:14px;min-height:100px;">
+              <div class="fw-bold mb-2" style="font-size:.9rem;color:#64748b;"><i class="bi bi-list-ul me-1"></i>Locais adicionados</div>
+              <div id="listaLocaisDetalheEdit">
+                <div id="vazioLocaisDetalheEdit" class="text-center py-3 text-secondary" style="font-size:.88rem;">
+                  <i class="bi bi-map" style="color:#cbd5e1;font-size:1.5rem;display:block;margin-bottom:6px;"></i>
+                  Nenhum local adicionado ainda
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-gray" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary-orange fw-bold" id="btnSalvarDetalheEdit">
+            <i class="bi bi-check-lg me-1"></i>Salvar Alterações
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function trocarAbaDetalhe(aba) {
+      const abaInfo   = document.getElementById('detalheAbaInfo');
+      const abaLocais = document.getElementById('detalheAbaLocais');
+      const btnInfo   = document.getElementById('detalheTabInfoBtn');
+      const btnLocais = document.getElementById('detalheTabLocaisBtn');
+      const btnSalvar = document.getElementById('btnSalvarDetalheEdit');
+      if (aba === 'info') {
+        abaInfo.style.display = ''; abaLocais.style.display = 'none';
+        btnInfo.classList.add('active'); btnLocais.classList.remove('active');
+        btnInfo.style.color = '#f97316'; btnLocais.style.color = '';
+        btnSalvar.style.display = '';
+      } else {
+        abaInfo.style.display = 'none'; abaLocais.style.display = '';
+        btnInfo.classList.remove('active'); btnLocais.classList.add('active');
+        btnInfo.style.color = ''; btnLocais.style.color = '#f97316';
+        btnSalvar.style.display = 'none';
+        // Reinicializa autocomplete agora que o input está visível
+        if (window.google && typeof initMapsDetalheEdit === 'function') {
+          initMapsDetalheEdit();
+        }
+      }
+    }
+  </script>
+
+  <script>
+    function mascHorario(input) {
+      let v = input.value.replace(/\D/g, '').slice(0, 4);
+      if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+      input.value = v;
+    }
+  </script>
 </body>
 </html>

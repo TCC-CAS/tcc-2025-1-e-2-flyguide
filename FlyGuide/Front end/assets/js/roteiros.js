@@ -129,6 +129,10 @@
           if (!roteiroParaEditar) return;
           preencherModalEditar(roteiroParaEditar);
           modalEditar.show();
+          // Carrega locais do roteiro no modal
+          if (typeof window.abrirLocaisEdit === "function") {
+            window.abrirLocaisEdit(roteiroParaEditar.idRoteiro);
+          }
         });
       });
     }
@@ -196,7 +200,7 @@
 
       const dI      = document.getElementById("editDataInicio").value;
       const dF      = document.getElementById("editDataFim").value;
-      const dias    = (dI && dF) ? Math.round((new Date(dF) - new Date(dI)) / 864e5) + 1 : roteiroParaEditar.diasTotais;
+      const dias    = (dI && dF) ? Math.round((new Date(dF) - new Date(dI)) / 864e5) : roteiroParaEditar.diasTotais;
       const idImagem = document.getElementById("editImagem").value;
 
       const payload = {
@@ -261,7 +265,7 @@
     function calcDias(i, f) {
       if (!i || !f) return null;
       const diff = Math.round((new Date(f) - new Date(i)) / 864e5);
-      return diff > 0 ? diff + 1 : null;
+      return diff > 0 ? diff : null;
     }
 
     document.getElementById("btnAvancar")?.addEventListener("click", async () => {

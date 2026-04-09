@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <title>FlyGuide - Atividades do Roteiro</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+  <title>🧭 FlyGuide - Atividades do Roteiro</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +14,34 @@
   <link href="../assets/css/layout.css" rel="stylesheet">
   <link href="../assets/css/components.css" rel="stylesheet">
   <link href="../assets/css/pages/atividades-roteiro.css" rel="stylesheet">
+  <style>
+    .local-search-box {
+      background: #fff;
+      border: 1px solid #eef2f7;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      padding: 20px;
+      margin-top: 16px;
+    }
+    .local-search-box input {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      height: 44px;
+    }
+    .local-preview {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    .pac-container {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+      font-family: Inter, sans-serif;
+    }
+  </style>
 </head>
 <body data-pagina="atividades-roteiro">
   <div class="app-shell">
@@ -21,32 +50,19 @@
     <div class="sidebar">
       <div class="brand">
         <div class="brand-badge"><i class="bi bi-compass"></i></div>
-        <div>
-          <div class="brand-title">Roteiros</div>
-          <div class="brand-sub">Suas viagens inesquecíveis</div>
-        </div>
-        <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar">
-          <i class="bi bi-x-lg"></i>
-        </button>
+        <div><div class="brand-title">Roteiros</div><div class="brand-sub">Suas viagens inesquecíveis</div></div>
+        <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar"><i class="bi bi-x-lg"></i></button>
       </div>
-
       <div class="navlist">
-        <a class="" href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
-        <a class="" href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
-        <a class="" href="planos-premium.html"><i class="bi bi-star"></i><span>Planos Premium</span></a>
-        <a class="" href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+        <a href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+        <a href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+        <a href="planos-premium.html"><i class="bi bi-star"></i><span>Planos Premium</span></a>
+        <a href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
       </div>
-
-      <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100">
-        <i class="bi bi-plus-lg me-2"></i>Novo Roteiro
-      </a>
-
+      <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100"><i class="bi bi-plus-lg me-2"></i>Novo Roteiro</a>
       <div class="profile">
         <div class="avatar">?</div>
-        <div>
-          <div class="name">Carregando...</div>
-          <div class="email"></div>
-        </div>
+        <div><div class="name">Carregando...</div><div class="email"></div></div>
       </div>
     </div>
 
@@ -58,20 +74,19 @@
         <div style="width:44px"></div>
       </div>
 
-      <div class="d-lg-none position-fixed top-0 start-0 w-100 h-100" data-sidebar-backdrop style="display:none; z-index:1035;"></div>
+      <div class="d-lg-none position-fixed top-0 start-0 w-100 h-100" data-sidebar-backdrop style="display:none;z-index:1035;"></div>
       <script>
         (function(){
-          const sidebar=document.querySelector('.sidebar');
-          const backdrop=document.querySelector('[data-sidebar-backdrop]');
-          const show=()=>{ if(backdrop) backdrop.style.display='block'; };
-          const hide=()=>{ if(backdrop) backdrop.style.display='none'; };
+          const sidebar=document.querySelector('.sidebar'),backdrop=document.querySelector('[data-sidebar-backdrop]');
+          const show=()=>{if(backdrop)backdrop.style.display='block';};
+          const hide=()=>{if(backdrop)backdrop.style.display='none';};
           document.addEventListener('click',(e)=>{
-            if(e.target.closest('[data-sidebar-open]')) show();
-            if(e.target.closest('[data-sidebar-close]')) hide();
-            if(e.target.matches('[data-sidebar-backdrop]')) hide();
+            if(e.target.closest('[data-sidebar-open]'))show();
+            if(e.target.closest('[data-sidebar-close]'))hide();
+            if(e.target.matches('[data-sidebar-backdrop]'))hide();
           });
-          const obs=new MutationObserver(()=>{ if(!sidebar) return; if(sidebar.classList.contains('open')) show(); else hide(); });
-          if(sidebar) obs.observe(sidebar,{attributes:true,attributeFilter:['class']});
+          const obs=new MutationObserver(()=>{if(!sidebar)return;sidebar.classList.contains('open')?show():hide();});
+          if(sidebar)obs.observe(sidebar,{attributes:true,attributeFilter:['class']});
         })();
       </script>
 
@@ -81,39 +96,96 @@
 
       <div class="grid-wrap pt-2">
         <div class="text-center mb-4">
-          <h1 class="fw-bold" style="font-weight:900; font-size: clamp(2rem, 3.5vw, 3rem);">Atividades do Roteiro</h1>
-          <div class="small-muted">Adicione o roteiro dia a dia com horários, descrição e custo</div>
+          <h1 class="fw-bold" style="font-weight:900;font-size:clamp(2rem,3.5vw,3rem);">Atividades do Roteiro</h1>
+          <div class="small-muted">Adicione os locais que vai visitar no seu roteiro</div>
           <div class="small text-secondary mt-2">Etapa 2 de 2 — atividades</div>
-
-          <!-- Resumo do roteiro criado -->
           <div class="draft-summary mt-3" id="draftSummary" style="display:none;"></div>
         </div>
 
-        <!-- Aviso: roteiro já salvo -->
+        <!-- Alerta roteiro salvo -->
         <div class="alert mx-auto mb-3" id="roteiroSalvoAlert"
-             style="max-width:980px; background:#f0fdf4; border:1px solid #86efac; color:#166534; border-radius:14px; display:none;">
+             style="max-width:980px;background:#f0fdf4;border:1px solid #86efac;color:#166534;border-radius:14px;display:none;">
           <i class="bi bi-check-circle-fill me-2"></i>
-          Roteiro salvo com sucesso! Você pode concluir agora ou adicionar atividades abaixo.
+          Roteiro salvo com sucesso! Adicione locais abaixo ou conclua agora.
         </div>
 
-        <!-- LISTA DE ATIVIDADES -->
-        <div class="big-box mx-auto" id="boxActivities" style="max-width: 980px;">
-          <div class="d-flex align-items-center justify-content-between">
-            <h5 class="fw-bold mb-0">Atividades do Roteiro</h5>
-            <button class="btn btn-outline-soft fw-bold" data-add-activity>
-              <i class="bi bi-plus-lg me-2"></i>Adicionar Atividade
-            </button>
+        <div class="mx-auto" style="max-width:980px;">
+
+          <!-- BUSCA DE LOCAIS (Google Maps) -->
+          <div class="local-search-box">
+            <h5 class="fw-bold mb-3"><i class="bi bi-map-fill me-2" style="color:#f97316;"></i>Adicionar Local</h5>
+
+            <div class="alert" id="erroLocal" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;"></div>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label fw-bold">Buscar Local *</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white" style="border-radius:12px 0 0 12px;">
+                    <i class="bi bi-search" style="color:#f97316;"></i>
+                  </span>
+                  <input id="buscaLocal" type="text" class="form-control border-start-0"
+                         style="border-radius:0 12px 12px 0;"
+                         placeholder="Ex: Cristo Redentor, Rio de Janeiro...">
+                </div>
+              </div>
+
+              <!-- Preview do local selecionado -->
+              <div class="col-12" id="localPreview" style="display:none;">
+                <div class="local-preview">
+                  <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-geo-alt-fill mt-1" style="color:#f97316;flex-shrink:0;"></i>
+                    <div>
+                      <div class="fw-bold" id="previewNome"></div>
+                      <div class="small text-secondary" id="previewEndereco"></div>
+                    </div>
+                    <i class="bi bi-check-circle-fill ms-auto" style="color:#22c55e;flex-shrink:0;font-size:1.2rem;"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-bold">Dia *</label>
+                <input id="localDia" type="number" min="1" class="form-control" placeholder="Ex: 1">
+              </div>
+
+              <div class="col-12 col-md-3">
+                <label class="form-label fw-bold">Horário</label>
+                <input id="localHorario" type="text" class="form-control" placeholder="HH:MM" maxlength="5" oninput="mascHorario(this)">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-bold">Observações (opcional)</label>
+                <input id="localObs" type="text" class="form-control" placeholder="Ex: Chegar cedo para evitar filas">
+              </div>
+
+              <div class="col-12">
+                <button class="btn btn-primary-orange" id="btnSalvarLocal" type="button">
+                  <i class="bi bi-plus-lg me-1"></i>Adicionar ao Roteiro
+                </button>
+              </div>
+            </div>
           </div>
 
-          <!-- Aviso sobre Google Maps -->
-          <div class="alert mt-3" style="background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; color:#92400e;">
-            <i class="bi bi-map-fill me-2" style="color:#f97316;"></i>
-            <strong>Em breve:</strong> Adicione locais reais pelo Google Maps com nome, endereço e coordenadas. Por enquanto, registre suas atividades manualmente abaixo.
+          <!-- LISTA DE LOCAIS SALVOS -->
+          <div class="big-box mt-3">
+            <h5 class="fw-bold mb-0">Locais do Roteiro</h5>
+            <div id="vazioLocais" class="text-center py-4 text-secondary">
+              <i class="bi bi-map" style="font-size:2rem;color:#cbd5e1;"></i>
+              <div class="mt-2">Nenhum local adicionado ainda</div>
+            </div>
+            <div id="listaLocaisMaps"></div>
           </div>
 
-          <div class="empty" data-empty>Nenhuma atividade adicionada</div>
-          <div data-list></div>
+          <!-- MAPA EM TEMPO REAL -->
+          <div class="big-box mt-3" id="mapaAtividadesBox" style="display:none;">
+            <h5 class="fw-bold mb-3">
+              <i class="bi bi-map-fill me-2" style="color:#f97316;"></i>Mapa do Roteiro
+            </h5>
+            <div id="mapaAtividades" style="width:100%;height:380px;border-radius:14px;overflow:hidden;border:1px solid #eef2f7;background:#f1f5f9;"></div>
+          </div>
 
+          <!-- AÇÕES -->
           <div class="footer-actions">
             <a class="btn btn-outline-gray" href="meus-roteiros.html">Cancelar</a>
             <button class="btn btn-primary-orange" type="button" id="btnConcluirRoteiro">
@@ -125,49 +197,18 @@
     </div>
   </div>
 
-  <!-- Modal: Adicionar Atividade -->
-  <div class="modal fade" id="modalActivity" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="border-radius:18px;">
-        <div class="modal-header">
-          <h5 class="modal-title fw-bold">Adicionar Atividade</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="alert alert-danger py-2" id="actError" style="display:none;">Preencha pelo menos <b>Dia</b> e <b>Título</b>.</div>
-          <div class="row g-3">
-            <div class="col-4">
-              <label class="form-label fw-bold">Dia</label>
-              <input class="form-control" id="actDay" placeholder="Ex: 2">
-            </div>
-            <div class="col-8">
-              <label class="form-label fw-bold">Horário</label>
-              <input class="form-control" id="actTime" placeholder="Ex: 08:00">
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-bold">Título</label>
-              <input class="form-control" id="actTitle" placeholder="Ex: Glaciar Perito Moreno">
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-bold">Descrição</label>
-              <textarea class="form-control" id="actDesc" rows="3" placeholder="Ex: Caminhada sobre o glaciar..."></textarea>
-            </div>
-            <div class="col-12">
-              <label class="form-label fw-bold">Custo (opcional)</label>
-              <input class="form-control" id="actCost" placeholder="Ex: 400">
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-outline-gray" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary-orange" data-save-activity>Salvar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/app.js"></script>
   <script src="../assets/js/roteiros.js"></script>
+  <script src="../assets/js/maps.js"></script>
+  <!-- Google Maps API com Places -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsds5wnst1kYPker-1-9bu1fej6KcSRi4&libraries=places&language=pt-BR&callback=initMapsAtividades" async defer></script>
+  <script>
+    function mascHorario(input) {
+      let v = input.value.replace(/\D/g, '').slice(0, 4);
+      if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+      input.value = v;
+    }
+  </script>
 </body>
 </html>

@@ -148,3 +148,38 @@
   margin-top: 12px;
 }
 .tip-item i{ color:#f59e0b; }
+
+/* Mapa do roteiro */
+#secaoMapa .section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#mapaRoteiro {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #eef2f7;
+}
+
+/* Melhorias no day-item para locais do Maps */
+.day-item {
+  transition: box-shadow .2s;
+}
+.day-item:hover {
+  box-shadow: 0 4px 16px rgba(249,115,22,.12);
+}
+.day-item .day-bubble {
+  flex-shrink: 0;
+  font-size: .9rem;
+}
+/* Fix: Google Places dropdown dentro do modal Bootstrap */
+.pac-container {
+  z-index: 10055 !important; /* Acima do modal Bootstrap (z-index 1055) */
+}
+/* Fix: modal-dialog-scrollable esconde o dropdown — libera overflow no modal-body quando na aba locais */
+#modalEditarDetalhe .modal-body {
+  overflow: visible !important;
+}
+#modalEditarDetalhe .modal-dialog {
+  overflow: visible !important;
+}
