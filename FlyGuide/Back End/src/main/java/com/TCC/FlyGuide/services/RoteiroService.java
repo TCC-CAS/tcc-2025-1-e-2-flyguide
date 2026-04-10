@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 
 import com.TCC.FlyGuide.DTO.RoteiroCompletoDTO;
 import com.TCC.FlyGuide.DTO.RoteiroLocalDTO;
+import com.TCC.FlyGuide.entities.Imagem;
 import com.TCC.FlyGuide.entities.RoteiroLocal;
+import com.TCC.FlyGuide.repositories.ImagemRepository;
 import com.TCC.FlyGuide.repositories.RoteiroLocalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,6 +36,9 @@ public class RoteiroService {
     private UserRepository userRepository;
 
     @Autowired
+    private ImagemRepository imagemRepository;
+
+    @Autowired
     private RoteiroLocalRepository roteiroLocalRepository;
 
     public List<RoteiroDTO> findAll() {
@@ -47,14 +52,12 @@ public class RoteiroService {
         return new RoteiroDTO(entity);
     }
 
-    // "Meus Roteiros"
     public List<RoteiroDTO> findByUsuario(Long idUsuario) {
         List<Roteiro> list = roteiroRepository.findByUsuario_IdUsuario(idUsuario);
         return list.stream().map(RoteiroDTO::new).collect(Collectors.toList());
     }
 
     public RoteiroDTO insert(RoteiroDTO dto) {
-        // valida usuário dono
         User usuario = userRepository.findById(dto.getIdUsuario())
                 .orElseThrow(() -> new ResourceNotFoundException(dto.getIdUsuario()));
 
@@ -68,6 +71,8 @@ public class RoteiroService {
 
     public void delete(Long id) {
         try {
+            // Remove os locais vinculados antes de deletar o roteiro
+            roteiroLocalRepository.deleteByRoteiro_IdRoteiro(id);
             roteiroRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new ResourceNotFoundException(id);
@@ -79,13 +84,9 @@ public class RoteiroService {
     public RoteiroDTO update(Long id, RoteiroDTO dto) {
         try {
             Roteiro entity = roteiroRepository.getReferenceById(id);
-
-            // Não troca o dono no update (mesmo que venha idUsuario)
             updateData(entity, dto);
-
             entity = roteiroRepository.save(entity);
             return new RoteiroDTO(entity);
-
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }
@@ -102,11 +103,17 @@ public class RoteiroService {
         entity.setObservacoes(dto.getObservacoes());
         entity.setDiasTotais(dto.getDiasTotais());
         entity.setOrcamento(dto.getOrcamento());
+
+        // Vincula a imagem de capa se enviada
+        if (dto.getIdImagem() != null) {
+            Imagem imagem = imagemRepository.findById(dto.getIdImagem())
+                    .orElse(null);
+            entity.setImagem(imagem);
+        }
     }
 
     @Transactional(readOnly = true)
     public RoteiroCompletoDTO findCompletoById(Long idRoteiro) {
-
         Roteiro roteiro = roteiroRepository.findById(idRoteiro)
                 .orElseThrow(() -> new ResourceNotFoundException(idRoteiro));
 
@@ -118,5 +125,4 @@ public class RoteiroService {
 
         return new RoteiroCompletoDTO(new RoteiroDTO(roteiro), locaisDTO);
     }
-
 }

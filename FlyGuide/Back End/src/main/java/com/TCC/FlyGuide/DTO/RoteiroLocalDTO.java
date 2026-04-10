@@ -1,7 +1,9 @@
 package com.TCC.FlyGuide.DTO;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import com.TCC.FlyGuide.entities.RoteiroLocal;
 
@@ -13,45 +15,23 @@ public class RoteiroLocalDTO implements Serializable {
     private Long idRoteiro;
 
     private Long idLocal;
-    private String placeId; // opcional (ajuda no front)
-    private String nome;    // opcional (ajuda no front)
+    private String placeId;
+    private String nome;
+    private String endereco;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 
     private String status;
     private String observacoes;
 
     private Integer dia;
     private Integer ordem;
+    private LocalTime horario;
 
     private LocalDateTime criadoEm;
 
-    public RoteiroLocalDTO() {
-    }
+    public RoteiroLocalDTO() {}
 
-    public RoteiroLocalDTO(
-            Long idRoteiroLocal,
-            Long idRoteiro,
-            Long idLocal,
-            String placeId,
-            String nome,
-            String status,
-            String observacoes,
-            Integer dia,
-            Integer ordem,
-            LocalDateTime criadoEm
-    ) {
-        this.idRoteiroLocal = idRoteiroLocal;
-        this.idRoteiro = idRoteiro;
-        this.idLocal = idLocal;
-        this.placeId = placeId;
-        this.nome = nome;
-        this.status = status;
-        this.observacoes = observacoes;
-        this.dia = dia;
-        this.ordem = ordem;
-        this.criadoEm = criadoEm;
-    }
-
-    // Construtor auxiliar: Entity -> DTO
     public RoteiroLocalDTO(RoteiroLocal entity) {
         this.idRoteiroLocal = entity.getIdRoteiroLocal();
 
@@ -71,90 +51,65 @@ public class RoteiroLocalDTO implements Serializable {
                 ? entity.getLocal().getNome()
                 : null;
 
-        this.status = entity.getStatus();
+        this.endereco = (entity.getLocal() != null)
+                ? entity.getLocal().getEndereco()
+                : null;
+
+        this.latitude = (entity.getLocal() != null)
+                ? entity.getLocal().getLatitude()
+                : null;
+
+        this.longitude = (entity.getLocal() != null)
+                ? entity.getLocal().getLongitude()
+                : null;
+
+        this.status      = entity.getStatus();
         this.observacoes = entity.getObservacoes();
-        this.dia = entity.getDia();
-        this.ordem = entity.getOrdem();
-        this.criadoEm = entity.getCriadoEm();
+        this.dia         = entity.getDia();
+        this.ordem       = entity.getOrdem();
+        this.horario     = entity.getHorario();
+        this.criadoEm    = entity.getCriadoEm();
     }
 
-    public Long getIdRoteiroLocal() {
-        return idRoteiroLocal;
-    }
+    public Long getIdRoteiroLocal()                        { return idRoteiroLocal; }
+    public void setIdRoteiroLocal(Long idRoteiroLocal)     { this.idRoteiroLocal = idRoteiroLocal; }
 
-    public void setIdRoteiroLocal(Long idRoteiroLocal) {
-        this.idRoteiroLocal = idRoteiroLocal;
-    }
+    public Long getIdRoteiro()                             { return idRoteiro; }
+    public void setIdRoteiro(Long idRoteiro)               { this.idRoteiro = idRoteiro; }
 
-    public Long getIdRoteiro() {
-        return idRoteiro;
-    }
+    public Long getIdLocal()                               { return idLocal; }
+    public void setIdLocal(Long idLocal)                   { this.idLocal = idLocal; }
 
-    public void setIdRoteiro(Long idRoteiro) {
-        this.idRoteiro = idRoteiro;
-    }
+    public String getPlaceId()                             { return placeId; }
+    public void setPlaceId(String placeId)                 { this.placeId = placeId; }
 
-    public Long getIdLocal() {
-        return idLocal;
-    }
+    public String getNome()                                { return nome; }
+    public void setNome(String nome)                       { this.nome = nome; }
 
-    public void setIdLocal(Long idLocal) {
-        this.idLocal = idLocal;
-    }
+    public String getEndereco()                            { return endereco; }
+    public void setEndereco(String endereco)               { this.endereco = endereco; }
 
-    public String getPlaceId() {
-        return placeId;
-    }
+    public BigDecimal getLatitude()                        { return latitude; }
+    public void setLatitude(BigDecimal latitude)           { this.latitude = latitude; }
 
-    public void setPlaceId(String placeId) {
-        this.placeId = placeId;
-    }
+    public BigDecimal getLongitude()                       { return longitude; }
+    public void setLongitude(BigDecimal longitude)         { this.longitude = longitude; }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getStatus()                              { return status; }
+    public void setStatus(String status)                   { this.status = status; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getObservacoes()                         { return observacoes; }
+    public void setObservacoes(String observacoes)         { this.observacoes = observacoes; }
 
-    public String getStatus() {
-        return status;
-    }
+    public Integer getDia()                                { return dia; }
+    public void setDia(Integer dia)                        { this.dia = dia; }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public Integer getOrdem()                              { return ordem; }
+    public void setOrdem(Integer ordem)                    { this.ordem = ordem; }
 
-    public String getObservacoes() {
-        return observacoes;
-    }
+    public LocalTime getHorario()                         { return horario; }
+    public void setHorario(LocalTime horario)             { this.horario = horario; }
 
-    public void setObservacoes(String observacoes) {
-        this.observacoes = observacoes;
-    }
-
-    public Integer getDia() {
-        return dia;
-    }
-
-    public void setDia(Integer dia) {
-        this.dia = dia;
-    }
-
-    public Integer getOrdem() {
-        return ordem;
-    }
-
-    public void setOrdem(Integer ordem) {
-        this.ordem = ordem;
-    }
-
-    public LocalDateTime getCriadoEm() {
-        return criadoEm;
-    }
-
-    public void setCriadoEm(LocalDateTime criadoEm) {
-        this.criadoEm = criadoEm;
-    }
+    public LocalDateTime getCriadoEm()                    { return criadoEm; }
+    public void setCriadoEm(LocalDateTime criadoEm)       { this.criadoEm = criadoEm; }
 }
