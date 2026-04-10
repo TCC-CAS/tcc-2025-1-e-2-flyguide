@@ -1,6 +1,7 @@
 package com.TCC.FlyGuide.services;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,7 @@ public class RoteiroLocalService {
         entity.setObservacoes(dto.getObservacoes());
         entity.setDia(dto.getDia());
         entity.setOrdem(dto.getOrdem());
+        entity.setHorario(dto.getHorario());
 
         entity.setCriadoEm(LocalDateTime.now());
 
@@ -88,6 +90,7 @@ public class RoteiroLocalService {
         entity.setObservacoes(dto.getObservacoes());
         entity.setDia(dto.getDia());
         entity.setOrdem(dto.getOrdem());
+        entity.setHorario(dto.getHorario());
 
         entity = roteiroLocalRepository.save(entity);
         return new RoteiroLocalDTO(entity);
