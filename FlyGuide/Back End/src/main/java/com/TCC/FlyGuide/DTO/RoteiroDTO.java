@@ -33,6 +33,7 @@ public class RoteiroDTO implements Serializable {
     private String observacoes;
     private LocalDateTime dataCriacao;
     private Long totalLikes;
+    private Long totalComentarios;
 
     // Dados do autor (para exibição no feed)
     private String emailUsuario;
@@ -116,8 +117,11 @@ public class RoteiroDTO implements Serializable {
     public LocalDateTime getDataCriacao()                        { return dataCriacao; }
     public void setDataCriacao(LocalDateTime dataCriacao)        { this.dataCriacao = dataCriacao; }
 
-    public Long getTotalLikes()                              { return totalLikes; }
-    public void setTotalLikes(Long totalLikes)               { this.totalLikes = totalLikes; }
+    public Long getTotalLikes()                                    { return totalLikes; }
+    public void setTotalLikes(Long totalLikes)                     { this.totalLikes = totalLikes; }
+
+    public Long getTotalComentarios()                              { return totalComentarios; }
+    public void setTotalComentarios(Long totalComentarios)         { this.totalComentarios = totalComentarios; }
 
     public String getEmailUsuario()                          { return emailUsuario; }
     public void setEmailUsuario(String emailUsuario)         { this.emailUsuario = emailUsuario; }

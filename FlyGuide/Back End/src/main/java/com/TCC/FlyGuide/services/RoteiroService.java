@@ -10,6 +10,7 @@ import com.TCC.FlyGuide.DTO.RoteiroLocalDTO;
 import com.TCC.FlyGuide.entities.Imagem;
 import com.TCC.FlyGuide.entities.RoteiroLocal;
 import com.TCC.FlyGuide.repositories.ImagemRepository;
+import com.TCC.FlyGuide.repositories.RoteiroComentarioRepository;
 import com.TCC.FlyGuide.repositories.RoteiroLikeRepository;
 import com.TCC.FlyGuide.repositories.RoteiroLocalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class RoteiroService {
     @Autowired
     private RoteiroLikeRepository likeRepository;
 
+    @Autowired
+    private RoteiroComentarioRepository comentarioRepository;
+
     public List<RoteiroDTO> findAll() {
         List<Roteiro> list = roteiroRepository.findAll();
         return list.stream().map(RoteiroDTO::new).collect(Collectors.toList());
@@ -68,6 +72,7 @@ public class RoteiroService {
         return list.stream().map(r -> {
             RoteiroDTO dto = new RoteiroDTO(r);
             dto.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
+            dto.setTotalComentarios(comentarioRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
             return dto;
         }).collect(Collectors.toList());
     }
