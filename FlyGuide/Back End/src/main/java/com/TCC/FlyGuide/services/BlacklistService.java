@@ -6,16 +6,7 @@ import java.text.Normalizer;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Valida textos contra uma lista de palavras proibidas.
- *
- * Normalização aplicada antes de qualquer verificação:
- *  1. Minúsculas
- *  2. Remove acentos (NFD)
- *  3. Substitui leet speak  (4→a, 3→e, 1→i, 0→o, 5→s, @→a, $→s, k→c …)
- *  4. Palavras simples  → word-boundary (\b) para evitar falsos positivos
- *  5. Frases / siglas coladas → verificação na string sem espaços
- */
+
 @Service
 public class BlacklistService {
 

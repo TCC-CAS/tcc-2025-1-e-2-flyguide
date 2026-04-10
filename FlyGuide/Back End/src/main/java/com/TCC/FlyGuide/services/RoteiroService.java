@@ -1,5 +1,6 @@
 package com.TCC.FlyGuide.services;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -67,8 +68,23 @@ public class RoteiroService {
     }
 
     @Transactional(readOnly = true)
-    public List<RoteiroDTO> findPublicos() {
-        List<Roteiro> list = roteiroRepository.findByVisibilidadeRoteiroOrderByDataCriacaoDesc("Público");
+    public List<RoteiroDTO> findPublicos(String cidade, String tipoRoteiro,
+                                         BigDecimal orcamentoMax, String ordenacao,
+                                         String busca, Integer diasMax) {
+        String cidadeFiltro = (cidade != null && !cidade.isBlank()) ? cidade : null;
+        String tipoFiltro   = (tipoRoteiro != null && !tipoRoteiro.isBlank()) ? tipoRoteiro : null;
+        String buscaFiltro  = (busca != null && !busca.isBlank()) ? busca : null;
+
+        List<Roteiro> list;
+        switch (ordenacao == null ? "recente" : ordenacao.toLowerCase()) {
+            case "curtidos"       -> list = roteiroRepository.findPublicosOrdenadosPorCurtidas(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
+            case "orcamento_asc"  -> list = roteiroRepository.findPublicosOrcamentoAsc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
+            case "orcamento_desc" -> list = roteiroRepository.findPublicosOrcamentoDesc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
+            case "duracao_asc"    -> list = roteiroRepository.findPublicosDuracaoAsc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
+            case "duracao_desc"   -> list = roteiroRepository.findPublicosDuracaoDesc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
+            default               -> list = roteiroRepository.findPublicosComFiltros(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
+        }
+
         return list.stream().map(r -> {
             RoteiroDTO dto = new RoteiroDTO(r);
             dto.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));

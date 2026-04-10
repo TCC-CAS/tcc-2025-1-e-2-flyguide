@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.TCC.FlyGuide.DTO.RoteiroDTO;
@@ -38,10 +41,16 @@ public class RoteiroResource {
         return ResponseEntity.ok().body(dto);
     }
 
-    // Feed: roteiros públicos ordenados do mais recente
+    // Feed: roteiros públicos com filtros e ordenação opcionais
     @GetMapping(value = "/publicos")
-    public ResponseEntity<List<RoteiroDTO>> findPublicos() {
-        List<RoteiroDTO> list = service.findPublicos();
+    public ResponseEntity<List<RoteiroDTO>> findPublicos(
+            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) String tipoRoteiro,
+            @RequestParam(required = false) BigDecimal orcamentoMax,
+            @RequestParam(required = false, defaultValue = "recente") String ordenacao,
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) Integer diasMax) {
+        List<RoteiroDTO> list = service.findPublicos(cidade, tipoRoteiro, orcamentoMax, ordenacao, busca, diasMax);
         return ResponseEntity.ok().body(list);
     }
 
