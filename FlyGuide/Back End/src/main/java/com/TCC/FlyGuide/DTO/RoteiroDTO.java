@@ -2,6 +2,7 @@ package com.TCC.FlyGuide.DTO;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
 import com.TCC.FlyGuide.entities.Roteiro;
@@ -30,6 +31,11 @@ public class RoteiroDTO implements Serializable {
     private Integer diasTotais;
     private BigDecimal orcamento;
     private String observacoes;
+    private LocalDateTime dataCriacao;
+    private Long totalLikes;
+
+    // Dados do autor (para exibição no feed)
+    private String emailUsuario;
 
     public RoteiroDTO() {}
 
@@ -52,6 +58,13 @@ public class RoteiroDTO implements Serializable {
             this.idImagem    = entity.getImagem().getIdImagem();
             this.imagemUrl   = entity.getImagem().getUrl();
             this.imagemChave = entity.getImagem().getChave();
+        }
+
+        this.dataCriacao = entity.getDataCriacao();
+
+        // Dados do autor
+        if (entity.getUsuario() != null) {
+            this.emailUsuario = entity.getUsuario().getEmail();
         }
     }
 
@@ -99,4 +112,13 @@ public class RoteiroDTO implements Serializable {
 
     public BigDecimal getOrcamento()                      { return orcamento; }
     public void setOrcamento(BigDecimal orcamento)        { this.orcamento = orcamento; }
+
+    public LocalDateTime getDataCriacao()                        { return dataCriacao; }
+    public void setDataCriacao(LocalDateTime dataCriacao)        { this.dataCriacao = dataCriacao; }
+
+    public Long getTotalLikes()                              { return totalLikes; }
+    public void setTotalLikes(Long totalLikes)               { this.totalLikes = totalLikes; }
+
+    public String getEmailUsuario()                          { return emailUsuario; }
+    public void setEmailUsuario(String emailUsuario)         { this.emailUsuario = emailUsuario; }
 }

@@ -1,5 +1,6 @@
 package com.TCC.FlyGuide.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import com.TCC.FlyGuide.DTO.RoteiroLocalDTO;
 import com.TCC.FlyGuide.entities.Imagem;
 import com.TCC.FlyGuide.entities.RoteiroLocal;
 import com.TCC.FlyGuide.repositories.ImagemRepository;
+import com.TCC.FlyGuide.repositories.RoteiroLikeRepository;
 import com.TCC.FlyGuide.repositories.RoteiroLocalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,6 +43,9 @@ public class RoteiroService {
     @Autowired
     private RoteiroLocalRepository roteiroLocalRepository;
 
+    @Autowired
+    private RoteiroLikeRepository likeRepository;
+
     public List<RoteiroDTO> findAll() {
         List<Roteiro> list = roteiroRepository.findAll();
         return list.stream().map(RoteiroDTO::new).collect(Collectors.toList());
@@ -57,12 +62,23 @@ public class RoteiroService {
         return list.stream().map(RoteiroDTO::new).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<RoteiroDTO> findPublicos() {
+        List<Roteiro> list = roteiroRepository.findByVisibilidadeRoteiroOrderByDataCriacaoDesc("Público");
+        return list.stream().map(r -> {
+            RoteiroDTO dto = new RoteiroDTO(r);
+            dto.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
     public RoteiroDTO insert(RoteiroDTO dto) {
         User usuario = userRepository.findById(dto.getIdUsuario())
                 .orElseThrow(() -> new ResourceNotFoundException(dto.getIdUsuario()));
 
         Roteiro entity = new Roteiro();
         entity.setUsuario(usuario);
+        entity.setDataCriacao(LocalDateTime.now());
         updateData(entity, dto);
 
         entity = roteiroRepository.save(entity);
@@ -123,6 +139,9 @@ public class RoteiroService {
                 .map(RoteiroLocalDTO::new)
                 .collect(Collectors.toList());
 
-        return new RoteiroCompletoDTO(new RoteiroDTO(roteiro), locaisDTO);
+        RoteiroDTO roteiroDTO = new RoteiroDTO(roteiro);
+        roteiroDTO.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(idRoteiro));
+
+        return new RoteiroCompletoDTO(roteiroDTO, locaisDTO);
     }
 }

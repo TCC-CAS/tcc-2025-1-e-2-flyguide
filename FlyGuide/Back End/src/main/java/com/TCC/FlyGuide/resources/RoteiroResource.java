@@ -38,6 +38,13 @@ public class RoteiroResource {
         return ResponseEntity.ok().body(dto);
     }
 
+    // Feed: roteiros públicos ordenados do mais recente
+    @GetMapping(value = "/publicos")
+    public ResponseEntity<List<RoteiroDTO>> findPublicos() {
+        List<RoteiroDTO> list = service.findPublicos();
+        return ResponseEntity.ok().body(list);
+    }
+
     // Meus Roteiros: lista por usuário
     @GetMapping(value = "/usuario/{idUsuario}")
     public ResponseEntity<List<RoteiroDTO>> findByUsuario(@PathVariable Long idUsuario) {
