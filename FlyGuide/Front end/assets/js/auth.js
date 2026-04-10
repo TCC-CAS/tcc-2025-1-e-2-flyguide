@@ -120,7 +120,6 @@
 
       marcarValido(inputCEP);
 
-      // Preenche endereço e cidade automaticamente
       if (inputEndereco) {
         const logradouro = dados.logradouro || "";
         const bairro     = dados.bairro     || "";
@@ -138,6 +137,9 @@
   }
 
   // ======================== LOGIN ========================
+
+  // Guarda o e-mail entre a etapa 1 (login) e etapa 2 (verificar OTP)
+  let emailPendente = null;
 
   async function processarLogin(evento) {
     evento.preventDefault();
@@ -165,11 +167,95 @@
         return;
       }
 
+      // Etapa 1 ok — guarda o e-mail e mostra o campo de código OTP
+      emailPendente = email;
+      mostrarAlerta("success", "Código de verificação enviado para o seu e-mail!");
+      mostrarCampoOtp();
+
+    } catch {
+      mostrarAlerta("danger", "Não foi possível conectar ao servidor. Verifique se o backend está rodando.");
+    } finally {
+      setBotaoCarregando(btn, false);
+    }
+  }
+
+  function mostrarCampoOtp() {
+    const formLogin = qs("#formularioLogin");
+    if (formLogin) formLogin.style.display = "none";
+
+    let formOtp = qs("#formularioOtp");
+    if (!formOtp) {
+      formOtp = document.createElement("form");
+      formOtp.id = "formularioOtp";
+      formOtp.innerHTML = `
+        <p class="text-muted mb-3" style="font-size:0.9rem;">
+          Digite o código de 6 dígitos enviado para <strong>${emailPendente}</strong>.
+        </p>
+        <div class="auth-field mb-3">
+          <label for="codigoOtp" class="form-label">Código de verificação</label>
+          <input id="codigoOtp" type="text" class="form-control" placeholder="000000" maxlength="6" required />
+          <div class="invalid-feedback"></div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mb-2">Verificar</button>
+        <button type="button" id="btnVoltarLogin" class="btn btn-link w-100 p-0" style="font-size:0.85rem;">
+          Voltar para o login
+        </button>
+      `;
+      if (formLogin) {
+        formLogin.parentNode.insertBefore(formOtp, formLogin.nextSibling);
+      } else {
+        document.body.appendChild(formOtp);
+      }
+      formOtp.addEventListener("submit", processarOtp);
+      qs("#btnVoltarLogin", formOtp)?.addEventListener("click", voltarParaLogin);
+    }
+    formOtp.style.display = "";
+  }
+
+  function voltarParaLogin() {
+    const formLogin = qs("#formularioLogin");
+    const formOtp   = qs("#formularioOtp");
+    if (formOtp)   formOtp.style.display   = "none";
+    if (formLogin) formLogin.style.display = "";
+    emailPendente = null;
+    mostrarAlerta("info", "Informe seu e-mail e senha para tentar novamente.");
+  }
+
+  async function processarOtp(evento) {
+    evento.preventDefault();
+
+    const inputCodigo = qs("#codigoOtp");
+    const codigo = inputCodigo?.value?.trim();
+    const btn    = evento.submitter || qs("#formularioOtp button[type=submit]");
+
+    if (!codigo) {
+      marcarInvalido(inputCodigo, "Informe o código recebido por e-mail.");
+      return;
+    }
+    marcarValido(inputCodigo);
+    setBotaoCarregando(btn, true);
+
+    try {
+      const resposta = await fetch(`${URL_API_BASE}/auth/login/verificar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailPendente, codigo }),
+      });
+
+      const dados = await resposta.json().catch(() => ({}));
+
+      if (!resposta.ok) {
+        marcarInvalido(inputCodigo, dados.message || "Código inválido ou expirado.");
+        return;
+      }
+
+      // Etapa 2 ok — agora temos o id real do usuário
       sessionStorage.setItem(SESSION_KEY, dados.id);
       mostrarAlerta("success", "Usuário logado com sucesso!");
       setTimeout(() => (window.location.href = "index.html"), 800);
+
     } catch {
-      mostrarAlerta("danger", "Não foi possível conectar ao servidor. Verifique se o backend está rodando.");
+      mostrarAlerta("danger", "Não foi possível verificar o código. Tente novamente.");
     } finally {
       setBotaoCarregando(btn, false);
     }
@@ -328,13 +414,11 @@
       else marcarValido(inputCNPJ);
     });
 
-    // CEP: formata e busca automaticamente quando completo
     inputCEP?.addEventListener("input", () => {
       inputCEP.value = formatarCEP(inputCEP.value);
       if (cepEhValido(inputCEP.value)) {
         buscarCEP(inputCEP.value);
       } else {
-        // Limpa campos de endereço se CEP incompleto
         const inputEndereco = qs("#enderecoCadastro");
         const inputCidade   = qs("#cidadeCadastro");
         if (inputEndereco) inputEndereco.value = "";
