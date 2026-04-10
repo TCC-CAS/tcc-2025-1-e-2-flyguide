@@ -48,8 +48,7 @@ public class RoteiroLocalResource {
     public ResponseEntity<RoteiroLocalDTO> update(
             @PathVariable Long idRoteiro,
             @PathVariable Long idLocal,
-            @RequestBody RoteiroLocalDTO dto
-    ) {
+            @RequestBody RoteiroLocalDTO dto) {
         RoteiroLocalDTO updated = service.update(idRoteiro, idLocal, dto);
         return ResponseEntity.ok().body(updated);
     }

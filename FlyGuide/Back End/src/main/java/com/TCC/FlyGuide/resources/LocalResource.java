@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.TCC.FlyGuide.DTO.LocalBuscaDTO;
 import com.TCC.FlyGuide.DTO.LocalDTO;
 import com.TCC.FlyGuide.services.LocalService;
 
@@ -24,6 +26,22 @@ public class LocalResource {
 
     @Autowired
     private LocalService service;
+
+    // Busca de locais no mundo via Google Places API (FREE e PREMIUM)
+    @GetMapping("/buscar")
+    public ResponseEntity<List<LocalBuscaDTO>> buscar(
+            @RequestParam Long idUsuario,
+            @RequestParam String query,
+            // Filtros PREMIUM
+            @RequestParam(required = false) Double avaliacaoMin,
+            @RequestParam(required = false) Integer precoMax,
+            @RequestParam(required = false) Boolean apenasAbertos,
+            @RequestParam(required = false) Boolean acessivel) {
+
+        List<LocalBuscaDTO> list = service.buscar(
+                idUsuario, query, avaliacaoMin, precoMax, apenasAbertos, acessivel);
+        return ResponseEntity.ok().body(list);
+    }
 
     @GetMapping
     public ResponseEntity<List<LocalDTO>> findAll() {
