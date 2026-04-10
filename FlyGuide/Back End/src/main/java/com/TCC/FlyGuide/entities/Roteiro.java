@@ -2,6 +2,7 @@ package com.TCC.FlyGuide.entities;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
 import jakarta.persistence.*;
@@ -40,6 +41,9 @@ public class Roteiro implements Serializable {
     private BigDecimal orcamento;
 
     private String observacoes;
+
+    @Column(updatable = false)
+    private LocalDateTime dataCriacao;
 
     public Roteiro() {}
 
@@ -96,8 +100,11 @@ public class Roteiro implements Serializable {
     public Integer getDiasTotais()                    { return diasTotais; }
     public void setDiasTotais(Integer diasTotais)     { this.diasTotais = diasTotais; }
 
-    public BigDecimal getOrcamento()                  { return orcamento; }
-    public void setOrcamento(BigDecimal orcamento)    { this.orcamento = orcamento; }
+    public BigDecimal getOrcamento()                        { return orcamento; }
+    public void setOrcamento(BigDecimal orcamento)          { this.orcamento = orcamento; }
+
+    public LocalDateTime getDataCriacao()                   { return dataCriacao; }
+    public void setDataCriacao(LocalDateTime dataCriacao)   { this.dataCriacao = dataCriacao; }
 
     @Override
     public int hashCode() {
