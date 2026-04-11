@@ -13,8 +13,10 @@ public class RoteiroComentarioDTO implements Serializable {
     private Long idRoteiro;
     private Long idUsuario;
     private String emailUsuario;
+    private String nomeExibicao;
     private String texto;
     private LocalDateTime criadoEm;
+    private LocalDateTime editadoEm;
 
     public RoteiroComentarioDTO() {}
 
@@ -25,6 +27,7 @@ public class RoteiroComentarioDTO implements Serializable {
         this.emailUsuario = entity.getUsuario() != null ? entity.getUsuario().getEmail() : null;
         this.texto        = entity.getTexto();
         this.criadoEm     = entity.getCriadoEm();
+        this.editadoEm    = entity.getEditadoEm();
     }
 
     public Long getIdComentario()                           { return idComentario; }
@@ -39,9 +42,15 @@ public class RoteiroComentarioDTO implements Serializable {
     public String getEmailUsuario()                         { return emailUsuario; }
     public void setEmailUsuario(String emailUsuario)        { this.emailUsuario = emailUsuario; }
 
+    public String getNomeExibicao()                         { return nomeExibicao; }
+    public void setNomeExibicao(String nomeExibicao)        { this.nomeExibicao = nomeExibicao; }
+
     public String getTexto()                                { return texto; }
     public void setTexto(String texto)                      { this.texto = texto; }
 
-    public LocalDateTime getCriadoEm()                     { return criadoEm; }
+    public LocalDateTime getCriadoEm()                      { return criadoEm; }
     public void setCriadoEm(LocalDateTime criadoEm)         { this.criadoEm = criadoEm; }
+
+    public LocalDateTime getEditadoEm()                     { return editadoEm; }
+    public void setEditadoEm(LocalDateTime editadoEm)       { this.editadoEm = editadoEm; }
 }

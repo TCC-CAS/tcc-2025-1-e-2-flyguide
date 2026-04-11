@@ -13,6 +13,11 @@ public class RoteiroLikeResource {
     @Autowired
     private RoteiroLikeService service;
 
+    @GetMapping("/{idUsuario}")
+    public ResponseEntity<Boolean> jacurtiu(@PathVariable Long idRoteiro, @PathVariable Long idUsuario) {
+        return ResponseEntity.ok(service.jaCurtiu(idRoteiro, idUsuario));
+    }
+
     @PostMapping("/{idUsuario}")
     public ResponseEntity<Void> like(@PathVariable Long idRoteiro, @PathVariable Long idUsuario) {
         service.like(idRoteiro, idUsuario);

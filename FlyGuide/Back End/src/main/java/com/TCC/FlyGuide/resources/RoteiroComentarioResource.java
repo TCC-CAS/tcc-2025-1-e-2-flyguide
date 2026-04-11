@@ -40,6 +40,16 @@ public class RoteiroComentarioResource {
         return ResponseEntity.created(uri).body(created);
     }
 
+    @PutMapping("/{idComentario}")
+    public ResponseEntity<RoteiroComentarioDTO> update(
+            @PathVariable Long idRoteiro,
+            @PathVariable Long idComentario,
+            @RequestBody RoteiroComentarioDTO dto) {
+
+        RoteiroComentarioDTO updated = service.update(idRoteiro, idComentario, dto);
+        return ResponseEntity.ok(updated);
+    }
+
     @DeleteMapping("/{idComentario}")
     public ResponseEntity<Void> delete(
             @PathVariable Long idRoteiro,
