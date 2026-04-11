@@ -27,6 +27,7 @@ public class RoteiroComentario implements Serializable {
     private String texto;
 
     private LocalDateTime criadoEm;
+    private LocalDateTime editadoEm;
 
     public RoteiroComentario() {}
 
@@ -51,4 +52,7 @@ public class RoteiroComentario implements Serializable {
 
     public LocalDateTime getCriadoEm()                    { return criadoEm; }
     public void setCriadoEm(LocalDateTime criadoEm)        { this.criadoEm = criadoEm; }
+
+    public LocalDateTime getEditadoEm()                   { return editadoEm; }
+    public void setEditadoEm(LocalDateTime editadoEm)      { this.editadoEm = editadoEm; }
 }

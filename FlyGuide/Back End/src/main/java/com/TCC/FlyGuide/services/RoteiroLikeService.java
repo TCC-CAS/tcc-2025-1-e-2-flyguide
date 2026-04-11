@@ -46,6 +46,10 @@ public class RoteiroLikeService {
         likeRepository.deleteByRoteiro_IdRoteiroAndUsuario_IdUsuario(idRoteiro, idUsuario);
     }
 
+    public boolean jaCurtiu(Long idRoteiro, Long idUsuario) {
+        return likeRepository.existsByRoteiro_IdRoteiroAndUsuario_IdUsuario(idRoteiro, idUsuario);
+    }
+
     public long countLikes(Long idRoteiro) {
         return likeRepository.countByRoteiro_IdRoteiro(idRoteiro);
     }

@@ -138,12 +138,12 @@ public class BlacklistService {
     // ── Frases / siglas coladas ───────────────────────────────────────────────
     private static final List<String> FRASES_COLADAS = List.of(
         "filhodaputa", "filhadaputa", "fiadaputa",
-        "fdp", "vsf",
+        "fdp", "vsf", "pqp", "krl", "pnc", "tnc", "qpd", "vtnc", "vtmnc",
         "vaisetfoder", "vaisefoder", "vaisefodar", "sefodam",
         "voutematar", "voumatar", "vouteacertar", "vouteestupar",
         "paunocu", "meteopau", "enfiaopau", "vaipaunocu",
         "tomarnorabo", "tomarnoco",
-        "putaquepariu", "pqp",
+        "putaquepariu",
         "sexoanal", "sexooral",
         "lixohumano", "escoria"
     );
