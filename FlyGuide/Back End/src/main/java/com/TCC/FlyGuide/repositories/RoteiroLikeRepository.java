@@ -11,4 +11,6 @@ public interface RoteiroLikeRepository extends JpaRepository<RoteiroLike, Long> 
     boolean existsByRoteiro_IdRoteiroAndUsuario_IdUsuario(Long idRoteiro, Long idUsuario);
 
     void deleteByRoteiro_IdRoteiroAndUsuario_IdUsuario(Long idRoteiro, Long idUsuario);
+
+    void deleteByRoteiro_IdRoteiro(Long idRoteiro);
 }

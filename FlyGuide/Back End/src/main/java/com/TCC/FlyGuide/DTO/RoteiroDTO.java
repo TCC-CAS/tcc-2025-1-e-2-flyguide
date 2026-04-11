@@ -34,6 +34,8 @@ public class RoteiroDTO implements Serializable {
     private LocalDateTime dataCriacao;
     private Long totalLikes;
     private Long totalComentarios;
+    private Double mediaAvaliacao;
+    private Long totalAvaliacoes;
 
     // Dados do autor (para exibição no feed)
     private String emailUsuario;
@@ -122,6 +124,12 @@ public class RoteiroDTO implements Serializable {
 
     public Long getTotalComentarios()                              { return totalComentarios; }
     public void setTotalComentarios(Long totalComentarios)         { this.totalComentarios = totalComentarios; }
+
+    public Double getMediaAvaliacao()                              { return mediaAvaliacao; }
+    public void setMediaAvaliacao(Double mediaAvaliacao)           { this.mediaAvaliacao = mediaAvaliacao; }
+
+    public Long getTotalAvaliacoes()                               { return totalAvaliacoes; }
+    public void setTotalAvaliacoes(Long totalAvaliacoes)           { this.totalAvaliacoes = totalAvaliacoes; }
 
     public String getEmailUsuario()                          { return emailUsuario; }
     public void setEmailUsuario(String emailUsuario)         { this.emailUsuario = emailUsuario; }

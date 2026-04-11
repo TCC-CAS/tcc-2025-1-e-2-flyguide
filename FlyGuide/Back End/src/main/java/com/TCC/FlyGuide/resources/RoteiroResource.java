@@ -80,6 +80,22 @@ public class RoteiroResource {
         return ResponseEntity.ok().body(updated);
     }
 
+    @GetMapping(value = "/{id}/clonou")
+    public ResponseEntity<Boolean> jaClonou(@PathVariable Long id, @RequestParam Long idUsuario) {
+        return ResponseEntity.ok(service.jaClonou(id, idUsuario));
+    }
+
+    @PostMapping(value = "/{id}/clonar")
+    public ResponseEntity<RoteiroDTO> clonar(@PathVariable Long id, @RequestParam Long idUsuario) {
+        RoteiroDTO clonado = service.clonar(id, idUsuario);
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .replacePath("/roteiros/{id}")
+                .buildAndExpand(clonado.getIdRoteiro())
+                .toUri();
+        return ResponseEntity.created(uri).body(clonado);
+    }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
