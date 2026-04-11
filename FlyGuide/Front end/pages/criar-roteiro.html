@@ -78,18 +78,13 @@
         <div class="form-card mx-auto" style="max-width:980px;">
           <h5 class="fw-bold mb-3">Informações Básicas</h5>
           <div class="row g-3">
-            <div class="col-12 col-lg-6">
+            <div class="col-12">
               <label class="form-label fw-bold">Título do Roteiro *</label>
               <input class="form-control" id="itTitle" placeholder="Ex: 10 dias mágicos em Paris">
             </div>
-            <div class="col-12 col-lg-6">
-              <label class="form-label fw-bold">Destino (Cidade) *</label>
-              <input class="form-control" id="itDestination" placeholder="Ex: Paris">
-            </div>
-            <div class="col-12 col-lg-4">
-              <label class="form-label fw-bold">País</label>
-              <input class="form-control" id="itCountry" placeholder="Ex: França">
-            </div>
+            <!-- campos ocultos para compatibilidade com o backend -->
+            <input type="hidden" id="itCountry" value="">
+            <input type="hidden" id="itDestination" value="">
             <div class="col-12 col-lg-4">
               <label class="form-label fw-bold">Data Início</label>
               <input class="form-control" id="itStart" type="date">

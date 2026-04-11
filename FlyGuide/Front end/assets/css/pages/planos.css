@@ -21,7 +21,7 @@
 }
 
 .pill-card{
-  background:#fff;
+  background: var(--fg-card, #fff);
   border: 1px solid #eef2f7;
   border-radius: 18px;
   box-shadow: var(--fg-shadow-soft);
@@ -39,7 +39,7 @@
   box-shadow: var(--fg-shadow-soft);
   padding: 22px;
   text-align:center;
-  background:#fff;
+  background: var(--fg-card, #fff);
 }
 .premium-feature .circle{
   width: 44px; height: 44px; border-radius: 999px;
@@ -54,7 +54,7 @@
   border: 1px solid #eef2f7;
   box-shadow: var(--fg-shadow-soft);
   padding: 24px;
-  background:#fff;
+  background: var(--fg-card, #fff);
   position:relative;
   overflow:hidden;
 }

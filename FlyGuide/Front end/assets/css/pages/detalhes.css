@@ -61,8 +61,8 @@
 .stats-cards{ margin-top: 18px; }
 
 .stat-card{
-  background:#fff;
-  border: 1px solid #eef2f7;
+  background: var(--fg-card, #fff);
+  border: 1px solid var(--fg-border, #eef2f7);
   border-radius: 16px;
   box-shadow: var(--fg-shadow-soft);
   padding: 18px;

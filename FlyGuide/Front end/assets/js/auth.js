@@ -429,3 +429,151 @@
     qs("#formularioCadastro")?.addEventListener("submit", processarCadastro);
   }
 })();
+// ── Recuperação de Senha ───────────────────────────────────────────────────
+(function iniciarRecuperacaoSenha() {
+  if (document.body.getAttribute("data-pagina") !== "login") return;
+
+  const URL_API_BASE = "http://localhost:8080";
+
+  const telaLogin       = document.getElementById("formularioLogin");
+  const telaEmail       = document.getElementById("telaEsqueceuEmail");
+  const telaReset       = document.getElementById("telaResetSenha");
+
+  let emailRecuperacao = "";
+
+  function mostrarTela(tela) {
+    telaLogin.style.display = "none";
+    telaEmail.style.display = "none";
+    telaReset.style.display = "none";
+    tela.style.display = "";
+  }
+
+  function mostrarAlertaLocal(idAlerta, tipo, msg) {
+    const el = document.getElementById(idAlerta);
+    if (!el) return;
+    el.className = `alert auth-alert mt-3 alert-${tipo}`;
+    el.textContent = msg;
+    el.style.display = "";
+  }
+
+  function setBtnCarregando(btn, carregando, textoOriginal) {
+    btn.disabled = carregando;
+    btn.innerHTML = carregando
+      ? `<span class="spinner-border spinner-border-sm me-2"></span>Aguarde...`
+      : textoOriginal;
+  }
+
+  // Link "Esqueceu a senha?"
+  document.getElementById("linkEsqueceuSenha")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    mostrarTela(telaEmail);
+  });
+
+  // Link "Voltar ao login"
+  document.getElementById("linkVoltarLogin")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    mostrarTela(telaLogin);
+  });
+
+  // Link "Voltar" na tela de reset
+  document.getElementById("linkVoltarEmail")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    mostrarTela(telaEmail);
+  });
+
+  // Etapa 1 — Solicitar OTP
+  document.getElementById("btnSolicitarOtp")?.addEventListener("click", async () => {
+    const input = document.getElementById("emailRecuperar");
+    const email = input.value.trim();
+    const btn   = document.getElementById("btnSolicitarOtp");
+
+    if (!email) {
+      input.classList.add("is-invalid");
+      input.nextElementSibling?.classList.add("d-block");
+      return;
+    }
+    input.classList.remove("is-invalid");
+
+    setBtnCarregando(btn, true, "Enviar código");
+    try {
+      const res  = await fetch(`${URL_API_BASE}/auth/senha/solicitar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const dados = await res.json();
+
+      if (res.ok) {
+        emailRecuperacao = email;
+        document.getElementById("subtituloReset").textContent =
+          `Enviamos o código para ${email}. Ele expira em 10 minutos.`;
+        mostrarTela(telaReset);
+      } else if (res.status === 404) {
+        mostrarAlertaLocal("alertaRecuperar", "danger", "Nenhuma conta encontrada com este e-mail.");
+      } else {
+        mostrarAlertaLocal("alertaRecuperar", "danger", dados.message || "Erro ao enviar o código.");
+      }
+    } catch {
+      mostrarAlertaLocal("alertaRecuperar", "danger", "Erro ao conectar ao servidor.");
+    } finally {
+      setBtnCarregando(btn, false, "Enviar código");
+    }
+  });
+
+  // Etapa 2 — Resetar senha
+  document.getElementById("btnResetarSenha")?.addEventListener("click", async () => {
+    const inputCodigo    = document.getElementById("codigoReset");
+    const inputNova      = document.getElementById("novaSenha");
+    const inputConfirmar = document.getElementById("confirmarNovaSenha");
+    const btn            = document.getElementById("btnResetarSenha");
+
+    let valido = true;
+
+    if (!inputCodigo.value.trim()) {
+      inputCodigo.classList.add("is-invalid"); valido = false;
+    } else { inputCodigo.classList.remove("is-invalid"); }
+
+    if (inputNova.value.length < 8) {
+      inputNova.classList.add("is-invalid"); valido = false;
+    } else { inputNova.classList.remove("is-invalid"); }
+
+    if (inputConfirmar.value !== inputNova.value) {
+      inputConfirmar.classList.add("is-invalid"); valido = false;
+    } else { inputConfirmar.classList.remove("is-invalid"); }
+
+    if (!valido) return;
+
+    setBtnCarregando(btn, true, "Redefinir senha");
+    try {
+      const res = await fetch(`${URL_API_BASE}/auth/senha/resetar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email:     emailRecuperacao,
+          codigo:    inputCodigo.value.trim(),
+          novaSenha: inputNova.value
+        })
+      });
+      const dados = await res.json();
+
+      if (res.ok) {
+        mostrarAlertaLocal("alertaReset", "success", "Senha redefinida com sucesso! Redirecionando...");
+        setTimeout(() => {
+          mostrarTela(telaLogin);
+          document.getElementById("alertaReset").style.display = "none";
+          inputCodigo.value = "";
+          inputNova.value   = "";
+          inputConfirmar.value = "";
+        }, 2000);
+      } else if (res.status === 401) {
+        mostrarAlertaLocal("alertaReset", "danger", "Código inválido ou expirado.");
+      } else {
+        mostrarAlertaLocal("alertaReset", "danger", dados.message || "Erro ao redefinir a senha.");
+      }
+    } catch {
+      mostrarAlertaLocal("alertaReset", "danger", "Erro ao conectar ao servidor.");
+    } finally {
+      setBtnCarregando(btn, false, "Redefinir senha");
+    }
+  });
+})();

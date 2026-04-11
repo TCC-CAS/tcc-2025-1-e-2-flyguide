@@ -7,6 +7,8 @@
   const style = document.createElement("style");
   style.id = "flyguide-dark-style";
   style.textContent = `
+    html[data-theme="dark"] { --fg-card: #1e293b; --fg-bg: #0f172a; --fg-border: #334155; }
+
     html[data-theme="dark"] body { background: #0f172a !important; color: #f1f5f9 !important; }
     html[data-theme="dark"] .app-shell { background: #0f172a !important; }
 

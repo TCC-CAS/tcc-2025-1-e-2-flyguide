@@ -111,7 +111,7 @@
         <!-- Cards de estatísticas + conteúdo -->
         <div class="details-top">
           <div class="row g-4 stats-cards">
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-4">
               <div class="stat-card">
                 <div class="stat-icon"><i class="bi bi-calendar-event"></i></div>
                 <div class="stat-title">Duração</div>
@@ -119,7 +119,7 @@
                 <div class="stat-sub" id="detalhePeriodo">—</div>
               </div>
             </div>
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-4">
               <div class="stat-card">
                 <div class="stat-icon" style="color:#22c55e;background:#ecfdf5;border-color:#d1fae5;">
                   <i class="bi bi-currency-dollar"></i>
@@ -127,6 +127,32 @@
                 <div class="stat-title">Orçamento</div>
                 <div class="stat-big" id="detalheOrcamento">—</div>
                 <div class="stat-sub">Estimado</div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-4">
+              <div class="stat-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+                <button id="btnCurtir" style="
+                  display:inline-flex;align-items:center;gap:8px;
+                  background:#ef4444;color:#fff;border:none;border-radius:10px;
+                  padding:10px 28px;font-size:.95rem;font-weight:600;cursor:pointer;
+                  transition:background .2s,transform .1s;width:100%;justify-content:center;">
+                  <i class="bi bi-heart-fill"></i>
+                  <span id="btnCurtirTexto">Curtir</span>
+                </button>
+                <div id="totalCurtidas" style="font-size:.85rem;color:#94a3b8;"></div>
+
+                <!-- Avaliação por estrelas -->
+                <div style="width:100%;border-top:1px solid rgba(148,163,184,.15);padding-top:10px;text-align:center;">
+                  <div style="font-size:.78rem;color:#94a3b8;margin-bottom:6px;">Avalie este roteiro</div>
+                  <div id="estrelasAvaliacao" style="display:flex;justify-content:center;gap:4px;font-size:1.4rem;cursor:pointer;">
+                    <i class="bi bi-star" data-nota="1" style="color:#facc15;transition:transform .1s;"></i>
+                    <i class="bi bi-star" data-nota="2" style="color:#facc15;transition:transform .1s;"></i>
+                    <i class="bi bi-star" data-nota="3" style="color:#facc15;transition:transform .1s;"></i>
+                    <i class="bi bi-star" data-nota="4" style="color:#facc15;transition:transform .1s;"></i>
+                    <i class="bi bi-star" data-nota="5" style="color:#facc15;transition:transform .1s;"></i>
+                  </div>
+                  <div id="mediaAvaliacao" style="font-size:.78rem;color:#94a3b8;margin-top:4px;"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -157,6 +183,52 @@
               <div class="mt-2">Nenhuma atividade adicionada ainda.</div>
             </div>
           </div>
+
+          <!-- ── SEÇÃO DE COMENTÁRIOS ─────────────────────────────── -->
+          <div class="section-card" id="secaoComentarios" style="margin-top:16px;">
+            <div class="section-title"><i class="bi bi-chat-dots-fill me-2" style="color:#f97316;"></i>Comentários</div>
+
+            <!-- Formulário de novo comentário (só para logado) -->
+            <div id="formComentario" style="display:none; margin-bottom:20px;">
+              <textarea
+                id="inputComentario"
+                class="form-control"
+                rows="2"
+                maxlength="500"
+                placeholder="Escreva um comentário..."
+                style="resize:none; border-radius:10px; font-size:.9rem;"
+              ></textarea>
+              <div id="erroComentario" class="mt-2" style="display:none; color:#ef4444; font-size:.85rem;">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                <span id="erroComentarioTexto"></span>
+              </div>
+              <div class="d-flex justify-content-end mt-2">
+                <button id="btnEnviarComentario" class="btn btn-sm btn-primary" style="border-radius:8px; background:#f97316; border-color:#f97316; font-size:.85rem;">
+                  <i class="bi bi-send-fill me-1"></i>Publicar
+                </button>
+              </div>
+            </div>
+
+            <!-- Aviso para não logado -->
+            <div id="avisoLoginComentario" style="display:none; margin-bottom:16px; font-size:.85rem; color:#64748b; text-align:center;">
+              <i class="bi bi-lock-fill me-1"></i>
+              <a href="login.html" style="color:#f97316;">Faça login</a> para comentar.
+            </div>
+
+            <!-- Lista de comentários -->
+            <div id="listaComentarios">
+              <div id="loadingComentarios" class="text-center py-3 text-secondary" style="font-size:.85rem;">
+                <span class="spinner-border spinner-border-sm me-2"></span>Carregando comentários...
+              </div>
+            </div>
+
+            <!-- Estado vazio -->
+            <div id="semComentarios" style="display:none; text-align:center; padding:24px 0; color:#94a3b8; font-size:.88rem;">
+              <i class="bi bi-chat" style="font-size:2rem; color:#cbd5e1;"></i>
+              <div class="mt-2">Nenhum comentário ainda. Seja o primeiro!</div>
+            </div>
+          </div>
+          <!-- ─────────────────────────────────────────────────────── -->
 
           <div style="height:32px;"></div>
         </div>
@@ -190,7 +262,7 @@
   <script src="../assets/js/detalhes.js"></script>
   <script src="../assets/js/maps.js"></script>
   <script src="../assets/js/maps-edit-detalhe.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsds5wnst1kYPker-1-9bu1fej6KcSRi4&libraries=places&language=pt-BR&callback=initMapsDetalhes" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJDXcLhGd99ryVpWwvkVpeFaKuzDWbvwI&libraries=places&language=pt-BR&callback=initMapsDetalhes" async defer></script>
 
   <!-- Modal: Editar Roteiro nos Detalhes -->
   <div class="modal fade" id="modalEditarDetalhe" tabindex="-1">

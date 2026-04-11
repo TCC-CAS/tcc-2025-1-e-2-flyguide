@@ -57,10 +57,72 @@
           <div class="alert auth-alert mt-3" data-alerta-auth role="alert"></div>
 
           <div class="auth-footer">
-            <a href="#" onclick="alert('Fluxo de recuperação ainda irá ser implementado'); return false;">Esqueceu a senha?</a>
+            <a href="#" id="linkEsqueceuSenha">Esqueceu a senha?</a>
             <a href="cadastro.html">Não tem conta? <span style="color:#0f172a;">Criar</span></a>
           </div>
         </form>
+
+        <!-- ── ETAPA 1: Informe o e-mail ──────────────────────────── -->
+        <div id="telaEsqueceuEmail" style="display:none;">
+          <div class="mb-4">
+            <h2 class="auth-title" style="font-size:1.2rem;">Recuperar senha</h2>
+            <div class="auth-subtitle">Informe seu e-mail e enviaremos um código.</div>
+          </div>
+          <div class="auth-field mb-3">
+            <label for="emailRecuperar">E-mail</label>
+            <div class="input-group auth-input">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input id="emailRecuperar" type="email" class="form-control" placeholder="voce@exemplo.com" autocomplete="email">
+            </div>
+            <div class="invalid-feedback"></div>
+          </div>
+          <button id="btnSolicitarOtp" class="btn btn-primary auth-btn auth-btn-primary w-100" type="button">
+            Enviar código
+          </button>
+          <div class="alert auth-alert mt-3" id="alertaRecuperar" role="alert"></div>
+          <div class="auth-footer">
+            <a href="#" id="linkVoltarLogin">← Voltar ao login</a>
+          </div>
+        </div>
+
+        <!-- ── ETAPA 2: Código OTP + nova senha ───────────────────── -->
+        <div id="telaResetSenha" style="display:none;">
+          <div class="mb-4">
+            <h2 class="auth-title" style="font-size:1.2rem;">Redefinir senha</h2>
+            <div class="auth-subtitle" id="subtituloReset">Digite o código que enviamos e escolha uma nova senha.</div>
+          </div>
+          <div class="auth-field mb-3">
+            <label for="codigoReset">Código</label>
+            <div class="input-group auth-input">
+              <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+              <input id="codigoReset" type="text" class="form-control" placeholder="000000" maxlength="6" inputmode="numeric">
+            </div>
+            <div class="invalid-feedback"></div>
+          </div>
+          <div class="auth-field mb-3">
+            <label for="novaSenha">Nova senha</label>
+            <div class="input-group auth-input">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input id="novaSenha" type="password" class="form-control" placeholder="Mínimo 8 caracteres">
+            </div>
+            <div class="invalid-feedback"></div>
+          </div>
+          <div class="auth-field mb-3">
+            <label for="confirmarNovaSenha">Confirmar nova senha</label>
+            <div class="input-group auth-input">
+              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              <input id="confirmarNovaSenha" type="password" class="form-control" placeholder="Repita a nova senha">
+            </div>
+            <div class="invalid-feedback"></div>
+          </div>
+          <button id="btnResetarSenha" class="btn btn-primary auth-btn auth-btn-primary w-100" type="button">
+            Redefinir senha
+          </button>
+          <div class="alert auth-alert mt-3" id="alertaReset" role="alert"></div>
+          <div class="auth-footer">
+            <a href="#" id="linkVoltarEmail">← Voltar</a>
+          </div>
+        </div>
       </div>
     </div>
   </main>

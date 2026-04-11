@@ -81,7 +81,21 @@
               </div>
             </div>
             <div class="trip-footer">
-              <div><i class="bi bi-calendar-event me-1" style="color:#f97316;font-size:.85rem;"></i>${formatarPeriodo(r.dataInicio, r.dataFim)}</div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div><i class="bi bi-calendar-event me-1" style="color:#f97316;font-size:.85rem;"></i>${formatarPeriodo(r.dataInicio, r.dataFim)}</div>
+                <span style="display:flex;align-items:center;gap:4px;font-size:.82rem;color:#94a3b8;">
+                  <i class="bi bi-heart-fill" style="color:#f97316;"></i>${r.totalLikes || 0}
+                </span>
+                <span style="display:flex;align-items:center;gap:4px;font-size:.82rem;color:#94a3b8;">
+                  <i class="bi bi-chat-fill" style="color:#f97316;"></i>${r.totalComentarios || 0}
+                </span>
+                ${r.visibilidadeRoteiro === "PUBLIC" && r.mediaAvaliacao > 0 ? `
+                <span style="display:flex;align-items:center;gap:3px;font-size:.82rem;">
+                  <i class="bi bi-star-fill" style="color:#facc15;"></i>
+                  <span style="color:#facc15;font-weight:600;">${r.mediaAvaliacao.toFixed(1)}</span>
+                  <span style="color:#94a3b8;">(${r.totalAvaliacoes || 0})</span>
+                </span>` : ""}
+              </div>
               <div class="d-flex gap-3 align-items-center">
                 <button class="btn btn-link p-0 fw-bold" style="color:#3b82f6;font-size:.85rem;"
                         data-editar-roteiro="${r.idRoteiro}" title="Editar">
@@ -279,13 +293,43 @@
       const isPublic    = document.getElementById("itPublic")?.checked;
       const idImagem    = document.getElementById("itImagem")?.value;
       const erroEl      = document.getElementById("criarRoteiroErro");
+      const btn         = document.getElementById("btnAvancar");
 
-      if (!titulo || !cidade) {
-        erroEl.textContent = "Preencha pelo menos o Título e o Destino.";
+      if (!titulo) {
+        erroEl.textContent = "Preencha pelo menos o Título do Roteiro.";
         erroEl.style.display = "";
         erroEl.scrollIntoView({ behavior: "smooth", block: "center" });
         return;
       }
+
+      // Validação de linguagem inapropriada
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Verificando...`;
+
+      const textoParaValidar = [titulo, observacoes].filter(Boolean).join(" ");
+      try {
+        const resVal = await fetch(`${URL_API_BASE}/validar/texto`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto: textoParaValidar })
+        });
+        if (resVal.ok) {
+          const val = await resVal.json();
+          if (!val.valido) {
+            erroEl.textContent = "O título ou descrição contém linguagem inapropriada. Por favor, revise.";
+            erroEl.style.display = "";
+            erroEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            btn.disabled = false;
+            btn.innerHTML = `Avançar <i class="bi bi-arrow-right ms-1"></i>`;
+            return;
+          }
+        }
+      } catch (_) {
+        // Se a validação falhar, continua normalmente
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `Avançar <i class="bi bi-arrow-right ms-1"></i>`;
       erroEl.style.display = "none";
 
       const payload = {
@@ -301,7 +345,6 @@
         idImagem:    idImagem ? parseInt(idImagem) : null,
       };
 
-      const btn = document.getElementById("btnAvancar");
       btn.disabled  = true;
       btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Salvando...`;
 
