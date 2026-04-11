@@ -11,4 +11,6 @@ public interface RoteiroComentarioRepository extends JpaRepository<RoteiroComent
     List<RoteiroComentario> findByRoteiro_IdRoteiroOrderByCriadoEmDesc(Long idRoteiro);
 
     long countByRoteiro_IdRoteiro(Long idRoteiro);
+
+    void deleteByRoteiro_IdRoteiro(Long idRoteiro);
 }

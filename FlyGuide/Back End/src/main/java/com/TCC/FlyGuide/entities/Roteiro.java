@@ -42,6 +42,8 @@ public class Roteiro implements Serializable {
 
     private String observacoes;
 
+    private Long idRoteiroOrigem;
+
     @Column(updatable = false)
     private LocalDateTime dataCriacao;
 
@@ -105,6 +107,9 @@ public class Roteiro implements Serializable {
 
     public LocalDateTime getDataCriacao()                   { return dataCriacao; }
     public void setDataCriacao(LocalDateTime dataCriacao)   { this.dataCriacao = dataCriacao; }
+
+    public Long getIdRoteiroOrigem()                        { return idRoteiroOrigem; }
+    public void setIdRoteiroOrigem(Long idRoteiroOrigem)    { this.idRoteiroOrigem = idRoteiroOrigem; }
 
     @Override
     public int hashCode() {
