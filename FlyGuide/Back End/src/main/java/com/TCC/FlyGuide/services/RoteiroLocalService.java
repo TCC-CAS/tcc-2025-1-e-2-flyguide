@@ -32,19 +32,14 @@ public class RoteiroLocalService {
     private LocalRepository localRepository;
 
     public List<RoteiroLocalDTO> findByRoteiro(Long idRoteiro) {
-
         roteiroRepository.findById(idRoteiro)
                 .orElseThrow(() -> new ResourceNotFoundException(idRoteiro));
 
         List<RoteiroLocal> list = roteiroLocalRepository.findByRoteiro_IdRoteiro(idRoteiro);
-
-        return list.stream()
-                .map(RoteiroLocalDTO::new)
-                .collect(Collectors.toList());
+        return list.stream().map(RoteiroLocalDTO::new).collect(Collectors.toList());
     }
 
     public RoteiroLocalDTO insert(Long idRoteiro, RoteiroLocalDTO dto) {
-
         if (dto.getIdLocal() == null) {
             throw new DatabaseException("idLocal é obrigatório para vincular um Local ao Roteiro.");
         }
@@ -65,13 +60,11 @@ public class RoteiroLocalService {
         RoteiroLocal entity = new RoteiroLocal();
         entity.setRoteiro(roteiro);
         entity.setLocal(local);
-
         entity.setStatus(dto.getStatus());
         entity.setObservacoes(dto.getObservacoes());
         entity.setDia(dto.getDia());
         entity.setOrdem(dto.getOrdem());
         entity.setHorario(dto.getHorario());
-
         entity.setCriadoEm(LocalDateTime.now());
 
         entity = roteiroLocalRepository.save(entity);
@@ -79,12 +72,10 @@ public class RoteiroLocalService {
     }
 
     public RoteiroLocalDTO update(Long idRoteiro, Long idLocal, RoteiroLocalDTO dto) {
-
         RoteiroLocal entity = roteiroLocalRepository
                 .findByRoteiro_IdRoteiroAndLocal_IdLocal(idRoteiro, idLocal)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Vínculo não encontrado para idRoteiro=" + idRoteiro + " e idLocal=" + idLocal
-                ));
+                        "Vínculo não encontrado para idRoteiro=" + idRoteiro + " e idLocal=" + idLocal));
 
         entity.setStatus(dto.getStatus());
         entity.setObservacoes(dto.getObservacoes());
@@ -101,11 +92,9 @@ public class RoteiroLocalService {
             RoteiroLocal entity = roteiroLocalRepository
                     .findByRoteiro_IdRoteiroAndLocal_IdLocal(idRoteiro, idLocal)
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Vínculo não encontrado para idRoteiro=" + idRoteiro + " e idLocal=" + idLocal
-                    ));
+                            "Vínculo não encontrado para idRoteiro=" + idRoteiro + " e idLocal=" + idLocal));
 
             roteiroLocalRepository.delete(entity);
-
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException(e.getMessage());
         }
