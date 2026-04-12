@@ -1,6 +1,7 @@
 package com.TCC.FlyGuide.services;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import com.TCC.FlyGuide.DTO.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,8 @@ public class UserService {
         user.setEndereco(dto.getEndereco());
         user.setCidade(dto.getCidade());
         user.setPais(dto.getPais());
-        user.setTipoConta(dto.getTipoConta());
+        user.setTipoConta("TRIAL");
+        user.setDataExpiracaoTrial(LocalDate.now().plusDays(30));
         user.setDataCadastro(LocalDate.now());
 
         user = userRepository.save(user);
@@ -302,6 +304,40 @@ public class UserService {
 
         user.setTipoConta("PREMIUM");
         userRepository.save(user);
+    }
+
+    /**
+     * Retorna o status do trial gratuito de um usuário PJ.
+     * Aplica expiração lazy: se os 30 dias passaram e a conta ainda está como TRIAL,
+     * atualiza para FREE automaticamente neste momento.
+     */
+    @Transactional
+    public TrialStatusDTO getTrialStatus(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(userId));
+
+        if (!"PJ".equalsIgnoreCase(user.getTipoPessoa())) {
+            throw new DatabaseException("Trial gratuito disponível apenas para Pessoa Jurídica.");
+        }
+
+        LocalDate hoje = LocalDate.now();
+        LocalDate expiracao = user.getDataExpiracaoTrial();
+
+        if (expiracao == null) {
+            return new TrialStatusDTO(false, true, 0, null, user.getTipoConta());
+        }
+
+        boolean expirado = hoje.isAfter(expiracao);
+        int diasRestantes = expirado ? 0 : (int) ChronoUnit.DAYS.between(hoje, expiracao);
+        boolean emTrial = "TRIAL".equalsIgnoreCase(user.getTipoConta()) && !expirado;
+
+        // Lazy expiration: trial acabou mas conta ainda estava como TRIAL → vira FREE
+        if (expirado && "TRIAL".equalsIgnoreCase(user.getTipoConta())) {
+            user.setTipoConta("FREE");
+            userRepository.save(user);
+        }
+
+        return new TrialStatusDTO(emTrial, expirado, diasRestantes, expiracao, user.getTipoConta());
     }
 
     @Transactional

@@ -39,12 +39,17 @@ public class User implements Serializable {
 
     private String tipoConta;
 
+    /**
+     * Preenchido apenas para PJ — data em que o trial gratuito de 30 dias expira.
+     */
+    private LocalDate dataExpiracaoTrial;
+
 
     public User() {
     }
 
     public User(Long idUsuario, String email, String senha, String tipoPessoa, String cep, String endereco, String cidade,
-                String pais, LocalDate dataCadastro, String tipoConta) {
+                String pais, LocalDate dataCadastro, String tipoConta, LocalDate dataExpiracaoTrial) {
         super();
         this.idUsuario = idUsuario;
         this.email = email;
@@ -56,6 +61,7 @@ public class User implements Serializable {
         this.pais = pais;
         this.dataCadastro = dataCadastro;
         this.tipoConta = tipoConta;
+        this.dataExpiracaoTrial = dataExpiracaoTrial;
     }
 
     public Long getIdUsuario() {
@@ -132,6 +138,13 @@ public class User implements Serializable {
         this.tipoConta = tipoConta;
     }
 
+    public LocalDate getDataExpiracaoTrial() {
+        return dataExpiracaoTrial;
+    }
+
+    public void setDataExpiracaoTrial(LocalDate dataExpiracaoTrial) {
+        this.dataExpiracaoTrial = dataExpiracaoTrial;
+    }
 
     @Override
     public int hashCode() {
