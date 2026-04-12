@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import com.TCC.FlyGuide.DTO.*;
+import com.TCC.FlyGuide.DTO.TrialStatusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -98,5 +99,25 @@ public class UserResource {
     public ResponseEntity<UserCompleteDTO> findCompletoById(@PathVariable Long id) {
         UserCompleteDTO dto = service.findCompletoById(id);
         return ResponseEntity.ok().body(dto);
+    }
+
+    /**
+     * Retorna o status do trial gratuito de um usuário PJ.
+     * Aplica expiração automaticamente se os 30 dias já passaram.
+     *
+     * Uso no frontend: chamar após login para decidir se libera ou bloqueia o acesso.
+     *
+     * Resposta:
+     * {
+     *   "emTrial": true/false,
+     *   "expirado": true/false,
+     *   "diasRestantes": 25,
+     *   "dataExpiracao": "2026-05-12",
+     *   "tipoConta": "TRIAL" | "FREE" | "PREMIUM"
+     * }
+     */
+    @GetMapping(value = "/trial-status/{id}")
+    public ResponseEntity<TrialStatusDTO> trialStatus(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getTrialStatus(id));
     }
 }
