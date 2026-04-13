@@ -26,6 +26,9 @@ public class RoteiroAvaliacao implements Serializable {
     @Column(nullable = false)
     private Integer nota; // 1 a 5
 
+    @Column(length = 1000)
+    private String texto; // comentário opcional
+
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
 
@@ -42,6 +45,9 @@ public class RoteiroAvaliacao implements Serializable {
 
     public Integer getNota()                                { return nota; }
     public void setNota(Integer nota)                       { this.nota = nota; }
+
+    public String getTexto()                                { return texto; }
+    public void setTexto(String texto)                      { this.texto = texto; }
 
     public LocalDateTime getCriadoEm()                      { return criadoEm; }
     public void setCriadoEm(LocalDateTime criadoEm)         { this.criadoEm = criadoEm; }

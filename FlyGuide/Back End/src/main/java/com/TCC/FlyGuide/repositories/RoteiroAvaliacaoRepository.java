@@ -1,5 +1,6 @@
 package com.TCC.FlyGuide.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,8 @@ import com.TCC.FlyGuide.entities.RoteiroAvaliacao;
 public interface RoteiroAvaliacaoRepository extends JpaRepository<RoteiroAvaliacao, Long> {
 
     Optional<RoteiroAvaliacao> findByRoteiro_IdRoteiroAndUsuario_IdUsuario(Long idRoteiro, Long idUsuario);
+
+    List<RoteiroAvaliacao> findByRoteiro_IdRoteiroOrderByCriadoEmDesc(Long idRoteiro);
 
     @Query("SELECT AVG(a.nota) FROM RoteiroAvaliacao a WHERE a.roteiro.idRoteiro = :idRoteiro")
     Double mediaByRoteiro(@Param("idRoteiro") Long idRoteiro);
