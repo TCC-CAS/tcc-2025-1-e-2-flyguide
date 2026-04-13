@@ -19,8 +19,11 @@ import java.math.BigDecimal;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.TCC.FlyGuide.DTO.RoteiroDTO;
-import com.TCC.FlyGuide.services.RoteiroService;
 import com.TCC.FlyGuide.DTO.RoteiroCompletoDTO;
+import com.TCC.FlyGuide.services.RoteiroService;
+import com.TCC.FlyGuide.services.PdfService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping(value = "/roteiros")
@@ -28,6 +31,9 @@ public class RoteiroResource {
 
     @Autowired
     private RoteiroService service;
+
+    @Autowired
+    private PdfService pdfService;
 
     @GetMapping
     public ResponseEntity<List<RoteiroDTO>> findAll() {
@@ -106,5 +112,17 @@ public class RoteiroResource {
     public ResponseEntity<RoteiroCompletoDTO> findCompletoById(@PathVariable Long id) {
         RoteiroCompletoDTO dto = service.findCompletoById(id);
         return ResponseEntity.ok().body(dto);
+    }
+
+    @GetMapping(value = "/{id}/exportar", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> exportarPdf(@PathVariable Long id) throws Exception {
+        byte[] pdf = pdfService.gerarPdf(id);
+
+        String nomeArquivo = "roteiro-" + id + ".pdf";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nomeArquivo + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }

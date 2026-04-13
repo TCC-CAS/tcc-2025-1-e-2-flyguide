@@ -17,6 +17,8 @@ public interface RoteiroLocalRepository extends JpaRepository<RoteiroLocal, Long
     @Transactional
     void deleteByRoteiro_IdRoteiro(Long idRoteiro);
 
+    long countByRoteiro_IdRoteiro(Long idRoteiro);
+
     boolean existsByRoteiro_IdRoteiroAndLocal_IdLocal(Long idRoteiro, Long idLocal);
 
     Optional<RoteiroLocal> findByRoteiro_IdRoteiroAndLocal_IdLocal(Long idRoteiro, Long idLocal);

@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.TCC.FlyGuide.DTO.RoteiroLocalDTO;
 import com.TCC.FlyGuide.entities.Local;
@@ -49,6 +51,12 @@ public class RoteiroLocalService {
 
         Local local = localRepository.findById(dto.getIdLocal())
                 .orElseThrow(() -> new ResourceNotFoundException(dto.getIdLocal()));
+
+        long totalLocais = roteiroLocalRepository.countByRoteiro_IdRoteiro(idRoteiro);
+        if (totalLocais >= 15) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Limite de 15 locais por roteiro atingido.");
+        }
 
         boolean jaExiste = roteiroLocalRepository
                 .existsByRoteiro_IdRoteiroAndLocal_IdLocal(idRoteiro, dto.getIdLocal());
