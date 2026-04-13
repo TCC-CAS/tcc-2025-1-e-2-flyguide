@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,17 +49,20 @@ public class RoteiroResource {
         return ResponseEntity.ok().body(dto);
     }
 
-    // Feed: roteiros públicos com filtros e ordenação opcionais
+    // Feed: roteiros públicos com filtros, ordenação e paginação
     @GetMapping(value = "/publicos")
-    public ResponseEntity<List<RoteiroDTO>> findPublicos(
+    public ResponseEntity<Page<RoteiroDTO>> findPublicos(
             @RequestParam(required = false) String cidade,
             @RequestParam(required = false) String tipoRoteiro,
             @RequestParam(required = false) BigDecimal orcamentoMax,
             @RequestParam(required = false, defaultValue = "recente") String ordenacao,
             @RequestParam(required = false) String busca,
-            @RequestParam(required = false) Integer diasMax) {
-        List<RoteiroDTO> list = service.findPublicos(cidade, tipoRoteiro, orcamentoMax, ordenacao, busca, diasMax);
-        return ResponseEntity.ok().body(list);
+            @RequestParam(required = false) Integer diasMax,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<RoteiroDTO> result = service.findPublicos(cidade, tipoRoteiro, orcamentoMax, ordenacao, busca, diasMax,
+                PageRequest.of(page, size));
+        return ResponseEntity.ok(result);
     }
 
     // Meus Roteiros: lista por usuário

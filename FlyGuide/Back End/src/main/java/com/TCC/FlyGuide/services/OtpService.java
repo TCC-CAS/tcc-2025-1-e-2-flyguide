@@ -32,11 +32,23 @@ public class OtpService {
     @Autowired
     private EmailService emailService;
 
+    private void verificarCooldown(String email, String tipo) {
+        LocalDateTime limiteExpiracao = LocalDateTime.now().plusMinutes(EXPIRACAO_MINUTOS - 1);
+        otpRepository.findTopByEmailAndTipoAndUsadoFalseOrderByExpiracaoDesc(email, tipo)
+                .ifPresent(otp -> {
+                    if (otp.getExpiracao().isAfter(limiteExpiracao)) {
+                        throw new UnauthorizedException("Aguarde pelo menos 1 minuto antes de solicitar um novo código.");
+                    }
+                });
+    }
+
     public void solicitarResetSenha(String email) {
         String emailNormalizado = email.trim().toLowerCase();
 
         userRepository.findByEmail(emailNormalizado)
                 .orElseThrow(() -> new ResourceNotFoundException("Nenhuma conta encontrada com este e-mail"));
+
+        verificarCooldown(emailNormalizado, TIPO_RESET_SENHA);
 
         String codigo = gerarCodigo();
         LocalDateTime expiracao = LocalDateTime.now().plusMinutes(EXPIRACAO_MINUTOS);
@@ -73,6 +85,7 @@ public class OtpService {
     }
 
     public void gerarOtpLogin(String email) {
+        verificarCooldown(email, TIPO_LOGIN);
         String codigo = gerarCodigo();
         LocalDateTime expiracao = LocalDateTime.now().plusMinutes(EXPIRACAO_MINUTOS);
         OtpCode otp = new OtpCode(email, codigo, expiracao, TIPO_LOGIN);

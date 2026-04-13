@@ -3,6 +3,8 @@ package com.TCC.FlyGuide.repositories;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,15 +26,16 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
             "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax) " +
             "ORDER BY r.dataCriacao DESC")
-    List<Roteiro> findPublicosComFiltros(
+    Page<Roteiro> findPublicosComFiltros(
             @Param("cidade") String cidade,
             @Param("tipoRoteiro") String tipoRoteiro,
             @Param("orcamentoMax") BigDecimal orcamentoMax,
             @Param("busca") String busca,
-            @Param("diasMax") Integer diasMax
+            @Param("diasMax") Integer diasMax,
+            Pageable pageable
     );
 
-    @Query("SELECT r FROM Roteiro r LEFT JOIN RoteiroAvaliacao a ON a.roteiro = r " +
+    @Query(value = "SELECT r FROM Roteiro r LEFT JOIN RoteiroAvaliacao a ON a.roteiro = r " +
             "WHERE r.visibilidadeRoteiro = 'Público' " +
             "AND (:cidade IS NULL OR LOWER(r.cidade) LIKE LOWER(CONCAT('%', :cidade, '%'))) " +
             "AND (:tipoRoteiro IS NULL OR r.tipoRoteiro = :tipoRoteiro) " +
@@ -40,13 +43,20 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
             "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax) " +
             "GROUP BY r " +
-            "ORDER BY AVG(COALESCE(a.nota, 0)) DESC")
-    List<Roteiro> findPublicosOrdenadosPorCurtidas(
+            "ORDER BY AVG(COALESCE(a.nota, 0)) DESC",
+           countQuery = "SELECT COUNT(DISTINCT r) FROM Roteiro r WHERE r.visibilidadeRoteiro = 'Público' " +
+            "AND (:cidade IS NULL OR LOWER(r.cidade) LIKE LOWER(CONCAT('%', :cidade, '%'))) " +
+            "AND (:tipoRoteiro IS NULL OR r.tipoRoteiro = :tipoRoteiro) " +
+            "AND (:orcamentoMax IS NULL OR r.orcamento <= :orcamentoMax) " +
+            "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
+            "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax)")
+    Page<Roteiro> findPublicosOrdenadosPorCurtidas(
             @Param("cidade") String cidade,
             @Param("tipoRoteiro") String tipoRoteiro,
             @Param("orcamentoMax") BigDecimal orcamentoMax,
             @Param("busca") String busca,
-            @Param("diasMax") Integer diasMax
+            @Param("diasMax") Integer diasMax,
+            Pageable pageable
     );
 
     @Query("SELECT r FROM Roteiro r WHERE r.visibilidadeRoteiro = 'Público' " +
@@ -56,12 +66,13 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
             "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax) " +
             "ORDER BY r.orcamento ASC")
-    List<Roteiro> findPublicosOrcamentoAsc(
+    Page<Roteiro> findPublicosOrcamentoAsc(
             @Param("cidade") String cidade,
             @Param("tipoRoteiro") String tipoRoteiro,
             @Param("orcamentoMax") BigDecimal orcamentoMax,
             @Param("busca") String busca,
-            @Param("diasMax") Integer diasMax
+            @Param("diasMax") Integer diasMax,
+            Pageable pageable
     );
 
     @Query("SELECT r FROM Roteiro r WHERE r.visibilidadeRoteiro = 'Público' " +
@@ -71,12 +82,13 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
             "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax) " +
             "ORDER BY r.orcamento DESC")
-    List<Roteiro> findPublicosOrcamentoDesc(
+    Page<Roteiro> findPublicosOrcamentoDesc(
             @Param("cidade") String cidade,
             @Param("tipoRoteiro") String tipoRoteiro,
             @Param("orcamentoMax") BigDecimal orcamentoMax,
             @Param("busca") String busca,
-            @Param("diasMax") Integer diasMax
+            @Param("diasMax") Integer diasMax,
+            Pageable pageable
     );
 
     @Query("SELECT r FROM Roteiro r WHERE r.visibilidadeRoteiro = 'Público' " +
@@ -86,12 +98,13 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
             "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax) " +
             "ORDER BY r.diasTotais ASC")
-    List<Roteiro> findPublicosDuracaoAsc(
+    Page<Roteiro> findPublicosDuracaoAsc(
             @Param("cidade") String cidade,
             @Param("tipoRoteiro") String tipoRoteiro,
             @Param("orcamentoMax") BigDecimal orcamentoMax,
             @Param("busca") String busca,
-            @Param("diasMax") Integer diasMax
+            @Param("diasMax") Integer diasMax,
+            Pageable pageable
     );
 
     @Query("SELECT r FROM Roteiro r WHERE r.visibilidadeRoteiro = 'Público' " +
@@ -101,11 +114,12 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
             "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax) " +
             "ORDER BY r.diasTotais DESC")
-    List<Roteiro> findPublicosDuracaoDesc(
+    Page<Roteiro> findPublicosDuracaoDesc(
             @Param("cidade") String cidade,
             @Param("tipoRoteiro") String tipoRoteiro,
             @Param("orcamentoMax") BigDecimal orcamentoMax,
             @Param("busca") String busca,
-            @Param("diasMax") Integer diasMax
+            @Param("diasMax") Integer diasMax,
+            Pageable pageable
     );
 }

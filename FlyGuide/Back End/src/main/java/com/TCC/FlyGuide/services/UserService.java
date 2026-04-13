@@ -2,8 +2,10 @@ package com.TCC.FlyGuide.services;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import com.TCC.FlyGuide.DTO.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -338,6 +340,15 @@ public class UserService {
         }
 
         return new TrialStatusDTO(emTrial, expirado, diasRestantes, expiracao, user.getTipoConta());
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    @Transactional
+    public void expirarTrialsVencidos() {
+        List<User> vencidos = userRepository
+                .findByTipoContaIgnoreCaseAndDataExpiracaoTrialBefore("TRIAL", LocalDate.now());
+        vencidos.forEach(u -> u.setTipoConta("FREE"));
+        userRepository.saveAll(vencidos);
     }
 
     @Transactional

@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.TCC.FlyGuide.DTO.RoteiroCompletoDTO;
 import com.TCC.FlyGuide.DTO.RoteiroLocalDTO;
 import com.TCC.FlyGuide.entities.Imagem;
@@ -59,7 +62,6 @@ public class RoteiroService {
             Double media = avaliacaoRepository.mediaByRoteiro(r.getIdRoteiro());
             dto.setMediaAvaliacao(media != null ? Math.round(media * 10.0) / 10.0 : 0.0);
             dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
-            dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
             return dto;
         }).collect(Collectors.toList());
     }
@@ -78,37 +80,35 @@ public class RoteiroService {
             Double media = avaliacaoRepository.mediaByRoteiro(r.getIdRoteiro());
             dto.setMediaAvaliacao(media != null ? Math.round(media * 10.0) / 10.0 : 0.0);
             dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
-            dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
             return dto;
         }).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<RoteiroDTO> findPublicos(String cidade, String tipoRoteiro,
+    public Page<RoteiroDTO> findPublicos(String cidade, String tipoRoteiro,
                                          BigDecimal orcamentoMax, String ordenacao,
-                                         String busca, Integer diasMax) {
+                                         String busca, Integer diasMax, Pageable pageable) {
         String cidadeFiltro = (cidade != null && !cidade.isBlank()) ? cidade : null;
         String tipoFiltro   = (tipoRoteiro != null && !tipoRoteiro.isBlank()) ? tipoRoteiro : null;
         String buscaFiltro  = (busca != null && !busca.isBlank()) ? busca : null;
 
-        List<Roteiro> list;
+        Page<Roteiro> page;
         switch (ordenacao == null ? "recente" : ordenacao.toLowerCase()) {
-            case "curtidos"       -> list = roteiroRepository.findPublicosOrdenadosPorCurtidas(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
-            case "orcamento_asc"  -> list = roteiroRepository.findPublicosOrcamentoAsc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
-            case "orcamento_desc" -> list = roteiroRepository.findPublicosOrcamentoDesc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
-            case "duracao_asc"    -> list = roteiroRepository.findPublicosDuracaoAsc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
-            case "duracao_desc"   -> list = roteiroRepository.findPublicosDuracaoDesc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
-            default               -> list = roteiroRepository.findPublicosComFiltros(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax);
+            case "curtidos"       -> page = roteiroRepository.findPublicosOrdenadosPorCurtidas(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax, pageable);
+            case "orcamento_asc"  -> page = roteiroRepository.findPublicosOrcamentoAsc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax, pageable);
+            case "orcamento_desc" -> page = roteiroRepository.findPublicosOrcamentoDesc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax, pageable);
+            case "duracao_asc"    -> page = roteiroRepository.findPublicosDuracaoAsc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax, pageable);
+            case "duracao_desc"   -> page = roteiroRepository.findPublicosDuracaoDesc(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax, pageable);
+            default               -> page = roteiroRepository.findPublicosComFiltros(cidadeFiltro, tipoFiltro, orcamentoMax, buscaFiltro, diasMax, pageable);
         }
 
-        return list.stream().map(r -> {
+        return page.map(r -> {
             RoteiroDTO dto = new RoteiroDTO(r);
             Double media = avaliacaoRepository.mediaByRoteiro(r.getIdRoteiro());
             dto.setMediaAvaliacao(media != null ? Math.round(media * 10.0) / 10.0 : 0.0);
             dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
-            dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
             return dto;
-        }).collect(Collectors.toList());
+        });
     }
 
     public RoteiroDTO insert(RoteiroDTO dto) {
@@ -130,6 +130,10 @@ public class RoteiroService {
 
     @Transactional
     public RoteiroDTO clonar(Long idRoteiro, Long idUsuario) {
+        if (roteiroRepository.existsByUsuario_IdUsuarioAndIdRoteiroOrigem(idUsuario, idRoteiro)) {
+            throw new UnauthorizedException("Você já clonou este roteiro.");
+        }
+
         Roteiro original = roteiroRepository.findById(idRoteiro)
                 .orElseThrow(() -> new ResourceNotFoundException(idRoteiro));
 
