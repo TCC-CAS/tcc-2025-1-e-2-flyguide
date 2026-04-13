@@ -32,7 +32,7 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             @Param("diasMax") Integer diasMax
     );
 
-    @Query("SELECT r FROM Roteiro r LEFT JOIN RoteiroLike l ON l.roteiro = r " +
+    @Query("SELECT r FROM Roteiro r LEFT JOIN RoteiroAvaliacao a ON a.roteiro = r " +
             "WHERE r.visibilidadeRoteiro = 'Público' " +
             "AND (:cidade IS NULL OR LOWER(r.cidade) LIKE LOWER(CONCAT('%', :cidade, '%'))) " +
             "AND (:tipoRoteiro IS NULL OR r.tipoRoteiro = :tipoRoteiro) " +
@@ -40,7 +40,7 @@ public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
             "AND (:busca IS NULL OR LOWER(r.titulo) LIKE LOWER(CONCAT('%', :busca, '%'))) " +
             "AND (:diasMax IS NULL OR r.diasTotais <= :diasMax) " +
             "GROUP BY r " +
-            "ORDER BY COUNT(l.idLike) DESC")
+            "ORDER BY AVG(COALESCE(a.nota, 0)) DESC")
     List<Roteiro> findPublicosOrdenadosPorCurtidas(
             @Param("cidade") String cidade,
             @Param("tipoRoteiro") String tipoRoteiro,

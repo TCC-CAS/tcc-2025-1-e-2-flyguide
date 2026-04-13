@@ -11,8 +11,7 @@ import com.TCC.FlyGuide.DTO.RoteiroLocalDTO;
 import com.TCC.FlyGuide.entities.Imagem;
 import com.TCC.FlyGuide.entities.RoteiroLocal;
 import com.TCC.FlyGuide.repositories.ImagemRepository;
-import com.TCC.FlyGuide.repositories.RoteiroComentarioRepository;
-import com.TCC.FlyGuide.repositories.RoteiroLikeRepository;
+import com.TCC.FlyGuide.repositories.ComentarioLikeRepository;
 import com.TCC.FlyGuide.repositories.RoteiroLocalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -47,10 +46,7 @@ public class RoteiroService {
     private RoteiroLocalRepository roteiroLocalRepository;
 
     @Autowired
-    private RoteiroLikeRepository likeRepository;
-
-    @Autowired
-    private RoteiroComentarioRepository comentarioRepository;
+    private ComentarioLikeRepository comentarioLikeRepository;
 
     @Autowired
     private com.TCC.FlyGuide.repositories.RoteiroAvaliacaoRepository avaliacaoRepository;
@@ -60,8 +56,6 @@ public class RoteiroService {
         List<Roteiro> list = roteiroRepository.findAll();
         return list.stream().map(r -> {
             RoteiroDTO dto = new RoteiroDTO(r);
-            dto.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
-            dto.setTotalComentarios(comentarioRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
             Double media = avaliacaoRepository.mediaByRoteiro(r.getIdRoteiro());
             dto.setMediaAvaliacao(media != null ? Math.round(media * 10.0) / 10.0 : 0.0);
             dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
@@ -81,8 +75,6 @@ public class RoteiroService {
         List<Roteiro> list = roteiroRepository.findByUsuario_IdUsuario(idUsuario);
         return list.stream().map(r -> {
             RoteiroDTO dto = new RoteiroDTO(r);
-            dto.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
-            dto.setTotalComentarios(comentarioRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
             Double media = avaliacaoRepository.mediaByRoteiro(r.getIdRoteiro());
             dto.setMediaAvaliacao(media != null ? Math.round(media * 10.0) / 10.0 : 0.0);
             dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
@@ -111,8 +103,6 @@ public class RoteiroService {
 
         return list.stream().map(r -> {
             RoteiroDTO dto = new RoteiroDTO(r);
-            dto.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
-            dto.setTotalComentarios(comentarioRepository.countByRoteiro_IdRoteiro(r.getIdRoteiro()));
             Double media = avaliacaoRepository.mediaByRoteiro(r.getIdRoteiro());
             dto.setMediaAvaliacao(media != null ? Math.round(media * 10.0) / 10.0 : 0.0);
             dto.setTotalAvaliacoes(avaliacaoRepository.totalByRoteiro(r.getIdRoteiro()));
@@ -195,9 +185,8 @@ public class RoteiroService {
                 throw new UnauthorizedException("Você não tem permissão para excluir este roteiro.");
             }
 
+            comentarioLikeRepository.deleteByAvaliacao_Roteiro_IdRoteiro(id);
             avaliacaoRepository.deleteByRoteiro_IdRoteiro(id);
-            likeRepository.deleteByRoteiro_IdRoteiro(id);
-            comentarioRepository.deleteByRoteiro_IdRoteiro(id);
             roteiroLocalRepository.deleteByRoteiro_IdRoteiro(id);
             roteiroRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
@@ -255,8 +244,6 @@ public class RoteiroService {
                 .collect(Collectors.toList());
 
         RoteiroDTO roteiroDTO = new RoteiroDTO(roteiro);
-        roteiroDTO.setTotalLikes(likeRepository.countByRoteiro_IdRoteiro(idRoteiro));
-
         return new RoteiroCompletoDTO(roteiroDTO, locaisDTO);
     }
 }
