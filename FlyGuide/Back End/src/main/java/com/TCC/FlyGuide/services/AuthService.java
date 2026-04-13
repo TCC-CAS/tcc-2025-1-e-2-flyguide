@@ -13,6 +13,7 @@ import com.TCC.FlyGuide.services.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.TCC.FlyGuide.services.JwtService;
 
 @Service
 public class AuthService {
@@ -31,6 +32,9 @@ public class AuthService {
 
     @Autowired
     private OtpService otpService;
+
+    @Autowired
+    private JwtService jwtService;
 
     public void login(LoginRequestDTO req) {
         String email = req.getEmail() == null ? null : req.getEmail().trim().toLowerCase();
@@ -76,13 +80,16 @@ public class AuthService {
             }
         }
 
+        String token = jwtService.gerarToken(user.getIdUsuario());
+
         return new LoginResponseDTO(
                 user.getIdUsuario(),
                 user.getEmail(),
                 nomeExibicao,
                 user.getTipoConta(),
                 tipoPessoa,
-                dataCadastro
+                dataCadastro,
+                token
         );
     }
 }
