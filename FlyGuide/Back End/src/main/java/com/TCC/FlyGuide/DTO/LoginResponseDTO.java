@@ -8,16 +8,18 @@ public class LoginResponseDTO {
     private String tipoConta;
     private String tipoPessoa;     // "PF" ou "PJ"
     private String dataCadastro;
+    private String token;
 
     public LoginResponseDTO() {}
 
-    public LoginResponseDTO(Long id, String email, String nomeExibicao, String tipoConta, String tipoPessoa, String dataCadastro) {
+    public LoginResponseDTO(Long id, String email, String nomeExibicao, String tipoConta, String tipoPessoa, String dataCadastro, String token) {
         this.id = id;
         this.email = email;
         this.nomeExibicao = nomeExibicao;
         this.tipoConta = tipoConta;
         this.tipoPessoa = tipoPessoa;
         this.dataCadastro = dataCadastro;
+        this.token = token;
     }
 
     public Long getId() { return id; }
@@ -37,4 +39,7 @@ public class LoginResponseDTO {
 
     public String getDataCadastro() { return dataCadastro; }
     public void setDataCadastro(String dataCadastro) { this.dataCadastro = dataCadastro; }
+
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 }
