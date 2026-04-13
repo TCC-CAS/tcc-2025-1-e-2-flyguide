@@ -2,6 +2,7 @@ package com.TCC.FlyGuide.entities;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,11 @@ public class User implements Serializable {
      * Preenchido apenas para PJ — data em que o trial gratuito de 30 dias expira.
      */
     private LocalDate dataExpiracaoTrial;
+
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private int tentativasFalhasLogin = 0;
+
+    private LocalDateTime bloqueadoAte;
 
 
     public User() {
@@ -144,6 +150,22 @@ public class User implements Serializable {
 
     public void setDataExpiracaoTrial(LocalDate dataExpiracaoTrial) {
         this.dataExpiracaoTrial = dataExpiracaoTrial;
+    }
+
+    public int getTentativasFalhasLogin() {
+        return tentativasFalhasLogin;
+    }
+
+    public void setTentativasFalhasLogin(int tentativasFalhasLogin) {
+        this.tentativasFalhasLogin = tentativasFalhasLogin;
+    }
+
+    public LocalDateTime getBloqueadoAte() {
+        return bloqueadoAte;
+    }
+
+    public void setBloqueadoAte(LocalDateTime bloqueadoAte) {
+        this.bloqueadoAte = bloqueadoAte;
     }
 
     @Override

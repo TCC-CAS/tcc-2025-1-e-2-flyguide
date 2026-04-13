@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.TCC.FlyGuide.services.JwtService;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AuthService {
 
@@ -36,6 +38,9 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
+    private static final int MAX_TENTATIVAS = 5;
+    private static final int BLOQUEIO_MINUTOS = 15;
+
     public void login(LoginRequestDTO req) {
         String email = req.getEmail() == null ? null : req.getEmail().trim().toLowerCase();
         String senha = req.getSenha();
@@ -43,13 +48,24 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UnauthorizedException("login ou senha invalida"));
 
-        if (user.getSenha() == null || senha == null) {
+        if (user.getBloqueadoAte() != null && LocalDateTime.now().isBefore(user.getBloqueadoAte())) {
+            throw new UnauthorizedException("Conta bloqueada temporariamente por " + BLOQUEIO_MINUTOS + " minutos. Tente novamente mais tarde.");
+        }
+
+        if (user.getSenha() == null || senha == null || !passwordEncoder.matches(senha, user.getSenha())) {
+            int tentativas = user.getTentativasFalhasLogin() + 1;
+            user.setTentativasFalhasLogin(tentativas);
+            if (tentativas >= MAX_TENTATIVAS) {
+                user.setBloqueadoAte(LocalDateTime.now().plusMinutes(BLOQUEIO_MINUTOS));
+                user.setTentativasFalhasLogin(0);
+            }
+            userRepository.save(user);
             throw new UnauthorizedException("login ou senha invalida");
         }
 
-        if (!passwordEncoder.matches(senha, user.getSenha())) {
-            throw new UnauthorizedException("login ou senha invalida");
-        }
+        user.setTentativasFalhasLogin(0);
+        user.setBloqueadoAte(null);
+        userRepository.save(user);
 
         otpService.gerarOtpLogin(email);
     }

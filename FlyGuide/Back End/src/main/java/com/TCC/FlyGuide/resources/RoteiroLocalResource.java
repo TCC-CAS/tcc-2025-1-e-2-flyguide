@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,10 @@ public class RoteiroLocalResource {
     @Autowired
     private RoteiroLocalService service;
 
+    private Long getUsuarioLogadoId() {
+        return (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
     @GetMapping
     public ResponseEntity<List<RoteiroLocalDTO>> findByRoteiro(@PathVariable Long idRoteiro) {
         List<RoteiroLocalDTO> list = service.findByRoteiro(idRoteiro);
@@ -33,7 +38,7 @@ public class RoteiroLocalResource {
 
     @PostMapping
     public ResponseEntity<RoteiroLocalDTO> insert(@PathVariable Long idRoteiro, @RequestBody RoteiroLocalDTO dto) {
-        RoteiroLocalDTO created = service.insert(idRoteiro, dto);
+        RoteiroLocalDTO created = service.insert(idRoteiro, dto, getUsuarioLogadoId());
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -49,13 +54,13 @@ public class RoteiroLocalResource {
             @PathVariable Long idRoteiro,
             @PathVariable Long idLocal,
             @RequestBody RoteiroLocalDTO dto) {
-        RoteiroLocalDTO updated = service.update(idRoteiro, idLocal, dto);
+        RoteiroLocalDTO updated = service.update(idRoteiro, idLocal, dto, getUsuarioLogadoId());
         return ResponseEntity.ok().body(updated);
     }
 
     @DeleteMapping(value = "/{idLocal}")
     public ResponseEntity<Void> delete(@PathVariable Long idRoteiro, @PathVariable Long idLocal) {
-        service.delete(idRoteiro, idLocal);
+        service.delete(idRoteiro, idLocal, getUsuarioLogadoId());
         return ResponseEntity.noContent().build();
     }
 }
