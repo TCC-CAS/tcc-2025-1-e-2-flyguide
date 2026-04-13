@@ -97,8 +97,8 @@ public class RoteiroResource {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @RequestParam Long idUsuario) {
+        service.delete(id, idUsuario);
         return ResponseEntity.noContent().build();
     }
 

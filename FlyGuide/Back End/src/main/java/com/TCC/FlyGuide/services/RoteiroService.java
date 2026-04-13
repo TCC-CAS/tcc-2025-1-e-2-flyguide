@@ -27,6 +27,7 @@ import com.TCC.FlyGuide.repositories.RoteiroRepository;
 import com.TCC.FlyGuide.repositories.UserRepository;
 import com.TCC.FlyGuide.services.exceptions.DatabaseException;
 import com.TCC.FlyGuide.services.exceptions.ResourceNotFoundException;
+import com.TCC.FlyGuide.services.exceptions.UnauthorizedException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -185,9 +186,15 @@ public class RoteiroService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, Long idUsuario) {
         try {
-            // Remove dependências antes de deletar o roteiro
+            Roteiro roteiro = roteiroRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException(id));
+
+            if (!roteiro.getUsuario().getIdUsuario().equals(idUsuario)) {
+                throw new UnauthorizedException("Você não tem permissão para excluir este roteiro.");
+            }
+
             avaliacaoRepository.deleteByRoteiro_IdRoteiro(id);
             likeRepository.deleteByRoteiro_IdRoteiro(id);
             comentarioRepository.deleteByRoteiro_IdRoteiro(id);
@@ -203,6 +210,11 @@ public class RoteiroService {
     public RoteiroDTO update(Long id, RoteiroDTO dto) {
         try {
             Roteiro entity = roteiroRepository.getReferenceById(id);
+
+            if (!entity.getUsuario().getIdUsuario().equals(dto.getIdUsuario())) {
+                throw new UnauthorizedException("Você não tem permissão para editar este roteiro.");
+            }
+
             updateData(entity, dto);
             entity = roteiroRepository.save(entity);
             return new RoteiroDTO(entity);
