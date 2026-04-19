@@ -25,73 +25,35 @@ public class AssinaturaPremium implements Serializable {
     @JoinColumn(name = "id_usuario", unique = true)
     private User usuario;
 
-    private String asaasCustomerId;
-    private String asaasSubscriptionId;
+    private String cartaoUltimos4;
+    private String cartaoBandeira;
 
-    /**
-     * Status possíveis: PENDING, ACTIVE, OVERDUE, CANCELLED
-     */
+    /** Status possíveis: ACTIVE, CANCELLED */
     private String status;
 
     private LocalDate dataInicio;
     private LocalDate proximoVencimento;
 
-    public AssinaturaPremium() {
-    }
+    public AssinaturaPremium() {}
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public User getUsuario() { return usuario; }
+    public void setUsuario(User usuario) { this.usuario = usuario; }
 
-    public User getUsuario() {
-        return usuario;
-    }
+    public String getCartaoUltimos4() { return cartaoUltimos4; }
+    public void setCartaoUltimos4(String cartaoUltimos4) { this.cartaoUltimos4 = cartaoUltimos4; }
 
-    public void setUsuario(User usuario) {
-        this.usuario = usuario;
-    }
+    public String getCartaoBandeira() { return cartaoBandeira; }
+    public void setCartaoBandeira(String cartaoBandeira) { this.cartaoBandeira = cartaoBandeira; }
 
-    public String getAsaasCustomerId() {
-        return asaasCustomerId;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setAsaasCustomerId(String asaasCustomerId) {
-        this.asaasCustomerId = asaasCustomerId;
-    }
+    public LocalDate getDataInicio() { return dataInicio; }
+    public void setDataInicio(LocalDate dataInicio) { this.dataInicio = dataInicio; }
 
-    public String getAsaasSubscriptionId() {
-        return asaasSubscriptionId;
-    }
-
-    public void setAsaasSubscriptionId(String asaasSubscriptionId) {
-        this.asaasSubscriptionId = asaasSubscriptionId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDate getDataInicio() {
-        return dataInicio;
-    }
-
-    public void setDataInicio(LocalDate dataInicio) {
-        this.dataInicio = dataInicio;
-    }
-
-    public LocalDate getProximoVencimento() {
-        return proximoVencimento;
-    }
-
-    public void setProximoVencimento(LocalDate proximoVencimento) {
-        this.proximoVencimento = proximoVencimento;
-    }
+    public LocalDate getProximoVencimento() { return proximoVencimento; }
+    public void setProximoVencimento(LocalDate proximoVencimento) { this.proximoVencimento = proximoVencimento; }
 }

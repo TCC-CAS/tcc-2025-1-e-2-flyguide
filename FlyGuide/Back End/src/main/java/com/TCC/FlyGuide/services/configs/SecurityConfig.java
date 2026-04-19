@@ -37,8 +37,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/roteiros/publicos").permitAll()
                 // Imagens de capa - publico
                 .requestMatchers(HttpMethod.GET, "/imagens").permitAll()
-                // Webhook do Asaas - autenticado pelo token proprio do webhook
-                .requestMatchers(HttpMethod.POST, "/assinatura/webhook").permitAll()
                 // Tudo mais exige token JWT valido
                 .anyRequest().authenticated()
             )

@@ -7,30 +7,22 @@ import com.TCC.FlyGuide.entities.AssinaturaPremium;
 public class AssinaturaStatusDTO {
 
     private String status;
+    private String cartaoBandeira;
+    private String cartaoUltimos4;
     private LocalDate dataInicio;
     private LocalDate proximoVencimento;
-    private String asaasSubscriptionId;
 
     public AssinaturaStatusDTO(AssinaturaPremium assinatura) {
         this.status = assinatura.getStatus();
+        this.cartaoBandeira = assinatura.getCartaoBandeira();
+        this.cartaoUltimos4 = assinatura.getCartaoUltimos4();
         this.dataInicio = assinatura.getDataInicio();
         this.proximoVencimento = assinatura.getProximoVencimento();
-        this.asaasSubscriptionId = assinatura.getAsaasSubscriptionId();
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public LocalDate getDataInicio() {
-        return dataInicio;
-    }
-
-    public LocalDate getProximoVencimento() {
-        return proximoVencimento;
-    }
-
-    public String getAsaasSubscriptionId() {
-        return asaasSubscriptionId;
-    }
+    public String getStatus() { return status; }
+    public String getCartaoBandeira() { return cartaoBandeira; }
+    public String getCartaoUltimos4() { return cartaoUltimos4; }
+    public LocalDate getDataInicio() { return dataInicio; }
+    public LocalDate getProximoVencimento() { return proximoVencimento; }
 }
