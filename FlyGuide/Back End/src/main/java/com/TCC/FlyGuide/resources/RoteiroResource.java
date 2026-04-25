@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -89,6 +90,13 @@ public class RoteiroResource {
     public ResponseEntity<RoteiroDTO> update(@PathVariable Long id, @RequestBody RoteiroDTO dto) {
         RoteiroDTO updated = service.update(id, dto);
         return ResponseEntity.ok().body(updated);
+    }
+
+    @PatchMapping(value = "/{id}/status")
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+        String novoStatus = body.get("statusRoteiro");
+        if (novoStatus != null) service.atualizarStatus(id, novoStatus);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/{id}/clonou")

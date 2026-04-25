@@ -2,6 +2,7 @@ package com.TCC.FlyGuide.resources;
 
 import java.util.Map;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AuthResource {
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req) {
         try {
             authService.login(req);
-            return ResponseEntity.ok(Map.of("message", "Código de acesso enviado para o seu e-mail"));
+            return ResponseEntity.ok(Map.of("message", "Codigo de acesso enviado para o seu e-mail"));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(401).body(Map.of("message", "login ou senha invalida"));
         }
@@ -40,5 +41,14 @@ public class AuthResource {
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            authService.logout(header.substring(7));
+        }
+        return ResponseEntity.ok(Map.of("message", "Logout realizado com sucesso"));
     }
 }

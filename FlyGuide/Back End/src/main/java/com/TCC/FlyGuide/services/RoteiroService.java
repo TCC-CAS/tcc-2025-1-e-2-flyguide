@@ -129,11 +129,15 @@ public class RoteiroService {
     }
 
     @Transactional
-    public RoteiroDTO clonar(Long idRoteiro, Long idUsuario) {
-        if (roteiroRepository.existsByUsuario_IdUsuarioAndIdRoteiroOrigem(idUsuario, idRoteiro)) {
-            throw new UnauthorizedException("Você já clonou este roteiro.");
-        }
+    public void atualizarStatus(Long id, String status) {
+        Roteiro roteiro = roteiroRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
+        roteiro.setStatusRoteiro(status);
+        roteiroRepository.save(roteiro);
+    }
 
+    @Transactional
+    public RoteiroDTO clonar(Long idRoteiro, Long idUsuario) {
         Roteiro original = roteiroRepository.findById(idRoteiro)
                 .orElseThrow(() -> new ResourceNotFoundException(idRoteiro));
 
@@ -150,7 +154,7 @@ public class RoteiroService {
         clone.setDiasTotais(original.getDiasTotais());
         clone.setTipoRoteiro(original.getTipoRoteiro());
         clone.setStatusRoteiro("PLANEJADO");
-        clone.setVisibilidadeRoteiro("PRIVATE");
+        clone.setVisibilidadeRoteiro("Privado");
         clone.setOrcamento(original.getOrcamento());
         clone.setObservacoes(original.getObservacoes());
         clone.setImagem(original.getImagem());

@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tb_roteiro_local", uniqueConstraints = @UniqueConstraint(columnNames = {"id_roteiro", "id_local"}))
+@Table(name = "tb_roteiro_local")
 public class RoteiroLocal implements Serializable {
 
     private static final long serialVersionUID = 1L;
