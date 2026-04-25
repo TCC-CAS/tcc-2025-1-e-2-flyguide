@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Service
@@ -38,6 +40,18 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
         return Long.parseLong(claims.getSubject());
+    }
+
+    public LocalDateTime extrairExpiracao(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.getExpiration()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 
     public boolean tokenValido(String token) {

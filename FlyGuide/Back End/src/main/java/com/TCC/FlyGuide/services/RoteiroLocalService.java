@@ -63,13 +63,6 @@ public class RoteiroLocalService {
                     "Limite de 15 locais por roteiro atingido.");
         }
 
-        boolean jaExiste = roteiroLocalRepository
-                .existsByRoteiro_IdRoteiroAndLocal_IdLocal(idRoteiro, dto.getIdLocal());
-
-        if (jaExiste) {
-            throw new DatabaseException("Este Local já está vinculado a este Roteiro.");
-        }
-
         RoteiroLocal entity = new RoteiroLocal();
         entity.setRoteiro(roteiro);
         entity.setLocal(local);

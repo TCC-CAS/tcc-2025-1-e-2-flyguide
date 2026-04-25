@@ -1,6 +1,7 @@
 package com.TCC.FlyGuide.services.configs;
 
 import com.TCC.FlyGuide.services.JwtService;
+import com.TCC.FlyGuide.services.SessaoService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private SessaoService sessaoService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -30,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
 
-            if (jwtService.tokenValido(token)) {
+            if (jwtService.tokenValido(token) && sessaoService.isAtiva(token)) {
                 Long userId = jwtService.extrairUserId(token);
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());

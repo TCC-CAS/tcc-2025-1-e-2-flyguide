@@ -13,7 +13,6 @@ import com.TCC.FlyGuide.services.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.TCC.FlyGuide.services.JwtService;
 
 import java.time.LocalDateTime;
 
@@ -37,6 +36,9 @@ public class AuthService {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private SessaoService sessaoService;
 
     private static final int MAX_TENTATIVAS = 5;
     private static final int BLOQUEIO_MINUTOS = 15;
@@ -76,7 +78,7 @@ public class AuthService {
         otpService.validarOtpLogin(emailNormalizado, codigo);
 
         User user = userRepository.findByEmail(emailNormalizado)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario nao encontrado"));
 
         String nomeExibicao = "";
         String tipoPessoa = user.getTipoPessoa();
@@ -97,6 +99,8 @@ public class AuthService {
         }
 
         String token = jwtService.gerarToken(user.getIdUsuario());
+        LocalDateTime dataExpiracao = jwtService.extrairExpiracao(token);
+        sessaoService.salvar(token, user.getIdUsuario(), dataExpiracao);
 
         return new LoginResponseDTO(
                 user.getIdUsuario(),
@@ -107,5 +111,9 @@ public class AuthService {
                 dataCadastro,
                 token
         );
+    }
+
+    public void logout(String token) {
+        sessaoService.invalidar(token);
     }
 }
