@@ -116,6 +116,12 @@
 			<artifactId>layout</artifactId>
 			<version>7.2.5</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -123,6 +129,30 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<configuration>
+					<excludes>
+						<exclude>com/TCC/FlyGuide/services/PdfService*.class</exclude>
+						<exclude>com/TCC/FlyGuide/services/GooglePlacesService.class</exclude>
+						<exclude>com/TCC/FlyGuide/services/PerspectiveService.class</exclude>
+						<exclude>com/TCC/FlyGuide/services/EmailService.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals><goal>prepare-agent</goal></goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals><goal>report</goal></goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
