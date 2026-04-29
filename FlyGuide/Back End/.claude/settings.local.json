@@ -3,7 +3,11 @@
     "allow": [
       "Bash(mvn compile:*)",
       "Bash(./mvnw compile:*)",
-      "Bash(mvn clean:*)"
+      "Bash(mvn clean:*)",
+      "Bash(mvn test *)",
+      "Bash(mvn verify *)",
+      "Bash(powershell -Command ' *)",
+      "Bash(grep -v \"//\")"
     ]
   }
 }
