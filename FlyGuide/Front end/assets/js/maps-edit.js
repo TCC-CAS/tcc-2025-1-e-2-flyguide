@@ -240,6 +240,36 @@ function _mapsUrlLocalEdit(local) {
   return query ? _mapsUrlEdit("", query) : "";
 }
 
+const _PLACE_TYPES_APRESENTAVEIS_EDIT = [
+  "amusement_park","zoo","aquarium","museum","art_gallery","spa","beach",
+  "restaurant","cafe","bar","bakery","night_club","casino","movie_theater",
+  "park","natural_feature","shopping_mall","store","stadium","library",
+  "church","mosque","hindu_temple","supermarket","tourist_attraction","point_of_interest",
+];
+
+function _tipoApresentavelLocalEdit(types, nome) {
+  const lista = Array.isArray(types)
+    ? types.filter(Boolean)
+    : String(types || "").split(",").map(t => t.trim()).filter(Boolean);
+  const direto = _PLACE_TYPES_APRESENTAVEIS_EDIT.find(tipo => lista.includes(tipo));
+  if (direto) return direto;
+  if (lista.length) return "point_of_interest";
+  const inferido = window.inferPlaceType ? window.inferPlaceType(nome) : "";
+  return inferido || "point_of_interest";
+}
+
+function _badgeCategoriaLocalEdit(local) {
+  if (!window.placeCategoryBadgeHtml || !local) return "";
+  const tipos = [];
+  if (Array.isArray(local.tipos)) tipos.push(...local.tipos);
+  if (Array.isArray(local.types)) tipos.push(...local.types);
+  if (local.tipo) tipos.push(local.tipo);
+  if (local.nome) tipos.push(_tipoApresentavelLocalEdit(tipos, local.nome));
+  if (!tipos.length) tipos.push("point_of_interest");
+  const html = window.placeCategoryBadgeHtml([...new Set(tipos)]);
+  return html || window.placeCategoryBadgeHtml(["point_of_interest"]);
+}
+
 function _atualizarLinksMapsAI(item, url) {
   if (!item) return;
   item.querySelectorAll("[data-ai-maps-link]").forEach(link => {
@@ -651,7 +681,7 @@ function _renderRecomendacoes(lugares, pagina) {
               ${tot > 0 ? `<span style="font-size:.72rem;color:#94a3b8;">(${tot.toLocaleString("pt-BR")})</span>` : ""}
             </div>
             ${addr ? `<div style="color:#94a3b8;font-size:.75rem;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(addr)}</div>` : ""}
-            ${window.placeCategoryBadgeHtml ? window.placeCategoryBadgeHtml(lugar.types || []) : ""}
+            ${_badgeCategoriaLocalEdit({ tipos: lugar.types || [], nome: lugar.name })}
             ${lugar.business_status === "OPERATIONAL" ? `<div style="font-size:.72rem;color:#16a34a;margin-top:2px;"><i class="bi bi-clock me-1"></i>Estabelecimento ativo</div>` : ""}
             ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="font-size:.72rem;color:#f97316;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:3px;font-weight:700;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
           </div>
@@ -662,6 +692,7 @@ function _renderRecomendacoes(lugares, pagina) {
                   data-rec-pid="${lugar.place_id}"
                   data-rec-lat="${lugar.geometry?.location?.lat() ?? ""}"
                   data-rec-lng="${lugar.geometry?.location?.lng() ?? ""}"
+                  data-rec-tipos="${escapeHtml((lugar.types || []).join(","))}"
                   data-rec-tipo="${(lugar.types || [])[0] || "establishment"}">
             <i class="bi bi-plus-lg"></i>
           </button>
@@ -677,11 +708,14 @@ function _renderRecomendacoes(lugares, pagina) {
 
   listaEl.querySelectorAll("[data-rec-pid]").forEach(btn => {
     btn.addEventListener("click", () => {
+      const tipos = (btn.getAttribute("data-rec-tipos") || "").split(",").map(t => t.trim()).filter(Boolean);
+      const nome = btn.getAttribute("data-rec-nome");
       _localSelecionadoEdit = {
         placeId:   btn.getAttribute("data-rec-pid"),
-        nome:      btn.getAttribute("data-rec-nome"),
+        nome:      nome,
         endereco:  btn.getAttribute("data-rec-end"),
-        tipo:      btn.getAttribute("data-rec-tipo"),
+        tipo:      _tipoApresentavelLocalEdit(tipos.length ? tipos : [btn.getAttribute("data-rec-tipo")], nome),
+        tipos:     tipos,
         latitude:  parseFloat(btn.getAttribute("data-rec-lat")) || null,
         longitude: parseFloat(btn.getAttribute("data-rec-lng")) || null,
       };
@@ -760,7 +794,8 @@ function garantirAutocompleteEdit() {
       placeId:           place.place_id,
       nome:              place.name,
       endereco:          place.formatted_address,
-      tipo:              (place.types || [])[0] || "establishment",
+      tipo:              _tipoApresentavelLocalEdit(place.types || [], place.name),
+      tipos:             place.types || [],
       latitude:          place.geometry && place.geometry.location ? place.geometry.location.lat() : null,
       longitude:         place.geometry && place.geometry.location ? place.geometry.location.lng() : null,
       addressComponents: place.address_components || [],
@@ -948,7 +983,7 @@ function _renderAIItemCardMR(item, idx, uid, isDark) {
       <div style="flex:1;min-width:0;">
         <div data-ai-title style="font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(nome || "Local")}</div>
         <div data-ai-address style="font-size:.72rem;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:${endereco ? "" : "none"};">${endereco ? `<i class="bi bi-geo-alt me-1"></i>${escapeHtml(endereco)}` : ""}</div>
-        ${window.placeCategoryBadgeHtml ? window.placeCategoryBadgeHtml([window.inferPlaceType ? window.inferPlaceType(nome) : "tourist_attraction"]) : ""}
+        ${_badgeCategoriaLocalEdit({ tipos: item.tipos || item.types || [], tipo: item.tipo || item.placeType || "", nome })}
         <span id="mr-rating-ai-${uid}" data-mr-rating-id="mr-rating-ai-${uid}" data-mr-rating-nome="${escapeHtml(nome)}" data-mr-rating-pid="${escapeHtml(placeId)}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
         <div data-ai-obs-display style="display:${obs ? "" : "none"};font-size:.72rem;color:#94a3b8;margin-top:2px;"><i class="bi bi-pencil-fill me-1"></i><span>${escapeHtml(obs)}</span></div>
         <a data-ai-maps-link href="${mapsUrl ? escapeHtml(mapsUrl) : "#"}" target="_blank" rel="noopener" style="font-size:.7rem;color:#f97316;text-decoration:none;display:${mapsUrl ? "inline-flex" : "none"};align-items:center;gap:3px;margin-top:3px;font-weight:700;"><i class="bi bi-map"></i>Ver no Maps</a>
@@ -1088,7 +1123,7 @@ function _renderLocalCardMR(l, idx, isDark) {
       <div style="flex:1;min-width:0;">
         <div data-ai-title style="font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(l.nome || "Local")}</div>
         <div data-ai-address style="font-size:.72rem;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:${l.endereco ? "" : "none"};">${l.endereco ? `<i class="bi bi-geo-alt me-1"></i>${escapeHtml(l.endereco)}` : ""}</div>
-        ${window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : "tourist_attraction")]) : ""}
+        ${_badgeCategoriaLocalEdit(l)}
         <span id="mr-rating-lr-${vid}" data-mr-rating-id="mr-rating-lr-${vid}" data-mr-rating-nome="${escapeHtml(l.nome || '')}" data-mr-rating-pid="${escapeHtml(l.placeId || '')}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
         <div data-ai-obs-display style="display:${obs ? "" : "none"};font-size:.72rem;color:#94a3b8;margin-top:2px;"><i class="bi bi-pencil-fill me-1"></i><span>${escapeHtml(obs)}</span></div>
         ${mapsUrl ? `<a data-ai-maps-link href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="font-size:.7rem;color:#f97316;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:3px;font-weight:700;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
@@ -2447,7 +2482,7 @@ function _renderLocaisReaisEdit(lista) {
                 ${l.endereco    ? `<div style="font-size:.72rem;color:${corEndereco};margin-top:1px;"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(l.endereco)}</div>` : ""}
                 ${distHtml}
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px;">
-                  ${window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : "tourist_attraction")]) : ""}
+                  ${_badgeCategoriaLocalEdit(l)}
                   <span id="mr-rating-lr-${vid}" data-mr-rating-id="mr-rating-lr-${vid}" data-mr-rating-nome="${escapeHtml(l.nome || '')}" data-mr-rating-pid="${escapeHtml(l.placeId || '')}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
                   ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:#f97316;font-weight:700;text-decoration:none;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
                 </div>
@@ -3059,6 +3094,10 @@ document.getElementById("btnAdicionarLocalEdit")?.addEventListener("click", asyn
   btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
 
   try {
+    const tipoSelecionado = _tipoApresentavelLocalEdit(
+      _localSelecionadoEdit.tipos || [_localSelecionadoEdit.tipo],
+      _localSelecionadoEdit.nome
+    );
     const resLocal = await authFetch(`${_URL_API}/locais`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
@@ -3066,7 +3105,7 @@ document.getElementById("btnAdicionarLocalEdit")?.addEventListener("click", asyn
         placeId:   _localSelecionadoEdit.placeId,
         nome:      _localSelecionadoEdit.nome,
         endereco:  _localSelecionadoEdit.endereco,
-        tipo:      _localSelecionadoEdit.tipo,
+        tipo:      tipoSelecionado,
         latitude:  _localSelecionadoEdit.latitude,
         longitude: _localSelecionadoEdit.longitude,
       }),
@@ -3097,7 +3136,8 @@ document.getElementById("btnAdicionarLocalEdit")?.addEventListener("click", asyn
 
     const vinculo = await resVinculo.json();
     if (obs && !vinculo.observacoes) vinculo.observacoes = obs;
-    if (!vinculo.tipo     && _localSelecionadoEdit?.tipo)    vinculo.tipo    = _localSelecionadoEdit.tipo;
+    vinculo.tipo = tipoSelecionado;
+    vinculo.tipos = _localSelecionadoEdit?.tipos || [tipoSelecionado];
     if (!vinculo.placeId  && _localSelecionadoEdit?.placeId) vinculo.placeId = _localSelecionadoEdit.placeId;
     if (!vinculo.nome     && _localSelecionadoEdit?.nome)    vinculo.nome    = _localSelecionadoEdit.nome;
     if (!vinculo.endereco && _localSelecionadoEdit?.endereco) vinculo.endereco = _localSelecionadoEdit.endereco;
