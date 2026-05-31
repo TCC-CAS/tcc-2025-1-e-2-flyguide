@@ -52,7 +52,7 @@ public class GeradorRoteiroService {
     private static final String ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
     private static final String ANTHROPIC_MODEL = "claude-sonnet-4-6";
     private static final Duration AI_REQUEST_TIMEOUT = Duration.ofMinutes(5);
-    private static final int LONG_ROUTE_MIN_DAYS = 6;
+    private static final int LONG_ROUTE_MIN_DAYS = 10;
     private static final int LONG_ROUTE_CHUNK_DAYS = 5;
     private static final int MAX_AI_TOKENS = 8192;
     private static final int MAX_DIAS_ROTEIRO = 30;
