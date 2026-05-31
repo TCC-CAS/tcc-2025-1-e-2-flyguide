@@ -103,7 +103,9 @@ Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC) do Serv
 
 ## Status do projeto
 
-Projeto em desenvolvimento acadêmico para fins de Trabalho de Conclusão de Curso.
+Projeto acadêmico concluído para fins de Trabalho de Conclusão de Curso.
+
+Serviço Nacional de Aprendizagem Comercial (SENAC), curso de Bacharelado em Sistemas de Informação.
 
 ## Integrantes
 
