@@ -1,0 +1,514 @@
+/* assets/css/pages/auth.css */
+
+:root{
+  --auth-bg: radial-gradient(1200px 700px at 50% 15%, rgba(15,23,42,.06), transparent 55%),
+             radial-gradient(900px 500px at 20% 65%, rgba(249,115,22,.08), transparent 60%),
+             radial-gradient(900px 500px at 80% 65%, rgba(59,130,246,.08), transparent 60%),
+             #f8fafc;
+}
+
+.auth-page{
+  min-height: 100vh;
+  background: var(--auth-bg);
+  display: grid;
+  place-items: center;
+  padding: 28px 16px;
+}
+
+.auth-card{
+  width: min(460px, 100%);
+  border-radius: 18px;
+  border: 1px solid #eef2f7;
+  background: #fff;
+  box-shadow: 0 25px 60px rgba(15,23,42,.10);
+  overflow: hidden;
+}
+
+.auth-topbar{
+  height: 6px;
+  background: linear-gradient(90deg, rgba(249,115,22,.95), rgba(59,130,246,.80));
+}
+
+.auth-inner{
+  padding: 28px 28px 22px;
+}
+
+.auth-logo{
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  margin: 6px auto 14px;
+  background: #fff;
+  border: 1px solid #eef2f7;
+  box-shadow: 0 14px 34px rgba(15,23,42,.10);
+}
+
+.auth-title{
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: #0f172a;
+  margin: 0 0 6px;
+  font-size: 1.55rem;
+}
+
+.auth-subtitle{
+  text-align: center;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+
+.auth-divider{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 12px;
+  color: #94a3b8;
+  font-size: .85rem;
+  font-weight: 700;
+}
+.auth-divider::before,
+.auth-divider::after{
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #e2e8f0;
+}
+
+.auth-btn{
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.auth-btn-primary{
+  background: #0f172a;
+  border-color: #0f172a;
+}
+.auth-btn-primary:hover{
+  background: #0b1220;
+  border-color: #0b1220;
+}
+
+.auth-google{
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 800;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.auth-field label{
+  font-weight: 700;
+  color: #334155;
+  font-size: .9rem;
+  margin-bottom: 6px;
+}
+
+.auth-input .input-group-text{
+  border-radius: 12px 0 0 12px;
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+.auth-input .form-control{
+  height: 48px;
+  border-radius: 0 12px 12px 0;
+  border-color: #e2e8f0;
+}
+.auth-input .password-toggle{
+  border-color: #e2e8f0;
+  border-left: 0;
+  background: #fff;
+  color: #64748b;
+  border-radius: 0 12px 12px 0;
+}
+.auth-input .password-toggle:hover,
+.auth-input .password-toggle:focus{
+  background: #fff;
+  color: #0f172a;
+  box-shadow: none;
+}
+.auth-input .has-password-toggle{
+  border-right: 0;
+  border-radius: 0;
+}
+.auth-input .form-control:focus{
+  border-color: rgba(59,130,246,.6);
+  box-shadow: 0 0 0 .2rem rgba(59,130,246,.12);
+}
+
+.auth-footer{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: .92rem;
+}
+.auth-footer a{
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 700;
+}
+.auth-footer a:hover{
+  color: #0f172a;
+}
+
+.auth-back{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 800;
+}
+.auth-back:hover{
+  color: #0f172a;
+}
+
+.auth-alert{
+  display: none;
+  margin-top: 12px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LAYOUT SPLIT ESTILO FACEBOOK  (login.html)
+   Todas as classes auth-* acima permanecem intactas (cadastro.html)
+   ══════════════════════════════════════════════════════════════ */
+
+.fly-split {
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── PAINEL ESQUERDO ── */
+.fly-left {
+  flex: 0 0 58%;
+  background: linear-gradient(150deg, #0c1a2e 0%, #0f2d4d 50%, #0a1628 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 44px 56px 48px;
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+}
+.fly-left::before {
+  content: '';
+  position: absolute;
+  width: 480px; height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(249,115,22,.18) 0%, transparent 65%);
+  top: -120px; right: -80px;
+  pointer-events: none;
+}
+.fly-left::after {
+  content: '';
+  position: absolute;
+  width: 360px; height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,130,246,.14) 0%, transparent 65%);
+  bottom: -80px; left: -60px;
+  pointer-events: none;
+}
+
+.fly-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
+  position: relative;
+}
+.fly-brand-logo {
+  width: 42px; height: 42px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.4));
+}
+.fly-brand-name {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: #fff;
+}
+
+.fly-cards-scene {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+  padding: 32px 0;
+}
+
+.fly-dest-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,255,255,.10);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 18px;
+  padding: 14px 20px;
+  width: 300px;
+  transition: transform .2s ease, background .2s ease;
+}
+.fly-dest-card:hover {
+  background: rgba(255,255,255,.17);
+  transform: translateX(6px);
+}
+.fly-card-2 { margin-left: 40px; }
+.fly-card-3 { margin-left: 18px; }
+
+.fly-dest-flag { font-size: 1.9rem; line-height: 1; flex-shrink: 0; }
+.fly-dest-info { flex: 1; }
+.fly-dest-city { font-weight: 700; font-size: .95rem; color: #fff; }
+.fly-dest-country { font-size: .78rem; color: rgba(255,255,255,.55); margin-top: 2px; }
+.fly-dest-arrow { color: rgba(255,255,255,.45); font-size: 1rem; flex-shrink: 0; }
+
+.fly-plane-deco {
+  position: absolute;
+  top: 10px; right: 20px;
+  font-size: 2.8rem;
+  transform: rotate(-20deg);
+  opacity: .18;
+  pointer-events: none;
+}
+
+.fly-tagline {
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -.025em;
+  color: #fff;
+  z-index: 1;
+  position: relative;
+}
+.fly-tagline span {
+  background: linear-gradient(90deg, #f97316 20%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── PAINEL DIREITO ── */
+.fly-right {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+}
+
+.fly-form-wrap { width: min(380px, 100%); }
+
+.fly-form-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 24px;
+  letter-spacing: -.02em;
+}
+
+.fly-subtitle {
+  font-size: .9rem;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.fly-field { position: relative; }
+
+.fly-input {
+  height: 60px !important;
+  border-radius: 8px !important;
+  border: 1.5px solid #dde3ea !important;
+  font-size: 1.05rem;
+  padding: 0 18px !important;
+  color: #0f172a;
+  background: #fff !important;
+  transition: border-color .15s, box-shadow .15s;
+}
+.fly-input:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.13) !important;
+  outline: none;
+}
+.fly-input::placeholder { color: #9aa5b4; }
+.fly-input.is-invalid { border-color: #dc3545 !important; }
+
+.fly-btn-primary {
+  height: 58px;
+  border-radius: 8px;
+  background: #3b82f6;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  transition: background .15s;
+}
+.fly-btn-primary:hover,
+.fly-btn-primary:focus { background: #2563eb; color: #fff; }
+.fly-btn-primary:disabled { background: #93c5fd; border-color: transparent; color: #fff; }
+
+.fly-link-forgot {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.fly-link-forgot:hover { color: #3b82f6; text-decoration: underline; }
+
+.fly-hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 0;
+}
+
+.fly-btn-new {
+  height: 54px;
+  padding: 0 36px;
+  border-radius: 8px;
+  background: #f97316;
+  border: none;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background .15s;
+}
+.fly-btn-new:hover,
+.fly-btn-new:focus { background: #ea6c0a; color: #fff; }
+
+/* Botão de mostrar/ocultar senha */
+.fly-eye-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  color: #9aa5b4;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  font-size: 1.05rem;
+  z-index: 2;
+  line-height: 1;
+}
+.fly-eye-btn:hover { color: #0f172a; }
+
+.fly-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #64748b;
+  text-decoration: none;
+  font-size: .88rem;
+  font-weight: 600;
+  transition: color .15s;
+}
+.fly-back-link:hover { color: #0f172a; }
+
+/* OTP form (gerado dinamicamente pelo auth.js) */
+#formularioOtp .form-control {
+  height: 52px;
+  border-radius: 8px;
+  border: 1.5px solid #dde3ea;
+}
+#formularioOtp .btn-primary {
+  height: 50px;
+  border-radius: 8px;
+  background: #3b82f6;
+  border-color: #3b82f6;
+  font-weight: 700;
+}
+#formularioOtp .btn-primary:hover { background: #2563eb; border-color: #2563eb; }
+
+/* Globe container */
+.fly-map-wrap {
+  flex: 1;
+  width: 100%;
+  min-height: 220px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+}
+.fly-map-wrap svg { display: block; overflow: visible; }
+
+/* Logo mobile (oculto no desktop) */
+.fly-mobile-brand {
+  display: none;
+}
+
+/* ── TABLET (768px – 991px) ── */
+@media (max-width: 991px) and (min-width: 768px) {
+  .fly-left { flex: 0 0 45%; padding: 32px 36px 40px; }
+  .fly-tagline { font-size: 1.5rem; }
+  .fly-map-wrap { min-height: 200px; }
+  .fly-right { padding: 36px 28px; }
+}
+
+/* ── MOBILE (< 768px) ── */
+@media (max-width: 767px) {
+  .fly-split { flex-direction: column; }
+
+  /* Painel azul escuro some no mobile */
+  .fly-left { display: none; }
+
+  /* Painel do formulário ocupa a tela toda */
+  .fly-right {
+    min-height: 100vh;
+    padding: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    background: #fff;
+  }
+
+  .fly-form-wrap {
+    width: 100%;
+    max-width: 100%;
+    padding: 48px 24px 48px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  /* Logo visível no topo do formulário */
+  .fly-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .fly-mobile-brand img {
+    width: 40px; height: 40px;
+    object-fit: contain;
+  }
+  .fly-mobile-brand span {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    color: #0f172a;
+  }
+
+  .fly-form-title { font-size: 1.5rem; margin-bottom: 20px; }
+
+  .fly-input  { height: 54px !important; font-size: 1rem; }
+  .fly-btn-primary { height: 54px; font-size: 1rem; }
+  .fly-btn-new { height: 50px; font-size: 1rem; }
+  .fly-subtitle { font-size: .88rem; }
+}

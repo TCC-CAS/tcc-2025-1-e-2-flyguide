@@ -1,0 +1,139 @@
+/* assets/css/pages/perfil.css */
+
+.main { padding: 32px 40px; }
+@media (max-width: 768px) { .main { padding: 20px 16px; } }
+
+/* Títulos da página */
+.perfil-page-title {
+  font-size: 1.7rem; font-weight: 800; color: var(--fg-ink); margin-bottom: 4px;
+}
+.perfil-page-sub {
+  color: var(--fg-muted); margin-bottom: 28px;
+}
+.perfil-nome {
+  font-size: 1.3rem; font-weight: 800; color: var(--fg-ink);
+}
+
+/* Avatar grande */
+.perfil-avatar {
+  width: 72px; height: 72px; border-radius: 999px;
+  background: var(--fg-orange);
+  display: grid; place-items: center;
+  color: #fff; font-weight: 800; font-size: 1.9rem;
+  flex-shrink: 0;
+}
+
+/* Cards */
+.perfil-card {
+  background: #fff;
+  border: 1px solid var(--fg-border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--fg-shadow-soft);
+}
+.perfil-card-title {
+  font-weight: 700; font-size: 1rem; color: var(--fg-ink);
+  margin-bottom: 4px;
+}
+
+/* Grid de campos */
+.perfil-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  margin-top: 24px;
+}
+@media (max-width: 576px) { .perfil-grid { grid-template-columns: 1fr; } }
+
+.perfil-field label {
+  display: block;
+  font-size: .8rem; font-weight: 600; color: var(--fg-muted);
+  margin-bottom: 6px;
+}
+
+/* Modo visualização */
+.perfil-field .valor {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: .95rem; font-weight: 500; color: var(--fg-ink);
+  min-height: 42px;
+}
+.perfil-field .valor-muted {
+  font-size: .78rem; color: var(--fg-muted); margin-top: 4px;
+}
+
+/* Modo edição */
+.perfil-field .form-control {
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  padding: 10px 14px;
+  font-size: .95rem;
+  font-weight: 500;
+  height: auto;
+}
+.perfil-field .form-control:focus {
+  border-color: var(--fg-orange);
+  box-shadow: 0 0 0 .2rem rgba(249,115,22,.15);
+}
+.perfil-field .form-control:disabled {
+  background: #f8fafc;
+  color: var(--fg-muted);
+}
+
+/* Badges */
+.badge-tipo {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: .75rem; font-weight: 700;
+}
+.badge-premium { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.badge-free    { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.badge-pf      { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.badge-pj      { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+
+/* Botão editar */
+.btn-editar {
+  border-radius: 10px; font-weight: 600;
+  border: 1.5px solid #e2e8f0;
+  background: #fff; color: var(--fg-ink);
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 16px;
+}
+.btn-editar:hover { background: #f8fafc; }
+
+/* Botões salvar/cancelar */
+.edit-actions {
+  display: none;
+  gap: 10px;
+  margin-top: 20px;
+}
+.edit-actions.visivel { display: flex; }
+
+/* Ações */
+.acao-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+.acao-item:last-child { border-bottom: none; }
+.acao-info { display: flex; align-items: center; gap: 14px; }
+.acao-icone {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: #f8fafc; border: 1px solid #e5e7eb;
+  display: grid; place-items: center;
+  font-size: 1.1rem; color: var(--fg-muted);
+}
+.acao-titulo { font-weight: 600; font-size: .95rem; color: var(--fg-ink); }
+.acao-desc   { font-size: .82rem; color: var(--fg-muted); margin-top: 2px; }
+
+/* Zona de perigo */
+.danger-zone {
+  border: 1px solid #fecaca; background: #fff5f5;
+  border-radius: 16px; padding: 28px; margin-bottom: 20px;
+}
+.danger-title {
+  font-weight: 700; color: #dc2626; font-size: 1rem;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.danger-desc { color: #dc2626; font-size: .88rem; margin-bottom: 16px; }

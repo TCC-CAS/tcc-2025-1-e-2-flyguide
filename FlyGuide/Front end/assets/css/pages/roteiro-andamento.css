@@ -1,0 +1,230 @@
+/* ================================================================
+   Página: Roteiro em Andamento
+================================================================ */
+
+/* Cabeçalho da viagem */
+.andamento-header {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #fff;
+  padding: 24px 22px 20px 22px;
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 20px;
+}
+.andamento-titulo { font-size: 1.4rem; font-weight: 800; margin: 0 0 4px 0; }
+.andamento-cidade { font-size: .9rem; opacity: .88; margin: 0 0 16px 0; }
+
+/* Barra de progresso */
+.progress-wrap { margin-top: 12px; }
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: .82rem; font-weight: 600; margin-bottom: 6px; opacity: .92;
+}
+.progress-bar-track {
+  height: 8px; background: rgba(255,255,255,.3); border-radius: 999px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; background: #fff; border-radius: 999px;
+  transition: width .4s ease;
+}
+.progress-stats {
+  display: flex; gap: 16px; margin-top: 10px; font-size: .8rem; opacity: .9;
+}
+.progress-stat { display: flex; align-items: center; gap: 4px; }
+
+/* Grupo de dia */
+.dia-group { margin-bottom: 20px; }
+.dia-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: #f1f5f9;
+  border-radius: 12px 12px 0 0; border-bottom: 1px solid #e2e8f0;
+  font-weight: 800; font-size: .9rem; color: #374151;
+}
+.dia-counter {
+  font-size: .8rem; font-weight: 700;
+  background: #e2e8f0; color: #64748b;
+  padding: 2px 8px; border-radius: 999px;
+}
+.dia-counter.completo { background: #dcfce7; color: #15803d; }
+
+/* Item de checkpoint */
+.checkpoint-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px; background: #fff;
+  border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background .15s;
+}
+.checkpoint-item:last-child { border-radius: 0 0 12px 12px; border-bottom: 1px solid #e2e8f0; }
+.checkpoint-item.visitado { background: #f0fdf4; }
+.checkpoint-item.pulado { background: #f8fafc; opacity: .65; }
+
+.check-btn {
+  border: none; background: none; padding: 0;
+  font-size: 1.35rem; cursor: pointer; flex-shrink: 0;
+  color: #cbd5e1; line-height: 1; transition: color .15s, transform .1s;
+}
+.check-btn:hover { transform: scale(1.1); }
+.checkpoint-item.visitado .check-btn { color: #22c55e; }
+.checkpoint-item.pulado .check-btn { color: #94a3b8; }
+
+.checkpoint-nome { font-weight: 600; font-size: .92rem; color: #1e293b; }
+.checkpoint-item.pulado .checkpoint-nome { text-decoration: line-through; color: #94a3b8; }
+.checkpoint-horario { font-size: .78rem; color: #94a3b8; margin-top: 2px; }
+.checkpoint-obs { font-size: .78rem; color: #64748b; margin-top: 2px; font-style: italic; }
+
+.skip-btn {
+  border: 1px solid #e2e8f0; background: #fff; border-radius: 8px;
+  padding: 4px 10px; font-size: .75rem; font-weight: 600; color: #64748b;
+  cursor: pointer; flex-shrink: 0; transition: background .15s;
+}
+.skip-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+
+.pulado-badge {
+  font-size: .72rem; font-weight: 700; color: #94a3b8;
+  background: #f1f5f9; border: 1px solid #e2e8f0;
+  border-radius: 6px; padding: 3px 8px; flex-shrink: 0;
+}
+
+/* Estado vazio */
+.andamento-empty {
+  text-align: center; padding: 48px 24px;
+  color: #64748b;
+}
+.andamento-empty i { font-size: 3rem; color: #cbd5e1; display: block; margin-bottom: 12px; }
+
+/* Barra de ações inferior */
+.andamento-footer {
+  position: sticky; bottom: 0;
+  background: #fff; border-top: 1px solid #f1f5f9;
+  padding: 14px 22px; display: flex; gap: 12px; align-items: center;
+  z-index: 10;
+}
+
+/* Card de roteiro iniciado (lista) */
+.iniciado-card {
+  background: #fff; border: 1px solid #eef2f7;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,.06);
+  transition: box-shadow .2s;
+}
+.iniciado-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+.iniciado-cover {
+  height: 120px; background-size: cover; background-position: center;
+  position: relative;
+}
+.iniciado-cover-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(15,23,42,.55) 0%, transparent 60%);
+}
+.iniciado-cover-title {
+  position: absolute; bottom: 10px; left: 14px; right: 14px;
+  color: #fff; font-weight: 800; font-size: 1rem; line-height: 1.2;
+}
+.iniciado-cover-city {
+  font-size: .78rem; font-weight: 400; opacity: .88;
+}
+.iniciado-body { padding: 14px; }
+.iniciado-progress-bar {
+  height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin-bottom: 6px;
+}
+.iniciado-progress-fill {
+  height: 100%; background: linear-gradient(90deg, #f97316, #ea580c);
+  border-radius: 999px; transition: width .4s;
+}
+.iniciado-progress-label { font-size: .78rem; color: #64748b; margin-bottom: 12px; }
+.iniciado-actions { display: flex; gap: 8px; }
+
+/* ── Checkpoint with day-item visual (andamento page) ── */
+.check-bubble-and {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: .88rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  cursor: pointer;
+  transition: background .18s, color .18s, transform .1s;
+  border: none;
+  line-height: 1;
+}
+.check-bubble-and:hover { transform: scale(1.08); }
+
+.cp-and-visitado { background: #f0fdf4 !important; }
+.cp-and-pulado   { background: #f8fafc !important; opacity: .65; }
+.cp-and-pulado .name { text-decoration: line-through; color: #94a3b8 !important; }
+
+/* Dia bloqueado — itens de dias futuros não são acessíveis */
+.dia-bloqueado-section {
+  opacity: 0.38;
+  pointer-events: none;
+  user-select: none;
+  filter: grayscale(0.3);
+}
+
+/* Aviso de bloqueio no header do dia */
+.dia-lock-aviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  font-size: .78rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Star rating no modal do dia */
+.star-dia {
+  cursor: pointer;
+  transition: color .12s, transform .1s;
+}
+.star-dia:hover { transform: scale(1.15); }
+
+/* ── Responsividade mobile ─────────────────────────────────── */
+@media (max-width: 576px) {
+  .andamento-header {
+    padding: 16px 14px 16px 14px;
+    border-radius: 0 0 14px 14px;
+  }
+  .andamento-titulo { font-size: 1.15rem; }
+  .andamento-cidade { font-size: .82rem; margin-bottom: 10px; }
+
+  .progress-stats { flex-wrap: wrap; gap: 8px; }
+
+  .andamento-footer {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .andamento-footer .btn { flex: 1; min-width: 0; font-size: .88rem; }
+
+  .iniciado-actions { flex-wrap: wrap; }
+  .iniciado-actions .btn { flex: 1; min-width: 0; font-size: .82rem; }
+
+  .checkpoint-item { padding: 10px 10px; gap: 8px; }
+  .checkpoint-nome { font-size: .88rem; }
+}
+
+/* Dark mode */
+html[data-theme="dark"] .andamento-header { background: linear-gradient(135deg, #9a3412 0%, #7c2d12 100%); }
+html[data-theme="dark"] .dia-header { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+html[data-theme="dark"] .dia-counter { background: #334155 !important; color: #94a3b8 !important; }
+html[data-theme="dark"] .dia-counter.completo { background: #14532d !important; color: #86efac !important; }
+html[data-theme="dark"] .checkpoint-item { background: #1e293b !important; border-color: #334155 !important; }
+html[data-theme="dark"] .checkpoint-item.visitado { background: #052e16 !important; }
+html[data-theme="dark"] .checkpoint-item.pulado { background: #0f172a !important; }
+html[data-theme="dark"] .checkpoint-nome { color: #f1f5f9 !important; }
+html[data-theme="dark"] .skip-btn { background: #0f172a !important; border-color: #334155 !important; color: #94a3b8 !important; }
+html[data-theme="dark"] .andamento-footer { background: #0f172a !important; border-color: #334155 !important; }
+html[data-theme="dark"] .iniciado-card { background: #1e293b !important; border-color: #334155 !important; }
+html[data-theme="dark"] .iniciado-progress-bar { background: #334155 !important; }
+html[data-theme="dark"] .progress-bar-track { background: rgba(255,255,255,.2) !important; }
+html[data-theme="dark"] .pulado-badge { background: #1e293b !important; border-color: #334155 !important; }
+html[data-theme="dark"] .cp-and-visitado { background: #052e16 !important; }
+html[data-theme="dark"] .cp-and-pulado   { background: #0f172a !important; }
+html[data-theme="dark"] .cp-and-pulado .name { color: #64748b !important; }
+html[data-theme="dark"] .dia-lock-aviso { background: #1e293b; border-color: #334155; color: #64748b; }
+html[data-theme="dark"] .dia-bloqueado-section { opacity: 0.3; }

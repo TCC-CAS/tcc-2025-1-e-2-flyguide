@@ -1,0 +1,127 @@
+﻿<!doctype html>
+<html lang="pt-br">
+<head>
+  <link rel="icon" href="../assets/img/logo.png" type="image/png">
+  <title>FlyGuide - Roteiros Iniciados</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/roteiro-andamento.css" rel="stylesheet">
+</head>
+
+<body data-pagina="roteiros-iniciados">
+  <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" aria-label="Menu principal">
+      <div class="brand">
+        <div class="brand-badge" style="width:42px;height:42px;min-width:42px;padding:0;background:transparent;border:none;box-shadow:none;border-radius:0;overflow:visible;"><img src="../assets/img/logo.png" alt="FlyGuide" style="width:42px;height:42px;object-fit:contain;display:block;"></div>
+        <div><div class="brand-title">Fly Guide</div><div class="brand-sub">Suas viagens inesquecíveis</div></div>
+        <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="navlist">
+        <a class="" href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+        <a class="" href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+        <a class="active" href="roteiros-iniciados.html"><i class="bi bi-play-circle"></i><span>Roteiros Iniciados</span></a>
+        <a class="" href="planos-premium.html"><i class="bi bi-star"></i><span>Planos Premium</span></a>
+        <a class="" href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+      </div>
+      <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100"><i class="bi bi-plus-lg me-2"></i>Gerar Novo Roteiro</a>
+      <div class="profile">
+        <div class="avatar">?</div>
+        <div><div class="name">Carregando...</div><div class="email"></div></div>
+      </div>
+    </nav>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main" id="conteudo-principal">
+      <div class="mobile-topbar">
+        <button class="btn btn-outline-soft" data-sidebar-open><i class="bi bi-list"></i></button>
+        <div class="fw-bold">Roteiros Iniciados</div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="d-lg-none position-fixed top-0 start-0 w-100 h-100" data-sidebar-backdrop style="display:none; z-index:1035;"></div>
+      <script>
+        (function(){
+          const sidebar=document.querySelector('.sidebar'), backdrop=document.querySelector('[data-sidebar-backdrop]');
+          const show=()=>{ if(backdrop) backdrop.style.display='block'; };
+          const hide=()=>{ if(backdrop) backdrop.style.display='none'; };
+          document.addEventListener('click',(e)=>{
+            if(e.target.closest('[data-sidebar-open]')) show();
+            if(e.target.closest('[data-sidebar-close]')) hide();
+            if(e.target.matches('[data-sidebar-backdrop]')) hide();
+          });
+          const obs=new MutationObserver(()=>{ if(!sidebar) return; sidebar.classList.contains('open')?show():hide(); });
+          if(sidebar) obs.observe(sidebar,{attributes:true,attributeFilter:['class']});
+        })();
+      </script>
+
+      <div class="grid-wrap pt-4">
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+          <div>
+            <h1 class="fw-black fw-bold mb-1" style="font-weight:900;">Roteiros Iniciados</h1>
+            <div class="small-muted">Acompanhe o progresso das suas viagens em andamento</div>
+          </div>
+        </div>
+
+        <!-- Carregando -->
+        <div id="loadingIniciados" class="text-center py-5">
+          <div class="spinner-border" style="color:#f97316!important"></div>
+          <div class="small-muted mt-3">Carregando roteiros...</div>
+        </div>
+
+        <!-- Vazio -->
+        <div id="emptyIniciados" class="andamento-empty" style="display:none;">
+          <i class="bi bi-play-circle"></i>
+          <div class="fw-bold mt-2 mb-1">Nenhum roteiro em andamento</div>
+          <div class="small mb-4">Inicie um roteiro em <strong>Meus Roteiros</strong> para acompanhar seu progresso aqui.</div>
+          <a href="meus-roteiros.html" class="btn btn-primary-orange">
+            <i class="bi bi-map me-2"></i>Ir para Meus Roteiros
+          </a>
+        </div>
+
+        <!-- Lista -->
+        <div class="row g-4 mt-2" id="listaIniciados" style="display:none;"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Não continuar roteiro -->
+  <div class="modal fade" id="modalAbandonarIniciado" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:18px;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-x-circle-fill me-2" style="color:#ef4444;"></i>Não continuar roteiro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Tem certeza que <strong>não quer continuar</strong> o roteiro <strong id="nomeRoteiroAbandonar"></strong>? Ele voltará para a lista de planejados e você poderá retomá-lo quando quiser.</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Voltar</button>
+          <button class="btn btn-danger fw-bold" id="btnConfirmarAbandonarIniciado">
+            <i class="bi bi-x-circle me-1"></i>Sim, não continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/transitions.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script src="../assets/js/imagens.js"></script>
+  <script src="../assets/js/roteiro-andamento.js"></script>
+  <script src="../assets/js/dark-mode.js"></script>
+</body>
+</html>
+
+

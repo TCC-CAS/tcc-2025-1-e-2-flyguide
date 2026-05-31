@@ -1,0 +1,239 @@
+﻿<!doctype html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" href="../assets/img/logo.png" type="image/png">
+  <title>FlyGuide - Feed</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/feed.css" rel="stylesheet">
+</head>
+
+<body data-pagina="feed">
+  <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" aria-label="Menu principal">
+      <div class="brand">
+        <div class="brand-badge" style="width:42px;height:42px;min-width:42px;padding:0;background:transparent;border:none;box-shadow:none;border-radius:0;overflow:visible;"><img src="../assets/img/logo.png" alt="FlyGuide" style="width:42px;height:42px;object-fit:contain;display:block;"></div>
+        <div>
+          <div class="brand-title">Fly Guide</div>
+          <div class="brand-sub">Suas viagens inesquecíveis</div>
+        </div>
+        <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="navlist">
+        <a class="active" href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+        <a class="" href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+        <a class="" href="roteiros-iniciados.html"><i class="bi bi-play-circle"></i><span>Roteiros Iniciados</span></a>
+        <a class="" href="planos-premium.html"><i class="bi bi-star"></i><span>Planos Premium</span></a>
+        <a class="" href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+      </div>
+
+      <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100">
+        <i class="bi bi-plus-lg me-2"></i>Gerar Novo Roteiro
+      </a>
+
+      <div class="profile">
+        <div class="avatar">?</div>
+        <div>
+          <div class="name">Carregando...</div>
+          <div class="email"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main" id="conteudo-principal">
+      <div class="mobile-topbar">
+        <button class="btn btn-outline-soft" data-sidebar-open aria-label="Abrir menu"><i class="bi bi-list" aria-hidden="true"></i></button>
+        <div class="fw-bold">Feed</div>
+        <div style="width:44px"></div>
+      </div>
+
+      <div class="d-lg-none position-fixed top-0 start-0 w-100 h-100"
+           data-sidebar-backdrop style="display:none; z-index:1035;"></div>
+      <script>
+        (function(){
+          const sidebar=document.querySelector('.sidebar');
+          const backdrop=document.querySelector('[data-sidebar-backdrop]');
+          const show=()=>{ if(backdrop) backdrop.style.display='block'; };
+          const hide=()=>{ if(backdrop) backdrop.style.display='none'; };
+          document.addEventListener('click',(e)=>{
+            if(e.target.closest('[data-sidebar-open]')) show();
+            if(e.target.closest('[data-sidebar-close]')) hide();
+            if(e.target.matches('[data-sidebar-backdrop]')) hide();
+          });
+          const obs=new MutationObserver(()=>{ if(!sidebar) return; sidebar.classList.contains('open')?show():hide(); });
+          if(sidebar) obs.observe(sidebar,{attributes:true,attributeFilter:['class']});
+        })();
+      </script>
+
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-inner">
+          <div>
+            <h1>Inspire-se para sua próxima viagem</h1>
+            <p>Explore roteiros incríveis compartilhados por viajantes do mundo todo</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- BARRA DE BUSCA E FILTROS -->
+      <div class="searchbar">
+        <div class="panel">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-lg-6">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0" style="border-radius:12px 0 0 12px;">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input class="form-control border-start-0" id="feedBusca"
+                       style="border-radius:0 12px 12px 0;"
+                       placeholder="Buscar por destino, título...">
+              </div>
+            </div>
+            <div class="col-12 col-lg-3">
+              <div class="input-group">
+                <span class="input-group-text bg-white" style="border-radius:12px 0 0 12px;">
+                  <i class="bi bi-funnel"></i>
+                </span>
+                <select class="form-select" id="feedTipo" style="border-radius:0 12px 12px 0;">
+                  <option value="">Todos os tipos</option>
+                  <option value="Aventura">Aventura</option>
+                  <option value="Cultural">Cultural</option>
+                  <option value="Praia">Praia</option>
+                  <option value="Cidade">Cidade</option>
+                  <option value="Natureza">Natureza</option>
+                  <option value="Gastronomia">Gastronomia</option>
+                  <option value="Mochilão">Mochilão</option>
+                  <option value="Luxo">Luxo</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-12 col-lg-3 d-grid">
+              <button id="btnFiltrosAvancados" class="btn btn-outline-soft d-flex align-items-center justify-content-center gap-2" style="white-space:nowrap;">
+                <i class="bi bi-funnel"></i> Filtros Avançados
+                <i class="bi bi-star premium-crown" style="margin-left:0;"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRID DO FEED -->
+      <div class="grid-wrap">
+
+        <!-- Carregando -->
+        <div id="feedLoading" class="text-center py-5" aria-live="polite" aria-label="Carregando roteiros">
+          <div class="spinner-border" style="color:#f97316!important" role="status"><span class="visually-hidden">Carregando...</span></div>
+          <div class="small-muted mt-3">Carregando roteiros...</div>
+        </div>
+
+        <!-- Vazio -->
+        <div id="feedVazio" class="text-center py-5" style="display:none;" aria-live="polite">
+          <i class="bi bi-globe" style="font-size:3rem;color:#cbd5e1;"></i>
+          <div class="fw-bold mt-3" style="color:#64748b;">Nenhum roteiro público encontrado</div>
+          <div class="small-muted mt-1">Seja o primeiro a compartilhar uma viagem!</div>
+          <a href="criar-roteiro.html" class="btn btn-primary-orange mt-4">
+            <i class="bi bi-plus-lg me-2"></i>Criar Roteiro
+          </a>
+        </div>
+
+        <!-- Cards -->
+        <div class="row g-4" id="feedLista" style="display:none;" aria-live="polite" aria-label="Roteiros"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- OFFCANVAS FILTROS AVANÇADOS (PREMIUM) -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilters">
+    <div class="offcanvas-header">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-funnel"></i>
+        <h5 class="offcanvas-title mb-0">Filtros Avançados</h5>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+
+      <!-- Filtros -->
+      <div id="filtrosPremium">
+
+        <!-- País -->
+        <div class="mb-4">
+          <label class="fw-bold small mb-2 d-block">País</label>
+          <input type="text" id="filtroPais" class="form-control form-control-sm" placeholder="Ex: Brasil, França...">
+        </div>
+
+        <!-- Duração min/max -->
+        <div class="mb-4">
+          <label class="fw-bold small mb-2 d-block">Duração (dias)</label>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="small text-secondary" style="width:28px;">Mín</span>
+            <input type="range" id="filtroDiasMin" min="1" max="30" step="1" value="1" class="form-range flex-fill">
+            <span class="small fw-bold" id="filtroDiasMinVal" style="color:#f97316;min-width:52px;text-align:right;">1 dia</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="small text-secondary" style="width:28px;">Máx</span>
+            <input type="range" id="filtroDiasMax" min="1" max="30" step="1" value="30" class="form-range flex-fill">
+            <span class="small fw-bold" id="filtroDiasMaxVal" style="color:#f97316;min-width:52px;text-align:right;">Sem limite</span>
+          </div>
+        </div>
+
+        <!-- Avaliação mínima -->
+        <div class="mb-4">
+          <label class="fw-bold small mb-2 d-block">Avaliação mínima ⭐</label>
+          <input type="range" id="filtroAvaliacao" min="0" max="5" step="0.5" value="0" class="form-range">
+          <div class="d-flex justify-content-between mt-1">
+            <span class="small fw-bold" id="filtroAvaliacaoVal" style="color:#f97316;">Qualquer</span>
+            <span class="small text-secondary">5 ⭐</span>
+          </div>
+        </div>
+
+        <!-- Mínimo de avaliações -->
+        <div class="mb-4">
+          <label class="fw-bold small mb-2 d-block">Mínimo de avaliações</label>
+          <input type="range" id="filtroTotalAval" min="0" max="20" step="1" value="0" class="form-range">
+          <div class="d-flex justify-content-between mt-1">
+            <span class="small fw-bold" id="filtroTotalAvalVal" style="color:#f97316;">Sem filtro</span>
+            <span class="small text-secondary">20</span>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button id="btnAplicarFiltros" class="btn btn-primary-orange flex-fill">
+            <i class="bi bi-check-lg me-1"></i>Aplicar Filtros
+          </button>
+          <button id="btnLimparFiltros" class="btn btn-outline-secondary">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div id="filtrosAtivosAviso" style="display:none;margin-top:12px;padding:8px 12px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;font-size:.82rem;color:#c2410c;font-weight:600;">
+          <i class="bi bi-funnel-fill me-1"></i>Filtros aplicados ao feed
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../assets/js/transitions.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script src="../assets/js/imagens.js"></script>
+  <script src="../assets/js/feed.js"></script>
+  <script src="../assets/js/dark-mode.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,481 @@
+﻿<!doctype html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" href="../assets/img/logo.png" type="image/png">
+  <title>FlyGuide - Meus Roteiros</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="../assets/css/base.css" rel="stylesheet">
+  <link href="../assets/css/layout.css" rel="stylesheet">
+  <link href="../assets/css/components.css" rel="stylesheet">
+  <link href="../assets/css/pages/meus-roteiros.css" rel="stylesheet">
+  <style>
+    .img-selector-sm { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 6px; }
+    .img-opt-sm { position: relative; border-radius: 10px; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: border-color .2s; aspect-ratio: 16/9; }
+    .img-opt-sm:hover { border-color: #f97316; }
+    .img-opt-sm.selected { border-color: #f97316; box-shadow: 0 0 0 2px rgba(249,115,22,.3); }
+    .img-opt-sm img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .img-opt-sm .img-lbl { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg,rgba(0,0,0,.6),transparent); color:#fff; font-size:.65rem; font-weight:700; padding:4px 5px; }
+    .img-opt-sm .chk { position:absolute; top:4px; right:4px; background:#f97316; color:#fff; border-radius:50%; width:16px; height:16px; display:none; align-items:center; justify-content:center; font-size:.6rem; }
+    .img-opt-sm.selected .chk { display:flex; }
+    .active-filter { border-color: #f97316 !important; color: #f97316 !important; }
+  </style>
+  <style>
+    #listaLocaisEdit .d-flex { transition: box-shadow .15s; }
+    #listaLocaisEdit .d-flex:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    #buscaLocalEdit { border-left: none !important; }
+    .pac-container { font-family: Inter, sans-serif; border-radius: 12px; z-index: 2000 !important; }
+    /* Desktop: limita altura do body scrollável */
+    @media (min-width: 576px) {
+      .modal-dialog-scrollable .modal-body { max-height: 75vh; overflow-y: auto; }
+    }
+    #imgSelectorEdit { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-top:6px; }
+    /* Mobile: força fullscreen com scroll correto */
+    @media (max-width: 575.98px) {
+      #modalEditarRoteiro { padding: 0 !important; }
+      #modalEditarRoteiro .modal-dialog {
+        margin: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 100% !important;
+        min-height: 100% !important;
+        align-items: stretch !important;
+      }
+      #modalEditarRoteiro .modal-content {
+        height: 100% !important;
+        border-radius: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+      }
+      #modalEditarRoteiro .modal-body {
+        flex: 1 1 0 !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+  </style>
+</head>
+
+<body data-pagina="meus-roteiros">
+  <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" aria-label="Menu principal">
+      <div class="brand">
+        <div class="brand-badge" style="width:42px;height:42px;min-width:42px;padding:0;background:transparent;border:none;box-shadow:none;border-radius:0;overflow:visible;"><img src="../assets/img/logo.png" alt="FlyGuide" style="width:42px;height:42px;object-fit:contain;display:block;"></div>
+        <div><div class="brand-title">Fly Guide</div><div class="brand-sub">Suas viagens inesquecíveis</div></div>
+        <button class="btn btn-sm btn-outline-soft ms-auto d-lg-none" data-sidebar-close title="Fechar"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="navlist">
+        <a class="" href="index.html"><i class="bi bi-globe"></i><span>Feed de Roteiros</span></a>
+        <a class="active" href="meus-roteiros.html"><i class="bi bi-map"></i><span>Meus Roteiros</span></a>
+        <a class="" href="roteiros-iniciados.html"><i class="bi bi-play-circle"></i><span>Roteiros Iniciados</span></a>
+        <a class="" href="planos-premium.html"><i class="bi bi-star"></i><span>Planos Premium</span></a>
+        <a class="" href="ajuda.html"><i class="bi bi-question-circle"></i><span>Ajuda</span></a>
+      </div>
+      <a href="criar-roteiro.html" class="btn btn-new btn-primary w-100"><i class="bi bi-plus-lg me-2"></i>Gerar Novo Roteiro</a>
+      <div class="profile">
+        <div class="avatar">?</div>
+        <div><div class="name">Carregando...</div><div class="email"></div></div>
+      </div>
+    </nav>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main" id="conteudo-principal">
+      <div class="mobile-topbar">
+        <button class="btn btn-outline-soft" data-sidebar-open><i class="bi bi-list"></i></button>
+        <div class="fw-bold">Meus Roteiros</div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="d-lg-none position-fixed top-0 start-0 w-100 h-100" data-sidebar-backdrop style="display:none; z-index:1035;"></div>
+      <script>
+        (function(){
+          const sidebar=document.querySelector('.sidebar'), backdrop=document.querySelector('[data-sidebar-backdrop]');
+          const show=()=>{ if(backdrop) backdrop.style.display='block'; };
+          const hide=()=>{ if(backdrop) backdrop.style.display='none'; };
+          document.addEventListener('click',(e)=>{
+            if(e.target.closest('[data-sidebar-open]')) show();
+            if(e.target.closest('[data-sidebar-close]')) hide();
+            if(e.target.matches('[data-sidebar-backdrop]')) hide();
+          });
+          const obs=new MutationObserver(()=>{ if(!sidebar) return; sidebar.classList.contains('open')?show():hide(); });
+          if(sidebar) obs.observe(sidebar,{attributes:true,attributeFilter:['class']});
+        })();
+      </script>
+
+      <div class="grid-wrap pt-4">
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+          <div>
+            <h1 class="fw-black fw-bold mb-1" style="font-weight:900;">Meus Roteiros</h1>
+            <div class="small-muted">Gerencie suas viagens e experiências</div>
+          </div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="dropdown">
+              <button type="button" id="ordenacaoMRBtn"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                style="display:flex;align-items:center;gap:7px;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 14px;font-size:.84rem;font-weight:700;color:#1e293b;background:#fff;cursor:pointer;outline:none;white-space:nowrap;">
+                <i class="bi bi-sort-down" style="color:#f97316;font-size:.9rem;"></i>
+                <span id="ordenacaoMRLabel">Mais novo</span>
+                <i class="bi bi-chevron-down" style="font-size:.7rem;color:#94a3b8;margin-left:2px;"></i>
+              </button>
+              <ul class="dropdown-menu" style="min-width:150px;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:4px;">
+                <li><a class="dropdown-item" data-ordem="mais-novo" href="#" style="font-size:.84rem;font-weight:600;border-radius:8px;">Mais novo</a></li>
+                <li><a class="dropdown-item" data-ordem="mais-velho" href="#" style="font-size:.84rem;font-weight:600;border-radius:8px;">Mais velho</a></li>
+              </ul>
+            </div>
+            <a class="btn btn-primary-orange" href="criar-roteiro.html"><i class="bi bi-plus-lg me-2"></i>Gerar Novo Roteiro</a>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="mt-4 d-flex flex-wrap gap-2" id="filtrosRoteiros">
+          <button class="btn btn-outline-soft rounded-pill fw-bold active-filter" data-filtro="todos">Todos (<span id="cntTodos">0</span>)</button>
+          <button class="btn btn-outline-soft rounded-pill fw-bold" data-filtro="Público">
+            <i class="bi bi-globe2 me-1"></i>Roteiros públicos (<span id="cntPublicos">0</span>)
+          </button>
+          <button class="btn btn-outline-soft rounded-pill fw-bold" data-filtro="Privado">
+            <i class="bi bi-lock-fill me-1"></i>Roteiros privados (<span id="cntPrivados">0</span>)
+          </button>
+          <button class="btn btn-outline-soft rounded-pill fw-bold" data-filtro="rascunhos" id="btnFiltroRascunhos" style="display:none;">
+            <i class="bi bi-bookmark me-1"></i>Rascunhos (<span id="cntRascunhos">0</span>)
+          </button>
+        </div>
+
+        <!-- Carregando -->
+        <div id="loadingRoteiros" class="text-center py-5">
+          <div class="spinner-border" style="color:#f97316!important"></div>
+          <div class="small-muted mt-3">Carregando seus roteiros...</div>
+        </div>
+
+        <!-- Vazio -->
+        <div id="emptyRoteiros" class="text-center py-5" style="display:none;">
+          <i class="bi bi-map" style="font-size:3rem; color:#cbd5e1;"></i>
+          <div class="fw-bold mt-3" id="emptyRoteirosTitulo" style="color:#64748b;">Nenhum roteiro criado ainda</div>
+          <div class="small-muted mt-1" id="emptyRoteirosTexto">Crie seu primeiro roteiro e comece a explorar o mundo!</div>
+          <a href="criar-roteiro.html" class="btn btn-primary-orange mt-4"><i class="bi bi-plus-lg me-2"></i>Criar Roteiro</a>
+        </div>
+
+        <!-- Paginação topo -->
+        <div id="mrPaginacaoTopo"></div>
+
+        <!-- Lista -->
+        <div class="row g-4 mt-2" id="listaRoteiros" style="display:none;"></div>
+
+        <!-- Rascunhos -->
+        <div id="listaRascunhos" style="display:none;" class="mt-2"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Avaliar Roteiro -->
+  <div class="modal fade" id="modalAvaliarMR" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:18px;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-star-fill me-2" style="color:#facc15;"></i>Avaliar roteiro
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="text-secondary mb-3" style="font-size:.9rem;">Como foi sua experiência com este roteiro?</p>
+          <div role="radiogroup" aria-label="Nota de 1 a 5 estrelas" style="display:flex;gap:12px;justify-content:center;font-size:2.2rem;margin-bottom:8px;">
+            <i class="bi bi-star star-mr" data-nota="1" role="radio" aria-label="1 estrela" aria-checked="false" tabindex="0" style="cursor:pointer;color:#cbd5e1;transition:color .12s;"></i>
+            <i class="bi bi-star star-mr" data-nota="2" role="radio" aria-label="2 estrelas" aria-checked="false" tabindex="0" style="cursor:pointer;color:#cbd5e1;transition:color .12s;"></i>
+            <i class="bi bi-star star-mr" data-nota="3" role="radio" aria-label="3 estrelas" aria-checked="false" tabindex="0" style="cursor:pointer;color:#cbd5e1;transition:color .12s;"></i>
+            <i class="bi bi-star star-mr" data-nota="4" role="radio" aria-label="4 estrelas" aria-checked="false" tabindex="0" style="cursor:pointer;color:#cbd5e1;transition:color .12s;"></i>
+            <i class="bi bi-star star-mr" data-nota="5" role="radio" aria-label="5 estrelas" aria-checked="false" tabindex="0" style="cursor:pointer;color:#cbd5e1;transition:color .12s;"></i>
+          </div>
+          <p id="legendaNotaMR" style="font-size:.82rem;color:#94a3b8;min-height:1.2em;margin-bottom:14px;"></p>
+          <textarea id="textoAvaliacaoMR" placeholder="Conte como foi (opcional)..." maxlength="1000"
+            style="width:100%;border-radius:10px;border:1px solid #e2e8f0;padding:10px;font-size:.88rem;resize:none;min-height:80px;background:inherit;color:inherit;"></textarea>
+          <div id="erroAvaliacaoMR" style="display:none;margin-top:8px;padding:8px 12px;background:#fee2e2;color:#b91c1c;border-radius:8px;font-size:.83rem;text-align:left;"></div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button class="btn btn-outline-gray" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary-orange fw-bold" id="btnSalvarAvaliacaoMR" disabled>
+            <i class="bi bi-check-lg me-1"></i>Salvar avaliação
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar Roteiro -->
+  <!-- Modal: Editar Roteiro (com abas) -->
+  <div class="modal fade" id="modalEditarRoteiro" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+      <div class="modal-content" style="border-radius:18px;">
+
+        <!-- Header com abas -->
+        <div class="modal-header border-0 pb-0 flex-column align-items-start gap-2">
+          <div class="d-flex w-100 align-items-center justify-content-between">
+            <h5 class="modal-title fw-bold">Editar Roteiro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <!-- Abas -->
+          <ul class="nav nav-tabs w-100" id="editTabs" style="border-bottom:none;gap:4px;">
+            <li class="nav-item">
+              <button class="nav-link active fw-bold px-4" id="tab-info-btn"
+                      style="border-radius:10px 10px 0 0;color:#f97316;border-color:#e5e7eb #e5e7eb #fff;"
+                      onclick="trocarAbaEdit('info')">
+                <i class="bi bi-pencil me-2"></i>Informações
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link fw-bold px-4" id="tab-locais-btn"
+                      style="border-radius:10px 10px 0 0;"
+                      onclick="trocarAbaEdit('locais')">
+                <i class="bi bi-map me-2"></i>Locais
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-body">
+          <div class="alert alert-danger" id="editRoteiroErro" style="display:none;"></div>
+
+          <!-- ABA: Informações -->
+          <div id="abaInfo">
+            <div class="row g-3">
+              <input type="hidden" id="editRoteiroId">
+
+              <div class="col-12">
+                <label class="form-label fw-bold">Nomeie sua Viagem *</label>
+                <input class="form-control" id="editTitulo">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-bold">País Principal *</label>
+                <input class="form-control" id="editPais" placeholder="Ex: França" autocomplete="off">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-bold">Cidade Base *</label>
+                <input class="form-control" id="editCidade" placeholder="Ex: Paris" autocomplete="off">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-bold">Duração (dias) *</label>
+                <input class="form-control" id="editDuracao" type="number" min="1" placeholder="Ex: 7">
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label fw-bold">Tipo de Viagem</label>
+                <select class="form-select" id="editTipo">
+                  <option value="Cidade">Cidade</option>
+                  <option value="Aventura">Aventura</option>
+                  <option value="Cultural">Cultural</option>
+                  <option value="Praia">Praia</option>
+                  <option value="Natureza">Natureza</option>
+                  <option value="Gastronomia">Gastronomia</option>
+                  <option value="Mochilão">Mochilão</option>
+                  <option value="Luxo">Luxo</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold">Descritivo da Viagem</label>
+                <textarea class="form-control" id="editDescricao" rows="3"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-bold">Imagem de Capa</label>
+                <div class="helper mb-2">Escolha um tema visual para o seu roteiro</div>
+                <div id="imgSelectorEdit"></div>
+                <input type="hidden" id="editImagem" value="">
+              </div>
+              <div class="col-12">
+                <div class="visibility-strip" id="visibilityStrip">
+                  <div class="visibility-icon-wrap" id="visIconWrap">
+                    <i class="bi bi-lock-fill" id="visIcon"></i>
+                  </div>
+                  <div class="visibility-text">
+                    <div class="visibility-label" id="visLabel">Roteiro Privado</div>
+                    <div class="visibility-desc" id="visDesc">Somente você pode ver este roteiro</div>
+                  </div>
+                  <div class="visibility-toggle-wrap">
+                    <div class="form-check form-switch m-0">
+                      <input class="form-check-input" id="editPublico" type="checkbox" role="switch">
+                    </div>
+                    <span class="visibility-badge" id="visBadge">Privado</span>
+                  </div>
+                </div>
+                <input type="hidden" id="editVisibilidade" value="Privado">
+              </div>
+            </div>
+          </div>
+
+          <!-- ABA: Locais -->
+          <div id="abaLocais" style="display:none;">
+            <div class="alert" id="erroLocalEdit" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:10px;font-size:.9rem;"></div>
+            <div id="formAdicionarLocalEdit">
+
+            <!-- ── Recomendações Inteligentes ── -->
+            <div class="mb-3" style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:16px;">
+              <div style="font-weight:800;font-size:.95rem;margin-bottom:10px;">
+                <i class="bi bi-stars me-1" style="color:#f97316;"></i>Recomendações Inteligentes
+                <div style="font-size:.78rem;font-weight:400;color:#64748b;margin-top:2px;">Melhores lugares na cidade do roteiro, ordenados por avaliação</div>
+              </div>
+              <div class="d-flex gap-2 mb-2">
+                <select class="form-select form-select-sm" id="categoriaRecomendacaoEdit">
+                  <option value="tourist_attraction">Atrações Turísticas</option>
+                  <option value="restaurant">Restaurantes</option>
+                  <option value="lodging">Hospedagem</option>
+                  <option value="museum">Museus</option>
+                  <option value="park">Parques</option>
+                  <option value="shopping_mall">Shoppings</option>
+                  <option value="night_club">Vida Noturna</option>
+                  <option value="bar">Bares</option>
+                  <option value="cafe">Cafés</option>
+                  <option value="beach">Praias</option>
+                </select>
+                <button class="btn btn-sm btn-primary-orange flex-shrink-0" id="btnBuscarRecomendacoesEdit" type="button">
+                  <i class="bi bi-search me-1"></i>Buscar
+                </button>
+              </div>
+              <div id="alertaRecomendacoesEdit" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:8px;font-size:.82rem;padding:8px 12px;margin-bottom:8px;"></div>
+              <div id="loadingRecomendacoesEdit" style="display:none;" class="text-center py-2 text-secondary" style="font-size:.82rem;">
+                <span class="spinner-border spinner-border-sm me-1"></span>Buscando recomendações...
+              </div>
+              <div id="listaRecomendacoesEdit"></div>
+            </div>
+
+            <!-- ── Busca Manual ── -->
+            <div class="mb-3">
+              <label class="form-label fw-bold">Buscar Local</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white" style="border-radius:12px 0 0 12px;">
+                  <i class="bi bi-search" style="color:#f97316;"></i>
+                </span>
+                <input id="buscaLocalEdit" type="text" class="form-control border-start-0"
+                       style="border-radius:0 12px 12px 0;"
+                       placeholder="Ex: Torre Eiffel, Paris...">
+              </div>
+            </div>
+
+            <!-- Preview local selecionado -->
+            <div id="localPreviewEdit" style="display:none;" class="mb-3">
+              <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:12px 14px;">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-geo-alt-fill" style="color:#f97316;font-size:1.1rem;"></i>
+                  <div style="flex:1;">
+                    <div class="fw-bold" id="previewNomeEdit"></div>
+                    <div class="text-secondary" style="font-size:.82rem;" id="previewEnderecoEdit"></div>
+                  </div>
+                  <i class="bi bi-check-circle-fill" style="color:#22c55e;font-size:1.2rem;"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dia e observações -->
+            <div class="row g-2 mb-3">
+              <div class="col-4">
+                <label class="form-label fw-bold">Dia <span style="color:#ef4444;">*</span></label>
+                <select id="localDiaEdit" class="form-select"><option value="" disabled selected>Selecione</option></select>
+              </div>
+              <div class="col-4">
+                <label class="form-label fw-bold">Período <span style="color:#ef4444;">*</span></label>
+                <select id="localPeriodoEdit" class="form-select">
+                  <option value="" disabled selected>— selecione —</option>
+                  <option value="manha">🌅 Manhã</option>
+                  <option value="tarde">☀️ Tarde</option>
+                  <option value="noite">🌙 Noite</option>
+                </select>
+              </div>
+              <div class="col-4">
+                <label class="form-label fw-bold">Observações</label>
+                <input id="localObsEdit" type="text" class="form-control" placeholder="Ex: Chegar cedo">
+              </div>
+            </div>
+
+            <button class="btn btn-primary-orange w-100 fw-bold mb-3" id="btnAdicionarLocalEdit" type="button">
+              <i class="bi bi-plus-lg me-1"></i>Adicionar Local ao Roteiro
+            </button>
+            </div><!-- /formAdicionarLocalEdit -->
+
+            <!-- Mapa dos Locais -->
+            <div id="miniMapaEditBox" style="display:none;margin-bottom:12px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:12px;">
+              <div class="fw-bold mb-2" style="font-size:.9rem;color:#64748b;">
+                <i class="bi bi-map me-1" style="color:#f97316;"></i>Mapa dos Locais
+              </div>
+              <div id="miniMapaEdit" style="height:240px;border-radius:10px;overflow:hidden;"></div>
+            </div>
+
+            <!-- Lista -->
+            <div style="background:#f8fafc;border-radius:14px;padding:14px;min-height:120px;">
+              <div class="fw-bold mb-2" style="font-size:.9rem;color:#64748b;">
+                <i class="bi bi-list-ul me-1"></i>Locais adicionados
+              </div>
+              <div id="listaLocaisEdit">
+                <div id="vazioLocaisEdit" class="text-center py-3 text-secondary" style="font-size:.88rem;">
+                  <i class="bi bi-map" style="color:#cbd5e1;font-size:1.5rem;display:block;margin-bottom:6px;"></i>
+                  Nenhum local adicionado ainda
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer muda conforme aba -->
+        <div class="modal-footer border-0">
+          <button class="btn btn-outline-gray" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary-orange fw-bold" id="btnSalvarEdicaoRoteiro">
+            <i class="bi bi-check-lg me-1"></i>Salvar Alterações
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function trocarAbaEdit(aba) {
+      const abaInfo   = document.getElementById('abaInfo');
+      const abaLocais = document.getElementById('abaLocais');
+      const btnInfo   = document.getElementById('tab-info-btn');
+      const btnLocais = document.getElementById('tab-locais-btn');
+      const btnSalvar = document.getElementById('btnSalvarEdicaoRoteiro');
+
+      if (aba === 'info') {
+        abaInfo.style.display   = '';
+        abaLocais.style.display = 'none';
+        btnInfo.classList.add('active');
+        btnLocais.classList.remove('active');
+        btnInfo.style.color = '#f97316';
+        btnLocais.style.color = '';
+        btnSalvar.style.display = '';
+      } else {
+        abaInfo.style.display   = 'none';
+        abaLocais.style.display = '';
+        btnInfo.classList.remove('active');
+        btnLocais.classList.add('active');
+        btnInfo.style.color = '';
+        btnLocais.style.color = '#f97316';
+        btnSalvar.style.display = 'none';
+      }
+    }
+  </script>
+
+  <script src="../assets/js/transitions.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script src="../assets/js/imagens.js"></script>
+  <script src="../assets/js/roteiros.js"></script>
+  <script src="../assets/js/maps.js"></script>
+  <script src="../assets/js/maps-edit.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJDXcLhGd99ryVpWwvkVpeFaKuzDWbvwI&libraries=places&language=pt-BR&loading=async&callback=initMapsEdit" async defer></script>
+  <script>
+    function mascHorario(input) {
+      let v = input.value.replace(/\D/g, '').slice(0, 4);
+      if (v.length >= 3) v = v.slice(0, 2) + ':' + v.slice(2);
+      input.value = v;
+    }
+  </script>
+  <script src="../assets/js/dark-mode.js"></script>
+</body>
+</html>
+
+

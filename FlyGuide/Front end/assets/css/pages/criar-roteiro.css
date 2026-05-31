@@ -1,0 +1,125 @@
+/*
+  Página: Criar Roteiro
+  --------------------------------------------------
+  - Formulário principal
+  - Blocos de atividades e dicas (listas)
+*/
+
+.page-head{
+  padding: 18px 22px;
+  display:flex;
+  justify-content:center;
+}
+.page-head .back-center{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#0f172a;
+  font-weight: 800;
+}
+
+.form-card{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 18px;
+  box-shadow: var(--fg-shadow-soft);
+  padding: 18px;
+}
+.form-card .form-control,
+.form-card .form-select{
+  border-radius: 12px;
+  border-color: #e5e7eb;
+  height: 44px;
+}
+.form-card textarea.form-control{ height: auto; }
+
+.helper{ color: var(--fg-muted); font-size: .85rem; margin-top:6px; }
+
+.soft-strip{
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  border-radius: 14px;
+  padding: 14px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap: 12px;
+}
+.soft-strip .label{ font-weight: 800; }
+.soft-strip .desc{ color: var(--fg-muted); font-size: .9rem; margin-top: 2px; }
+
+.big-box{
+  background:#fff;
+  border: 1px solid #eef2f7;
+  border-radius: 18px;
+  box-shadow: var(--fg-shadow-soft);
+  padding: 18px;
+  margin-top: 16px;
+}
+.big-box .empty{
+  color: var(--fg-muted);
+  text-align:center;
+  padding: 22px 12px;
+}
+
+.footer-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap: 12px;
+  padding: 16px 0 26px 0;
+}
+
+/* Dropdown do Google Maps Autocomplete acima de tudo */
+.pac-container {
+  z-index: 9999 !important;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+
+/* ── Responsividade mobile ─────────────────────────────────── */
+@media (max-width: 576px) {
+  .grid-wrap {
+    padding: 10px 10px 32px 10px;
+  }
+
+  .form-card {
+    padding: 14px 12px;
+    border-radius: 14px;
+  }
+
+  .page-head {
+    padding: 12px 12px;
+  }
+
+  /* Mapa menor no mobile */
+  #miniMapaPasso3 {
+    height: 220px !important;
+  }
+
+  /* Linha Dia + Período lado a lado, Observações em linha própria */
+  #passo3 .row > .col-4:nth-child(-n+2) {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  #passo3 .row > .col-4:last-child {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Select + botão "Buscar" quebra linha se necessário */
+  #formAdicionarLocalEdit .d-flex.gap-2 {
+    flex-wrap: wrap;
+  }
+  #categoriaRecomendacaoEdit {
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* Botões finais empilhados no mobile */
+  #passo3 .d-flex.gap-3 {
+    flex-direction: column;
+  }
+  #passo3 .d-flex.gap-3 .btn-outline-gray {
+    min-width: unset;
+  }
+}

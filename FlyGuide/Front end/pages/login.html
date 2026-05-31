@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" href="../assets/img/logo.png" type="image/png">
+  <title>FlyGuide — Entrar</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <link href="../assets/css/pages/auth.css" rel="stylesheet" />
+</head>
+
+<body data-pagina="login" style="font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0;">
+
+  <div class="fly-split">
+
+    <!-- ── ESQUERDA: Painel de marca ───────────────────────────── -->
+    <div class="fly-left">
+      <div class="fly-brand">
+        <img src="../assets/img/logo.png" alt="FlyGuide" class="fly-brand-logo">
+        <span class="fly-brand-name">FlyGuide</span>
+      </div>
+
+      <div id="flyMap" class="fly-map-wrap"></div>
+
+      <div class="fly-tagline">
+        Explore destinos incríveis<br>
+        <span>com o FlyGuide.</span>
+      </div>
+    </div>
+
+    <!-- ── DIREITA: Painel de formulário ───────────────────────── -->
+    <div class="fly-right">
+      <div class="fly-form-wrap">
+
+        <!-- Logo visível apenas no mobile -->
+        <div class="fly-mobile-brand">
+          <img src="../assets/img/logo.png" alt="FlyGuide">
+          <span>FlyGuide</span>
+        </div>
+
+        <!-- Formulário principal de login -->
+        <form id="formularioLogin" novalidate>
+          <h1 class="fly-form-title">Entrar no FlyGuide</h1>
+
+          <div class="fly-field auth-field mb-3">
+            <input id="emailLogin" type="email" class="form-control fly-input"
+              placeholder="E-mail" autocomplete="email" required>
+            <div class="invalid-feedback"></div>
+          </div>
+
+          <div class="fly-field auth-field mb-3" style="position:relative;">
+            <input id="senhaLogin" type="password" class="form-control fly-input"
+              placeholder="Senha" autocomplete="current-password" required
+              style="padding-right:48px!important;">
+            <button type="button" class="fly-eye-btn"
+              data-toggle-password data-target="senhaLogin" aria-label="Mostrar senha">
+              <i class="bi bi-eye"></i>
+            </button>
+            <div class="invalid-feedback"></div>
+          </div>
+
+          <button class="btn fly-btn-primary w-100 mb-2" type="submit">Entrar</button>
+
+          <div class="alert auth-alert mt-3" data-alerta-auth role="alert"></div>
+
+          <div class="text-center my-3">
+            <a href="#" id="linkEsqueceuSenha" class="fly-link-forgot">Esqueceu a senha?</a>
+          </div>
+
+          <hr class="fly-hr">
+
+          <div class="text-center mt-4">
+            <a href="cadastro.html" class="btn fly-btn-new">Criar nova conta</a>
+          </div>
+        </form>
+
+        <!-- ── ETAPA 1: Informe o e-mail ──────────────────────── -->
+        <div id="telaEsqueceuEmail" style="display:none;">
+          <a href="#" id="linkVoltarLogin" class="fly-back-link">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+          </a>
+          <h2 class="fly-form-title mt-3">Recuperar senha</h2>
+          <p class="fly-subtitle">Informe seu e-mail e enviaremos um código de recuperação.</p>
+          <div class="fly-field auth-field mb-3">
+            <input id="emailRecuperar" type="email" class="form-control fly-input"
+              placeholder="E-mail" autocomplete="email">
+            <div class="invalid-feedback"></div>
+          </div>
+          <button id="btnSolicitarOtp" class="btn fly-btn-primary w-100" type="button">
+            Enviar código
+          </button>
+          <div class="alert auth-alert mt-3" id="alertaRecuperar" role="alert"></div>
+        </div>
+
+        <!-- ── ETAPA 2: Código OTP + nova senha ───────────────── -->
+        <div id="telaResetSenha" style="display:none;">
+          <a href="#" id="linkVoltarEmail" class="fly-back-link">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+          </a>
+          <h2 class="fly-form-title mt-3">Redefinir senha</h2>
+          <p class="fly-subtitle" id="subtituloReset">
+            Digite o código que enviamos e escolha uma nova senha.
+          </p>
+          <div class="fly-field auth-field mb-3">
+            <input id="codigoReset" type="text" class="form-control fly-input"
+              placeholder="Código (6 dígitos)" maxlength="6" inputmode="numeric">
+            <div class="invalid-feedback"></div>
+          </div>
+          <div class="fly-field auth-field mb-3" style="position:relative;">
+            <input id="novaSenha" type="password" class="form-control fly-input"
+              placeholder="Nova senha (mín. 8 caracteres, 1 maiúscula, 1 especial)"
+              style="padding-right:48px!important;">
+            <button type="button" class="fly-eye-btn"
+              data-toggle-password data-target="novaSenha" aria-label="Mostrar senha">
+              <i class="bi bi-eye"></i>
+            </button>
+            <div class="invalid-feedback"></div>
+          </div>
+          <div class="fly-field auth-field mb-3" style="position:relative;">
+            <input id="confirmarNovaSenha" type="password" class="form-control fly-input"
+              placeholder="Confirmar nova senha"
+              style="padding-right:48px!important;">
+            <button type="button" class="fly-eye-btn"
+              data-toggle-password data-target="confirmarNovaSenha" aria-label="Mostrar senha">
+              <i class="bi bi-eye"></i>
+            </button>
+            <div class="invalid-feedback"></div>
+          </div>
+          <button id="btnResetarSenha" class="btn fly-btn-primary w-100" type="button">
+            Redefinir senha
+          </button>
+          <div class="alert auth-alert mt-3" id="alertaReset" role="alert"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/auth.js"></script>
+
+  <!-- Globo interativo D3 -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js"></script>
+  <script>
+  (function () {
+    var el = document.getElementById('flyMap');
+    if (!el) return;
+
+    function init() {
+      var W = el.clientWidth  || 440;
+      var H = el.clientHeight || 380;
+      var R = Math.min(W, H) * 0.44;
+
+      var svg = d3.select('#flyMap').append('svg')
+        .attr('width', W).attr('height', H)
+        .style('cursor', 'grab').style('display', 'block');
+
+      var proj = d3.geoOrthographic()
+        .scale(R)
+        .translate([W / 2, H / 2])
+        .clipAngle(90)
+        .rotate([20, -20, 0]);
+
+      var pathGen = d3.geoPath().projection(proj);
+
+      // Glow filter
+      var defs = svg.append('defs');
+      var filt = defs.append('filter').attr('id', 'gGlow').attr('x', '-20%').attr('y', '-20%').attr('width', '140%').attr('height', '140%');
+      filt.append('feGaussianBlur').attr('in', 'SourceGraphic').attr('stdDeviation', '5').attr('result', 'blur');
+      var fm = filt.append('feMerge');
+      fm.append('feMergeNode').attr('in', 'blur');
+      fm.append('feMergeNode').attr('in', 'SourceGraphic');
+
+      // Sphere
+      svg.append('circle')
+        .attr('cx', W / 2).attr('cy', H / 2).attr('r', R)
+        .attr('fill', 'rgba(30,70,120,0.25)')
+        .attr('stroke', 'rgba(59,130,246,0.30)')
+        .attr('stroke-width', 1.5)
+        .attr('filter', 'url(#gGlow)');
+
+      // Graticule
+      var gratPath = svg.append('path')
+        .datum(d3.geoGraticule()())
+        .attr('fill', 'none')
+        .attr('stroke', 'rgba(255,255,255,0.07)')
+        .attr('stroke-width', 0.5)
+        .attr('d', pathGen);
+
+      var DESTINATIONS = [
+        { name: 'Paris',          lon:   2.35, lat:  48.86 },
+        { name: 'Tóquio',         lon: 139.69, lat:  35.69 },
+        { name: 'Rio de Janeiro', lon: -43.17, lat: -22.91 },
+        { name: 'Nova York',      lon: -74.01, lat:  40.71 },
+        { name: 'Dubai',          lon:  55.27, lat:  25.20 },
+        { name: 'Sydney',         lon: 151.21, lat: -33.87 },
+        { name: 'Londres',        lon:  -0.13, lat:  51.51 },
+        { name: 'Bangkok',        lon: 100.50, lat:  13.76 },
+      ];
+
+      d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+        .then(function (world) {
+          var features = topojson.feature(world, world.objects.countries).features;
+
+          var cGroup = svg.append('g');
+          var cPaths = cGroup.selectAll('path')
+            .data(features).enter().append('path')
+            .attr('d', pathGen)
+            .attr('fill', 'rgba(255,255,255,0.09)')
+            .attr('stroke', 'rgba(255,255,255,0.20)')
+            .attr('stroke-width', 0.5)
+            .on('mouseover', function () {
+              d3.select(this).raise()
+                .transition().duration(120)
+                .attr('fill', 'rgba(59,130,246,0.42)');
+            })
+            .on('mouseout', function () {
+              d3.select(this)
+                .transition().duration(380)
+                .attr('fill', 'rgba(255,255,255,0.09)');
+            });
+
+          // Destination markers
+          var mGroup = svg.append('g');
+          var markers = DESTINATIONS.map(function (d) {
+            var g = mGroup.append('g');
+            var ring = g.append('circle').attr('r', 6)
+              .attr('fill', 'none')
+              .attr('stroke', '#f97316')
+              .attr('stroke-width', 1.8)
+              .attr('opacity', 0.7);
+            var dot = g.append('circle').attr('r', 3.5)
+              .attr('fill', '#f97316')
+              .attr('stroke', 'rgba(255,255,255,0.85)')
+              .attr('stroke-width', 1.5);
+            g.append('text')
+              .text(d.name)
+              .attr('text-anchor', 'middle')
+              .attr('dy', 18)
+              .attr('fill', 'rgba(255,255,255,0.92)')
+              .attr('font-size', '16px')
+              .attr('font-weight', '700')
+              .attr('font-family', 'Inter, sans-serif')
+              .attr('stroke', 'rgba(0,0,0,0.55)')
+              .attr('stroke-width', '3px')
+              .attr('stroke-linejoin', 'round')
+              .style('paint-order', 'stroke');
+            return { lon: d.lon, lat: d.lat, g: g, ring: ring, dot: dot };
+          });
+
+          // Staggered pulse animation on rings
+          markers.forEach(function (m, i) {
+            setTimeout(function pulseTick() {
+              m.ring.attr('r', 5).attr('opacity', 0.8)
+                .transition().duration(1800).ease(d3.easeQuadOut)
+                .attr('r', 18).attr('opacity', 0)
+                .on('end', pulseTick);
+            }, i * 270);
+          });
+
+          function updateMarkers() {
+            var rot = proj.rotate();
+            markers.forEach(function (m) {
+              var dist = d3.geoDistance([m.lon, m.lat], [-rot[0], -rot[1]]);
+              var vis  = dist < Math.PI / 2 - 0.05;
+              m.g.style('display', vis ? '' : 'none');
+              if (vis) {
+                var p = proj([m.lon, m.lat]);
+                if (p) m.g.attr('transform', 'translate(' + p[0] + ',' + p[1] + ')');
+              }
+            });
+          }
+
+          var dragging = false;
+          svg.call(
+            d3.drag()
+              .on('start', function () { dragging = true; svg.style('cursor', 'grabbing'); })
+              .on('drag',  function (ev) {
+                var r = proj.rotate();
+                proj.rotate([r[0] + ev.dx * 0.35, r[1] - ev.dy * 0.35]);
+                cPaths.attr('d', pathGen);
+                gratPath.attr('d', pathGen);
+                updateMarkers();
+              })
+              .on('end',   function () { dragging = false; svg.style('cursor', 'grab'); })
+          );
+
+          d3.timer(function () {
+            if (dragging) return;
+            var r = proj.rotate();
+            proj.rotate([r[0] + 0.10, r[1]]);
+            cPaths.attr('d', pathGen);
+            gratPath.attr('d', pathGen);
+            updateMarkers();
+          });
+
+          updateMarkers();
+        });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { requestAnimationFrame(init); });
+    } else {
+      requestAnimationFrame(init);
+    }
+  })();
+  </script>
+</body>
+</html>

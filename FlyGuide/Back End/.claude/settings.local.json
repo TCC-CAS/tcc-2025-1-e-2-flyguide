@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn compile:*)",
+      "Bash(./mvnw compile:*)",
+      "Bash(mvn clean:*)",
+      "Bash(mvn test *)",
+      "Bash(mvn verify *)",
+      "Bash(powershell -Command ' *)",
+      "Bash(grep -v \"//\")",
+      "PowerShell(Stop-Process *)",
+      "Bash(dir \"C:\\\\Projetos\\\\tcc-repo\\\\FlyGuide\\\\Back End\\\\target\" /s /a)",
+      "PowerShell(Get-ChildItem -Recurse \"C:\\\\Users\\\\igorg\\\\OneDrive\\\\Área de Trabalho\\\\Back End\\\\src\" | Where-Object { -not $_.PSIsContainer } | Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem -Recurse \"C:\\\\Projetos\\\\tcc-repo\\\\FlyGuide\\\\Back End\\\\src\" | Where-Object { -not $_.PSIsContainer } | Select-Object -ExpandProperty FullName)",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(mysql *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Start-Sleep -Seconds 2; Invoke-WebRequest -Uri \"http://localhost:8080/roteiros\" -UseBasicParsing -TimeoutSec 10 -ErrorAction SilentlyContinue | Select-Object StatusCode, StatusDescription)",
+      "PowerShell(Get-Process *)",
+      "Read(//c/Users/igorg/OneDrive/Área de Trabalho/FLYGUIDE_FRONT_v1.4/FLYGUIDE_FRONT_v1.4/**)",
+      "Bash(Get-ChildItem -Path . -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Projetos\\\\tcc-repo\\\\FlyGuide\\\\Back End\\\\src\\\\main\\\\java\\\\com\\\\TCC\\\\FlyGuide\\\\resources\" -File -Recurse)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Projetos\\\\tcc-repo\\\\FlyGuide\\\\Back End\\\\src\\\\main\\\\java\\\\com\\\\TCC\\\\FlyGuide\" -Recurse -Filter \"*.java\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(powershell -Command \"Compress-Archive -Force -Path 'Dockerfile','target/FlyGuide-0.0.1-SNAPSHOT.jar' -DestinationPath 'flyguide-deploy.zip'\")"
+    ]
+  }
+}
