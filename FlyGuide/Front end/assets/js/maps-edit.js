@@ -29,6 +29,7 @@ let _lookupAiSeq               = 0;
 let _lookupAiPendente          = false;
 let _destinoPOIEdit            = false;
 let _localBaseEscolhidoEdit    = null;
+let _aiLocaisRemovidosEdit     = new Set();
 
 // ── Estado temporário da tela ─────────────────────────────────────
 function _resetarEstadoBasesEdit() {
@@ -83,6 +84,115 @@ function _atualizarBotoesLookupAi() {
 // ── Utilidades ────────────────────────────────────────────────────
 function _normalizar(v) {
   return String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+}
+
+function _normalizarNomeLocalAIEdit(valor) {
+  return _normalizar(valor).replace(/\s+/g, " ");
+}
+
+function _chavesLocalAIEdit(origem) {
+  const chaves = [];
+  const addNome = valor => {
+    const nome = _normalizarNomeLocalAIEdit(valor);
+    if (nome) chaves.push(`nome:${nome}`);
+  };
+  const addPlace = valor => {
+    const place = String(valor || "").trim();
+    if (place) chaves.push(`place:${place}`);
+  };
+
+  if (!origem) return chaves;
+
+  if (origem.nodeType === 1) {
+    addNome(origem.getAttribute("data-ai-origin-nome"));
+    addNome(origem.querySelector("[data-ai-nome]")?.value);
+    addNome(origem.querySelector("[data-ai-title]")?.textContent);
+    addPlace(origem.getAttribute("data-ai-origin-place-id"));
+    addPlace(origem.querySelector("[data-ai-place-id]")?.value);
+    return [...new Set(chaves)];
+  }
+
+  addNome(origem.nome || origem.name || origem.titulo || origem.label);
+  addPlace(origem.placeId || origem.place_id);
+  return [...new Set(chaves)];
+}
+
+function _registrarLocalRemovidoAIEdit(origem) {
+  _chavesLocalAIEdit(origem).forEach(chave => _aiLocaisRemovidosEdit.add(chave));
+}
+
+function _localFoiRemovidoAIEdit(origem) {
+  const chaves = _chavesLocalAIEdit(origem);
+  return chaves.length > 0 && chaves.some(chave => _aiLocaisRemovidosEdit.has(chave));
+}
+
+function _filtrarSugestoesRemovidasAIEdit(sugestoes) {
+  if (!_aiLocaisRemovidosEdit.size || !Array.isArray(sugestoes)) return sugestoes;
+  return sugestoes.map(diaObj => {
+    if (!diaObj || typeof diaObj !== "object") return diaObj;
+    if (diaObj.periodos && typeof diaObj.periodos === "object") {
+      const periodos = {};
+      Object.entries(diaObj.periodos).forEach(([periodo, locais]) => {
+        periodos[periodo] = Array.isArray(locais)
+          ? locais.filter(local => !_localFoiRemovidoAIEdit(local))
+          : locais;
+      });
+      return { ...diaObj, periodos };
+    }
+    if (Array.isArray(diaObj.locais)) {
+      return { ...diaObj, locais: diaObj.locais.filter(local => !_localFoiRemovidoAIEdit(local)) };
+    }
+    return diaObj;
+  });
+}
+
+function _removerSugestaoAIEditPorElemento(itemEl) {
+  if (!_roteiroObjEdit || !Array.isArray(_roteiroObjEdit.sugestoes) || !itemEl) return;
+
+  const uid = itemEl.getAttribute("data-ai-uid")
+    || itemEl.querySelector("[data-ai-edit]")?.getAttribute("data-ai-edit")
+    || "";
+  const partes = uid.split("-");
+  const chavesRemovidas = _chavesLocalAIEdit(itemEl);
+
+  const removerDaLista = (lista, idxFallback) => {
+    if (!Array.isArray(lista)) return lista;
+    const antes = lista.length;
+    let novaLista = lista.filter(local => {
+      const chavesLocal = _chavesLocalAIEdit(local);
+      return !chavesLocal.some(chave => chavesRemovidas.includes(chave));
+    });
+    if (novaLista.length === antes && Number.isInteger(idxFallback) && idxFallback >= 0 && idxFallback < lista.length) {
+      novaLista = lista.slice();
+      novaLista.splice(idxFallback, 1);
+    }
+    return novaLista;
+  };
+
+  if (partes[0] === "p" && partes.length >= 4) {
+    const dIdx = parseInt(partes[1], 10);
+    const perKey = partes[2];
+    const idx = parseInt(partes[3], 10);
+    const diaObj = _roteiroObjEdit.sugestoes[dIdx];
+    if (diaObj?.periodos?.[perKey]) {
+      diaObj.periodos[perKey] = removerDaLista(diaObj.periodos[perKey], idx);
+    }
+  } else if (partes[0] === "l" && partes.length >= 3) {
+    const dIdx = parseInt(partes[1], 10);
+    const idx = parseInt(partes[2], 10);
+    const diaObj = _roteiroObjEdit.sugestoes[dIdx];
+    if (Array.isArray(diaObj?.locais)) {
+      diaObj.locais = removerDaLista(diaObj.locais, idx);
+    }
+  } else {
+    _roteiroObjEdit.sugestoes = _filtrarSugestoesRemovidasAIEdit(_roteiroObjEdit.sugestoes);
+  }
+}
+
+function _atualizarAlvoPeriodoDepoisRemocaoAIEdit(perEl) {
+  if (!perEl) return;
+  const totalAtual = perEl.querySelectorAll("[data-ai-item]:not([data-ai-special])").length;
+  perEl.setAttribute("data-ai-target-count", String(totalAtual));
 }
 
 function _calcularKm(lat1, lng1, lat2, lng2) {
@@ -832,7 +942,7 @@ function _renderAIItemCardMR(item, idx, uid, isDark) {
   const custoLabel = custo ? "$ " + custo : "$";
   const obs = String(item.observacoes || "").trim();
 
-  return `<div data-ai-item style="margin-top:5px;">
+  return `<div data-ai-item data-ai-uid="${escapeHtml(uid)}" data-ai-origin-nome="${escapeHtml(nome)}" data-ai-origin-place-id="${escapeHtml(placeId)}" style="margin-top:5px;">
     <div style="background:${corCard};border:1px solid ${corBorda};border-radius:8px;display:flex;align-items:center;gap:8px;padding:7px 10px;">
       <div style="background:#f97316;color:#fff;min-width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.75rem;flex-shrink:0;">${idx + 1}</div>
       <div style="flex:1;min-width:0;">
@@ -963,7 +1073,6 @@ function _renderLocalCardMR(l, idx, isDark) {
   }
 
   const vid = String(l.idRoteiroLocal);
-  const horFmt    = _formatarHorarioEdit(l.horario) || "";
   const corCard   = isDark ? "#1e293b" : "#f8fafc";
   const corBorda  = isDark ? "#334155" : "#e2e8f0";
   const corLabel  = isDark ? "#94a3b8" : "#64748b";
@@ -971,20 +1080,18 @@ function _renderLocalCardMR(l, idx, isDark) {
   const corFormBrd = isDark ? "#334155" : "#e2e8f0";
   const maxDiaAttr = _diasTotaisEdit > 0 ? ` max="${_diasTotaisEdit}"` : "";
   const custoVal  = l.custo != null ? String(l.custo) : "";
-  const custoLabel = custoVal !== "" ? "$ " + custoVal : "$";
   const mapsUrl = _mapsUrlLocalEdit(l);
+  const obs = String(l.observacoes || "").trim();
   return `<div id="lwrap-${vid}" style="margin-top:5px;">
     <div style="background:${corCard};border:1px solid ${corBorda};border-radius:8px;display:flex;align-items:center;gap:8px;padding:7px 10px;">
       <div style="background:#f97316;color:#fff;min-width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.75rem;flex-shrink:0;">${idx + 1}</div>
       <div style="flex:1;min-width:0;">
-        <div style="font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(l.nome || "Local")}</div>
-        ${l.endereco ? `<div style="font-size:.72rem;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(l.endereco)}</div>` : ""}
-        ${l.observacoes ? `<div style="font-size:.72rem;color:${corLabel};">${escapeHtml(l.observacoes)}</div>` : ""}
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px;">
-          ${window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : "tourist_attraction")]) : ""}
-          <span id="mr-rating-lr-${vid}" data-mr-rating-id="mr-rating-lr-${vid}" data-mr-rating-nome="${escapeHtml(l.nome || '')}" data-mr-rating-pid="${escapeHtml(l.placeId || '')}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
-          ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="font-size:.7rem;color:#f97316;text-decoration:none;display:inline-flex;align-items:center;gap:3px;font-weight:700;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
-        </div>
+        <div data-ai-title style="font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(l.nome || "Local")}</div>
+        <div data-ai-address style="font-size:.72rem;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:${l.endereco ? "" : "none"};">${l.endereco ? `<i class="bi bi-geo-alt me-1"></i>${escapeHtml(l.endereco)}` : ""}</div>
+        ${window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : "tourist_attraction")]) : ""}
+        <span id="mr-rating-lr-${vid}" data-mr-rating-id="mr-rating-lr-${vid}" data-mr-rating-nome="${escapeHtml(l.nome || '')}" data-mr-rating-pid="${escapeHtml(l.placeId || '')}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
+        <div data-ai-obs-display style="display:${obs ? "" : "none"};font-size:.72rem;color:#94a3b8;margin-top:2px;"><i class="bi bi-pencil-fill me-1"></i><span>${escapeHtml(obs)}</span></div>
+        ${mapsUrl ? `<a data-ai-maps-link href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="font-size:.7rem;color:#f97316;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:3px;font-weight:700;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
       </div>
       <div style="display:flex;gap:4px;flex-shrink:0;">
         <button class="btn btn-sm btn-outline-secondary" data-edit-vinculo-mr="${vid}"><i class="bi bi-pencil"></i></button>
@@ -1123,7 +1230,7 @@ async function _autoLookupAIAddresses(lista, cidade) {
       return addr.includes(cidadeAlvo);
     };
 
-    const _resultadoAceitavel = r => r?.place_id && _dentroDoRaio(r) && _noEstado(r) && !_temTipoBloqueado(r);
+    const _resultadoAceitavel = r => r?.place_id && _dentroDoRaio(r) && _noEstado(r) && !_temTipoBloqueado(r) && !_localFoiRemovidoAIEdit(r);
 
     const _limparResolucaoItem = item => {
       const pidEl = item.querySelector("[data-ai-place-id]");
@@ -1430,9 +1537,13 @@ async function _autoLookupAIAddresses(lista, cidade) {
       const ins = document.getElementById(`aiedit-mr-${uid}`)?.closest("[data-ai-item]");
       if (!ins) return;
       ins.querySelector("[data-ai-del]")?.addEventListener("click", () => {
+        const perEl = ins.closest("[data-ai-per]");
+        _registrarLocalRemovidoAIEdit(ins);
         ins.remove();
+        _atualizarAlvoPeriodoDepoisRemocaoAIEdit(perEl);
         _atualizarContadoresAIVisiveis(lista);
         _renderMiniMapaPasso3(lista);
+        if (!_lookupAiPendente) _salvarOrdemSilencioso();
       });
       ins.querySelector("[data-ai-edit]")?.addEventListener("click", () => {
         const f = document.getElementById(`aiedit-mr-${uid}`);
@@ -1528,7 +1639,9 @@ async function _autoLookupAIAddresses(lista, cidade) {
         .some(el => el.querySelector("input[data-ai-checkout]")?.value === "1");
       if (hasCheckout) continue;
 
-      const alvo = Math.max(1, parseInt(perEl.getAttribute("data-ai-target-count") || "1") || 1);
+      const alvoRaw = parseInt(perEl.getAttribute("data-ai-target-count") || "0", 10);
+      const alvo = Number.isFinite(alvoRaw) ? Math.max(0, alvoRaw) : 0;
+      if (alvo <= 0) continue;
       // Exclui special items (checkin/checkout) da contagem — evita injetar após o marker
       const faltantes = Math.max(0, alvo - perEl.querySelectorAll("[data-ai-item]:not([data-ai-special])").length);
       if (faltantes <= 0) continue;
@@ -1761,7 +1874,11 @@ function renderLocaisEditAI() {
   if (vazio) vazio.style.display = "none";
   if (!lista) return;
 
-  const sugestoes = _garantirLocalBaseNoDiaUnicoEdit(_roteiroObjEdit.sugestoes);
+  const sugestoesBase = _garantirLocalBaseNoDiaUnicoEdit(_roteiroObjEdit.sugestoes);
+  const sugestoes = _filtrarSugestoesRemovidasAIEdit(sugestoesBase);
+  if (sugestoes !== _roteiroObjEdit.sugestoes) {
+    _roteiroObjEdit = Object.assign({}, _roteiroObjEdit, { sugestoes });
+  }
   const corCard   = isDark ? "#1e293b" : "#f8fafc";
   const corBorda  = isDark ? "#334155" : "#e2e8f0";
   const corHeader = isDark ? "#f1f5f9" : "#0f172a";
@@ -1843,7 +1960,7 @@ function renderLocaisEditAI() {
         const checkoutLocal      = locaisDestePer.find(l => _isCheckoutNome(l));
         const checkoutFinal      = checkoutAI || checkoutLocal;
 
-        html += `<div class="mb-2" data-ai-per="${per.key}" data-ai-target-count="${itens.length}">`;
+        html += `<div class="mb-2" data-ai-per="${per.key}" data-ai-target-count="${_contarLocaisContaveisEdit(itens)}">`;
         html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
           <i class="bi ${per.icon}" style="color:${per.cor};font-size:.85rem;"></i>
           <span style="font-size:.78rem;font-weight:700;color:${per.cor};">${per.label}</span>
@@ -1873,7 +1990,7 @@ function renderLocaisEditAI() {
       }
     } else {
       const itens = diaObj.locais || [];
-      html += `<div data-ai-per="locais" data-ai-target-count="${itens.length}">`;
+      html += `<div data-ai-per="locais" data-ai-target-count="${_contarLocaisContaveisEdit(itens)}">`;
       itens.forEach((item, idx) => {
         html += _renderAIItemCardMR(item, idx, `l-${dIdx}-${idx}`, isDark);
       });
@@ -1918,31 +2035,14 @@ function renderLocaisEditAI() {
       const item = btn.closest("[data-ai-item]");
       if (!item) return;
 
-      const nome   = item.querySelector("[data-ai-nome]")?.value?.trim() || "";
       const perEl  = item.closest("[data-ai-per]");
-      const perKey = perEl?.getAttribute("data-ai-per") || "";
-      const diaEl  = item.closest("[data-ai-dia-idx]");
-      const diaNum = parseInt(diaEl?.getAttribute("data-dia") || "0");
-
+      _registrarLocalRemovidoAIEdit(item);
+      _removerSugestaoAIEditPorElemento(item);
       item.remove();
-
-      if (_roteiroObjEdit?.sugestoes && nome && diaNum) {
-        const diaObj = _roteiroObjEdit.sugestoes.find(d => (d.dia || 0) === diaNum);
-        if (diaObj) {
-          if (diaObj.periodos?.[perKey]) {
-            diaObj.periodos[perKey] = diaObj.periodos[perKey].filter(
-              i => (i.nome || "").trim().toLowerCase() !== nome.toLowerCase()
-            );
-          } else if (Array.isArray(diaObj.locais)) {
-            diaObj.locais = diaObj.locais.filter(
-              i => (i.nome || "").trim().toLowerCase() !== nome.toLowerCase()
-            );
-          }
-        }
-      }
-
+      _atualizarAlvoPeriodoDepoisRemocaoAIEdit(perEl);
       _atualizarContadoresAIVisiveis(lista);
       _renderMiniMapaPasso3(lista);
+      if (!_lookupAiPendente) _salvarOrdemSilencioso();
     });
   });
 
@@ -1962,9 +2062,13 @@ function renderLocaisEditAI() {
         const nomeInput = inserted.querySelector("[data-ai-nome]");
         const custoInput = inserted.querySelector("[data-ai-custo]");
         inserted.querySelector("[data-ai-del]")?.addEventListener("click", () => {
+          const perEl = inserted.closest("[data-ai-per]");
+          _registrarLocalRemovidoAIEdit(inserted);
           inserted.remove();
+          _atualizarAlvoPeriodoDepoisRemocaoAIEdit(perEl);
           _atualizarContadoresAIVisiveis(lista);
           _renderMiniMapaPasso3(lista);
+          if (!_lookupAiPendente) _salvarOrdemSilencioso();
         });
         nomeInput?.addEventListener("input", () => {
           const title = inserted.querySelector("[data-ai-title]");
@@ -3020,6 +3124,9 @@ document.getElementById("btnAdicionarLocalEdit")?.addEventListener("click", asyn
 
 // ── Abrir aba locais (chamado de roteiros.js) ─────────────────────
 window.abrirLocaisEdit = function (roteiroId, cidadeRoteiro, opts) {
+  const mudouRoteiroEdit = String(_roteiroIdEdit || "") !== String(roteiroId || "");
+  if (mudouRoteiroEdit) _aiLocaisRemovidosEdit = new Set();
+
   _roteiroIdEdit             = roteiroId;
   _diasTotaisEdit            = (opts && opts.diasTotais) || 0;
   _userIdEdit                = (opts && opts.userId)     || null;

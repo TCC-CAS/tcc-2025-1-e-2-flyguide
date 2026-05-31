@@ -63,6 +63,13 @@
       }
       return false;
     }
+    if (typeof window.flyguideAiLookupPendente === "function" && window.flyguideAiLookupPendente()) {
+      if (erroEl) {
+        erroEl.textContent = "Aguarde a preparação dos locais no mapa terminar antes de salvar.";
+        erroEl.style.display = "";
+      }
+      return false;
+    }
     if (erroEl) erroEl.style.display = "none";
 
     const idImg     = document.getElementById("erImagem")?.value || "";
@@ -75,6 +82,9 @@
         : (idImg ? parseInt(idImg) : (roteiro.idImagem ? parseInt(roteiro.idImagem) : null)));
     const isPublico = !!document.getElementById("erVisPublico")?.checked;
     const descricao = (document.getElementById("erDescricao")?.value || "").trim();
+    const sugestoesEditadas = typeof window.getSugestoesEditadasLocais === "function"
+      ? window.getSugestoesEditadasLocais()
+      : null;
 
     const payload = {
       idUsuario:           roteiro.idUsuario || parseInt(userId),
@@ -91,6 +101,7 @@
       orcamento:           null,
       idImagem:            idImagem,
       imagemChave:         imagemSelecionada?.imagemChave || roteiro.imagemChave || null,
+      sugestoes:           sugestoesEditadas || roteiro.sugestoes || null,
     };
 
     const res = await authFetch(URL_API + "/roteiros/" + roteiroId, {
