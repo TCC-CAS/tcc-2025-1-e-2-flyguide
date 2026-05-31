@@ -432,6 +432,7 @@ function _renderLocalCardDet(l, idx, dragAttrs, isDark) {
     + '<div style="font-weight:700;font-size:.85rem;color:' + cText + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(l.nome || 'Local') + '</div>'
     + (l.endereco ? '<div style="font-size:.72rem;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="bi bi-geo-alt me-1"></i>' + escapeHtml(l.endereco) + '</div>' : '')
     + (window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : 'tourist_attraction')]) : '')
+    + '<span id="det-rating-' + vid + '" data-mr-rating-id="det-rating-' + vid + '" data-mr-rating-nome="' + escapeHtml(l.nome || '') + '" data-mr-rating-pid="' + escapeHtml(l.placeId || '') + '" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>'
     + (l.observacoes ? '<div style="font-size:.72rem;color:' + cLabel + ';">' + escapeHtml(l.observacoes) + '</div>' : '')
     + '</div>'
     + '<div id="lcusto-display-' + vid + '" style="min-width:48px;text-align:right;font-size:.8rem;font-weight:700;color:#f97316;background:#fff7ed;border:1px solid #ffffff;border-radius:4px;padding:2px 6px;flex-shrink:0;">' + escapeHtml(custoLabel) + '</div>'
@@ -1234,6 +1235,45 @@ function _renderLocaisReaisDetalhe(lista) {
   });
 }
 
+var _detRatingCache = {};
+
+function _fetchRatingDetalhe(nome, placeId, spanId) {
+  var cacheKey = placeId || nome;
+  if (!cacheKey) return;
+  var apply = function(rating) {
+    var el = document.getElementById(spanId);
+    if (!el || !rating) return;
+    el.innerHTML = '<i class="bi bi-star-fill" style="color:#facc15;font-size:.65rem;"></i> ' + rating.toFixed(1);
+    el.style.display = 'inline-flex';
+  };
+  if (_detRatingCache[cacheKey] !== undefined) { apply(_detRatingCache[cacheKey]); return; }
+  if (!window.google || !google.maps.places || !google.maps.places.PlacesService) return;
+  var svc = new google.maps.places.PlacesService(document.createElement('div'));
+  if (placeId) {
+    svc.getDetails({ placeId: placeId, fields: ['rating'] }, function(place, status) {
+      var r = status === google.maps.places.PlacesServiceStatus.OK ? (place && place.rating || null) : null;
+      _detRatingCache[cacheKey] = r;
+      apply(r);
+    });
+  } else if (nome) {
+    svc.textSearch({ query: nome }, function(results, status) {
+      var r = status === google.maps.places.PlacesServiceStatus.OK && results && results[0] && results[0].rating ? results[0].rating : null;
+      _detRatingCache[cacheKey] = r;
+      apply(r);
+    });
+  }
+}
+
+function _iniciarRatingsDetalheEdit() {
+  document.querySelectorAll('[data-mr-rating-id]').forEach(function(el) {
+    _fetchRatingDetalhe(
+      el.getAttribute('data-mr-rating-nome') || '',
+      el.getAttribute('data-mr-rating-pid')  || '',
+      el.getAttribute('data-mr-rating-id')
+    );
+  });
+}
+
 function renderLocaisDetalheEdit() {
   var lista = document.getElementById("listaLocaisDetalheEdit");
   var vazio = document.getElementById("vazioLocaisDetalheEdit");
@@ -1253,10 +1293,12 @@ function renderLocaisDetalheEdit() {
 
   if (temSugestoes) {
     renderLocaisDetalheEditAI(); // locais reais por dia já incluídos dentro de cada accordion
+    _iniciarRatingsDetalheEdit();
     return;
   }
 
   _renderLocaisReaisDetalhe(lista);
+  _iniciarRatingsDetalheEdit();
 }
 
 // ── Recomendações Inteligentes (Ver Detalhes) ─────────────────────

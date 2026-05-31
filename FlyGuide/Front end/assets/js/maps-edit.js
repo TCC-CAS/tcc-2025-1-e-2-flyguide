@@ -2315,7 +2315,11 @@ function _renderLocaisReaisEdit(lista) {
                 ${l.observacoes ? `<div style="font-size:.75rem;color:${isDark ? "#94a3b8" : "#64748b"};">${escapeHtml(l.observacoes)}</div>` : ""}
                 ${l.endereco    ? `<div style="font-size:.72rem;color:${corEndereco};margin-top:1px;"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(l.endereco)}</div>` : ""}
                 ${distHtml}
-                ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;font-size:.72rem;color:#f97316;font-weight:700;text-decoration:none;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px;">
+                  ${window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : "tourist_attraction")]) : ""}
+                  <span id="mr-rating-lr-${vid}" data-mr-rating-id="mr-rating-lr-${vid}" data-mr-rating-nome="${escapeHtml(l.nome || '')}" data-mr-rating-pid="${escapeHtml(l.placeId || '')}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
+                  ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;color:#f97316;font-weight:700;text-decoration:none;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
+                </div>
               </div>
               <div style="display:flex;gap:4px;flex-shrink:0;">
                 <button class="btn btn-sm btn-outline-secondary" data-edit-vinculo-mr="${vid}" title="Editar">
