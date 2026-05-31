@@ -903,6 +903,125 @@ const _PERIODOS_AI_MR = [
   { key: "noite", label: "Noite",  icon: "bi-moon-stars-fill", cor: "#6366f1" },
 ];
 
+function _nomeMarcadorPeriodoEdit(local) {
+  return String(local?.nome || local?.name || local || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]/g, "");
+}
+
+function _ehCheckinEdit(local) {
+  return !!local?._checkin || _nomeMarcadorPeriodoEdit(local) === "checkin";
+}
+
+function _ehCheckoutEdit(local) {
+  return !!local?._checkout || _nomeMarcadorPeriodoEdit(local) === "checkout";
+}
+
+function _obterSugestaoDiaEdit(dia) {
+  const diaNum = parseInt(dia, 10);
+  if (!diaNum || !_hasSugestoesAIEdit()) return null;
+  return _roteiroObjEdit.sugestoes.find(d => parseInt(d?.dia || 0, 10) === diaNum)
+    || _roteiroObjEdit.sugestoes[diaNum - 1]
+    || null;
+}
+
+function _janelaPeriodosDiaEdit(dia) {
+  const ordem = _PERIODOS_AI_MR.map(p => p.key);
+  const janela = {
+    inicio: 0,
+    fim: ordem.length - 1,
+    checkinPos: -1,
+    checkoutPos: Number.MAX_SAFE_INTEGER,
+    temRestricao: false,
+  };
+  const diaObj = _obterSugestaoDiaEdit(dia);
+  if (!diaObj || !diaObj.periodos || typeof diaObj.periodos !== "object") return janela;
+
+  _PERIODOS_AI_MR.forEach((per, pidx) => {
+    (diaObj.periodos[per.key] || []).forEach((item, lidx) => {
+      if (_ehCheckinEdit(item)) {
+        janela.inicio = Math.max(janela.inicio, pidx);
+        janela.checkinPos = lidx;
+      }
+      if (_ehCheckoutEdit(item)) {
+        janela.fim = Math.min(janela.fim, pidx);
+        janela.checkoutPos = lidx;
+      }
+    });
+  });
+
+  if (janela.fim < janela.inicio) janela.fim = janela.inicio;
+  janela.temRestricao = janela.inicio > 0 || janela.fim < ordem.length - 1;
+  return janela;
+}
+
+function _periodoPermitidoDiaEdit(dia, periodo) {
+  const idx = _PERIODOS_AI_MR.findIndex(p => p.key === periodo);
+  if (idx < 0) return true;
+  const janela = _janelaPeriodosDiaEdit(dia);
+  return idx >= janela.inicio && idx <= janela.fim;
+}
+
+function _textoPeriodosPermitidosEdit(dia) {
+  const janela = _janelaPeriodosDiaEdit(dia);
+  return _PERIODOS_AI_MR
+    .slice(janela.inicio, janela.fim + 1)
+    .map(p => p.label)
+    .join(", ");
+}
+
+function _mensagemPeriodoBloqueadoEdit(dia) {
+  return `Este dia do roteiro permite atividades apenas em: ${_textoPeriodosPermitidosEdit(dia)}. Ajuste o período para adicionar o local.`;
+}
+
+function _atualizarOpcoesPeriodoLocalEdit() {
+  const diaEl = document.getElementById("localDiaEdit");
+  const periodoEl = document.getElementById("localPeriodoEdit");
+  if (!periodoEl) return;
+
+  const dia = parseInt(diaEl?.value || "0", 10);
+  const valorAtual = periodoEl.value;
+  let limpouPeriodo = false;
+
+  Array.from(periodoEl.options).forEach(opt => {
+    if (!opt.value) return;
+    const permitido = !dia || _periodoPermitidoDiaEdit(dia, opt.value);
+    opt.disabled = !permitido;
+    opt.title = permitido ? "" : _mensagemPeriodoBloqueadoEdit(dia);
+  });
+
+  if (dia && valorAtual && !_periodoPermitidoDiaEdit(dia, valorAtual)) {
+    periodoEl.value = "";
+    limpouPeriodo = true;
+  }
+
+  if (limpouPeriodo) _mostrarErroLocalEdit(_mensagemPeriodoBloqueadoEdit(dia));
+}
+
+function _configurarRestricoesPeriodoLocalEdit() {
+  const diaEl = document.getElementById("localDiaEdit");
+  const periodoEl = document.getElementById("localPeriodoEdit");
+
+  if (diaEl && !diaEl.dataset.restricoesPeriodoBound) {
+    diaEl.dataset.restricoesPeriodoBound = "1";
+    diaEl.addEventListener("change", _atualizarOpcoesPeriodoLocalEdit);
+  }
+
+  if (periodoEl && !periodoEl.dataset.restricoesPeriodoBound) {
+    periodoEl.dataset.restricoesPeriodoBound = "1";
+    periodoEl.addEventListener("change", () => {
+      const dia = parseInt(diaEl?.value || "0", 10);
+      if (dia && periodoEl.value && !_periodoPermitidoDiaEdit(dia, periodoEl.value)) {
+        periodoEl.value = "";
+        _mostrarErroLocalEdit(_mensagemPeriodoBloqueadoEdit(dia));
+      }
+    });
+  }
+
+  _atualizarOpcoesPeriodoLocalEdit();
+}
+
 function _hasSugestoesAIEdit() {
   return _roteiroObjEdit
     && Array.isArray(_roteiroObjEdit.sugestoes)
@@ -1952,27 +2071,16 @@ function renderLocaisEditAI() {
     html += `<div style="padding:10px 12px;background:${isDark ? "#0f172a" : "#fff"};">`;
 
     if (temPeriodos) {
-      // Detecta posição exata de checkin/checkout para filtrar períodos
-      const PER_KEYS = _PERIODOS_AI_MR.map(p => p.key); // ["manha","tarde","noite"]
-      let ciPeriodIdx = -1,               coPeriodIdx = PER_KEYS.length;
-      let ciPosInPer  = -1,               coPosInPer  = Number.MAX_SAFE_INTEGER;
-      _PERIODOS_AI_MR.forEach((per, pidx) => {
-        (diaObj.periodos[per.key] || []).forEach((item, lidx) => {
-          if (item._checkin)  { ciPeriodIdx = pidx; ciPosInPer = lidx; }
-          if (item._checkout) { coPeriodIdx = pidx; coPosInPer = lidx; }
-        });
-      });
-      const startPer = ciPeriodIdx >= 0            ? ciPeriodIdx          : 0;
-      const endPer   = coPeriodIdx < PER_KEYS.length ? coPeriodIdx        : PER_KEYS.length - 1;
+      const janelaPeriodos = _janelaPeriodosDiaEdit(diaNum);
 
       _PERIODOS_AI_MR.forEach((per, pidx) => {
-        if (pidx < startPer || pidx > endPer) return; // período fora da janela
+        if (pidx < janelaPeriodos.inicio || pidx > janelaPeriodos.fim) return; // período fora da janela
 
         const todosItens = diaObj.periodos[per.key] || [];
         const itens = todosItens.filter((item, lidx) => {
-          if (item._checkin || item._checkout) return true; // marcadores sempre incluídos
-          if (pidx === startPer && lidx < ciPosInPer)  return false; // antes do checkin
-          if (pidx === endPer   && lidx > coPosInPer)  return false; // depois do checkout
+          if (_ehCheckinEdit(item) || _ehCheckoutEdit(item)) return true; // marcadores sempre incluídos
+          if (pidx === janelaPeriodos.inicio && lidx < janelaPeriodos.checkinPos)  return false; // antes do checkin
+          if (pidx === janelaPeriodos.fim && lidx > janelaPeriodos.checkoutPos)    return false; // depois do checkout
           return true;
         });
 
@@ -2770,6 +2878,7 @@ function renderLocaisEdit() {
   const lista = document.getElementById("listaLocaisEdit");
   const vazio = document.getElementById("vazioLocaisEdit");
   if (!lista) return;
+  _configurarRestricoesPeriodoLocalEdit();
 
   const temSugestoes = _hasSugestoesAIEdit();
   const temLocais    = _locaisEdit.length > 0;
@@ -3080,6 +3189,14 @@ document.getElementById("btnAdicionarLocalEdit")?.addEventListener("click", asyn
     return;
   }
 
+  if (!_periodoPermitidoDiaEdit(parseInt(dia, 10), periodo)) {
+    erroEl.textContent = _mensagemPeriodoBloqueadoEdit(parseInt(dia, 10));
+    erroEl.style.display = "";
+    _atualizarOpcoesPeriodoLocalEdit();
+    document.getElementById("localPeriodoEdit")?.focus();
+    return;
+  }
+
   if (!_validarLocalNaBaseEdit(_localSelecionadoEdit)) return;
 
   erroEl.style.display = "none";
@@ -3208,6 +3325,9 @@ window.abrirLocaisEdit = function (roteiroId, cidadeRoteiro, opts) {
     }
     diaSelectEdit.value = "";
   }
+  const periodoSelectEdit = document.getElementById("localPeriodoEdit");
+  if (periodoSelectEdit) periodoSelectEdit.value = "";
+  _configurarRestricoesPeriodoLocalEdit();
 
   const prevEl    = document.getElementById("localPreviewEdit");
   const listaRec  = document.getElementById("listaRecomendacoesEdit");

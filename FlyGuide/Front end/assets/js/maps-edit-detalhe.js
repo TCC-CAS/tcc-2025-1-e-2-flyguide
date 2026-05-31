@@ -243,6 +243,7 @@ window.abrirLocaisEditDetalhe = function(roteiroId, opts) {
 
   var periodoReset = document.getElementById("localPeriodoDetalheEdit");
   if (periodoReset) periodoReset.value = "";
+  _configurarRestricoesPeriodoLocalDetalhe();
 
   var prevEl = document.getElementById("localPreviewDetalheEdit");
   if (prevEl) prevEl.style.display = "none";
@@ -300,6 +301,135 @@ var _PERIODOS_AI_EDIT = [
   { key: "tarde", label: "Tarde",  icon: "bi-sun-fill",        cor: "#f97316" },
   { key: "noite", label: "Noite",  icon: "bi-moon-stars-fill", cor: "#6366f1" },
 ];
+
+function _nomeMarcadorPeriodoDetalhe(local) {
+  return String((local && (local.nome || local.name)) || local || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]/g, "");
+}
+
+function _ehCheckinDetalhe(local) {
+  return !!(local && local._checkin) || _nomeMarcadorPeriodoDetalhe(local) === "checkin";
+}
+
+function _ehCheckoutDetalhe(local) {
+  return !!(local && local._checkout) || _nomeMarcadorPeriodoDetalhe(local) === "checkout";
+}
+
+function _obterSugestaoDiaDetalhe(dia) {
+  var diaNum = parseInt(dia, 10);
+  if (!diaNum || !_hasSugestoesAI()) return null;
+  for (var i = 0; i < _roteiroDetalheEdit.sugestoes.length; i++) {
+    var item = _roteiroDetalheEdit.sugestoes[i];
+    if (parseInt((item && item.dia) || 0, 10) === diaNum) return item;
+  }
+  return _roteiroDetalheEdit.sugestoes[diaNum - 1] || null;
+}
+
+function _janelaPeriodosDiaDetalhe(dia) {
+  var janela = {
+    inicio: 0,
+    fim: _PERIODOS_AI_EDIT.length - 1,
+    checkinPos: -1,
+    checkoutPos: Number.MAX_SAFE_INTEGER,
+    temRestricao: false
+  };
+  var diaObj = _obterSugestaoDiaDetalhe(dia);
+  if (!diaObj || !diaObj.periodos || typeof diaObj.periodos !== "object") return janela;
+
+  _PERIODOS_AI_EDIT.forEach(function(per, pidx) {
+    (diaObj.periodos[per.key] || []).forEach(function(item, lidx) {
+      if (_ehCheckinDetalhe(item)) {
+        janela.inicio = Math.max(janela.inicio, pidx);
+        janela.checkinPos = lidx;
+      }
+      if (_ehCheckoutDetalhe(item)) {
+        janela.fim = Math.min(janela.fim, pidx);
+        janela.checkoutPos = lidx;
+      }
+    });
+  });
+
+  if (janela.fim < janela.inicio) janela.fim = janela.inicio;
+  janela.temRestricao = janela.inicio > 0 || janela.fim < _PERIODOS_AI_EDIT.length - 1;
+  return janela;
+}
+
+function _periodoPermitidoDiaDetalhe(dia, periodo) {
+  var idx = _PERIODOS_AI_EDIT.findIndex(function(p) { return p.key === periodo; });
+  if (idx < 0) return true;
+  var janela = _janelaPeriodosDiaDetalhe(dia);
+  return idx >= janela.inicio && idx <= janela.fim;
+}
+
+function _textoPeriodosPermitidosDetalhe(dia) {
+  var janela = _janelaPeriodosDiaDetalhe(dia);
+  return _PERIODOS_AI_EDIT
+    .slice(janela.inicio, janela.fim + 1)
+    .map(function(p) { return p.label; })
+    .join(", ");
+}
+
+function _mensagemPeriodoBloqueadoDetalhe(dia) {
+  return "Este dia do roteiro permite atividades apenas em: " + _textoPeriodosPermitidosDetalhe(dia) + ". Ajuste o período para adicionar o local.";
+}
+
+function _mostrarErroLocalDetalhe(msg) {
+  var erroEl = document.getElementById("erroLocalDetalheEdit");
+  if (!erroEl) return;
+  erroEl.textContent = msg;
+  erroEl.style.display = "";
+  erroEl.style.background = "";
+  erroEl.style.color = "";
+}
+
+function _atualizarOpcoesPeriodoLocalDetalhe() {
+  var diaEl = document.getElementById("localDiaDetalheEdit");
+  var periodoEl = document.getElementById("localPeriodoDetalheEdit");
+  if (!periodoEl) return;
+
+  var dia = parseInt((diaEl && diaEl.value) || "0", 10);
+  var valorAtual = periodoEl.value;
+  var limpouPeriodo = false;
+
+  Array.from(periodoEl.options).forEach(function(opt) {
+    if (!opt.value) return;
+    var permitido = !dia || _periodoPermitidoDiaDetalhe(dia, opt.value);
+    opt.disabled = !permitido;
+    opt.title = permitido ? "" : _mensagemPeriodoBloqueadoDetalhe(dia);
+  });
+
+  if (dia && valorAtual && !_periodoPermitidoDiaDetalhe(dia, valorAtual)) {
+    periodoEl.value = "";
+    limpouPeriodo = true;
+  }
+
+  if (limpouPeriodo) _mostrarErroLocalDetalhe(_mensagemPeriodoBloqueadoDetalhe(dia));
+}
+
+function _configurarRestricoesPeriodoLocalDetalhe() {
+  var diaEl = document.getElementById("localDiaDetalheEdit");
+  var periodoEl = document.getElementById("localPeriodoDetalheEdit");
+
+  if (diaEl && !diaEl.dataset.restricoesPeriodoBound) {
+    diaEl.dataset.restricoesPeriodoBound = "1";
+    diaEl.addEventListener("change", _atualizarOpcoesPeriodoLocalDetalhe);
+  }
+
+  if (periodoEl && !periodoEl.dataset.restricoesPeriodoBound) {
+    periodoEl.dataset.restricoesPeriodoBound = "1";
+    periodoEl.addEventListener("change", function() {
+      var dia = parseInt((diaEl && diaEl.value) || "0", 10);
+      if (dia && periodoEl.value && !_periodoPermitidoDiaDetalhe(dia, periodoEl.value)) {
+        periodoEl.value = "";
+        _mostrarErroLocalDetalhe(_mensagemPeriodoBloqueadoDetalhe(dia));
+      }
+    });
+  }
+
+  _atualizarOpcoesPeriodoLocalDetalhe();
+}
 
 function _hasSugestoesAI() {
   return _roteiroDetalheEdit
@@ -583,8 +713,17 @@ function renderLocaisDetalheEditAI() {
     html += '<div style="padding:10px 12px;background:' + cBody + ';">';
 
     if (temPeriodos) {
-      _PERIODOS_AI_EDIT.forEach(function(per) {
-        var itens = diaObj.periodos[per.key] || [];
+      var janelaPeriodos = _janelaPeriodosDiaDetalhe(diaNum);
+      _PERIODOS_AI_EDIT.forEach(function(per, pidx) {
+        if (pidx < janelaPeriodos.inicio || pidx > janelaPeriodos.fim) return;
+
+        var todosItens = diaObj.periodos[per.key] || [];
+        var itens = todosItens.filter(function(item, lidx) {
+          if (_ehCheckinDetalhe(item) || _ehCheckoutDetalhe(item)) return true;
+          if (pidx === janelaPeriodos.inicio && lidx < janelaPeriodos.checkinPos) return false;
+          if (pidx === janelaPeriodos.fim && lidx > janelaPeriodos.checkoutPos) return false;
+          return true;
+        });
         var locaisDestePer = locaisDesteDia.filter(function(l) {
           var hNorm = _normalizarHorarioDetalhe(l.horario);
           if (!hNorm) return false;
@@ -1278,6 +1417,7 @@ function renderLocaisDetalheEdit() {
   var lista = document.getElementById("listaLocaisDetalheEdit");
   var vazio = document.getElementById("vazioLocaisDetalheEdit");
   if (!lista) return;
+  _configurarRestricoesPeriodoLocalDetalhe();
 
   var temSugestoes = _hasSugestoesAI();
   var temLocais    = _locaisDetalheEdit.length > 0;
@@ -1470,6 +1610,12 @@ document.addEventListener("click", async function(e) {
 
   if (!dia) { mostrarErro("Selecione o dia da atividade."); return; }
   if (!periodo) { mostrarErro("Selecione o período (Manhã, Tarde ou Noite)."); return; }
+  if (!_periodoPermitidoDiaDetalhe(parseInt(dia, 10), periodo)) {
+    mostrarErro(_mensagemPeriodoBloqueadoDetalhe(parseInt(dia, 10)));
+    _atualizarOpcoesPeriodoLocalDetalhe();
+    if (periodoEl) periodoEl.focus();
+    return;
+  }
 
   var horario = periodo === "manha" ? "08:00:00"
     : periodo === "tarde" ? "14:00:00"
