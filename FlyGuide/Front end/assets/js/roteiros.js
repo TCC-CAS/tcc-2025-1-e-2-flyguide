@@ -1057,15 +1057,115 @@
     let autocompleteCidadeGen = null;
 
     // ── Seletores de período (check-in / checkout) ────────────────
+    const ORDEM_PERIODOS_ROTEIRO = { manha: 1, tarde: 2, noite: 3 };
+
+    function getDiasGeracaoRoteiro() {
+      return parseInt(document.getElementById("genDias")?.value || "0", 10) || 0;
+    }
+
+    function selecionarPeriodoRoteiro(selectorId, valor) {
+      const selector = document.getElementById(selectorId);
+      if (!selector) return;
+      selector.querySelectorAll(".period-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.value === valor);
+      });
+      const hiddenId = selectorId === "checkinSelector" ? "genCheckin" : "genCheckout";
+      const hidden = document.getElementById(hiddenId);
+      if (hidden) hidden.value = valor;
+    }
+
+    function mostrarAvisoPeriodoRoteiro(msg) {
+      const aviso = document.getElementById("periodoRoteiroAviso");
+      if (aviso) {
+        const texto = aviso.querySelector("span") || aviso;
+        texto.textContent = msg;
+        aviso.style.display = "";
+        return;
+      }
+      if (erroEl) {
+        erroEl.textContent = msg;
+        erroEl.style.display = "";
+      }
+    }
+
+    function ocultarAvisoPeriodoRoteiro() {
+      const aviso = document.getElementById("periodoRoteiroAviso");
+      if (aviso) aviso.style.display = "none";
+    }
+
+    function checkoutPermitidoParaRoteiro(checkin, checkout) {
+      if (getDiasGeracaoRoteiro() !== 1) return true;
+      if (!checkin || checkin === "sem" || !checkout || checkout === "sem") return true;
+      return (ORDEM_PERIODOS_ROTEIRO[checkout] || 0) >= (ORDEM_PERIODOS_ROTEIRO[checkin] || 0);
+    }
+
+    function mensagemPeriodoInvalido(checkin) {
+      if (checkin === "noite") {
+        return "Em roteiros de 1 dia com check-in à noite, o check-out só pode ser à noite ou sem check-out.";
+      }
+      if (checkin === "tarde") {
+        return "Em roteiros de 1 dia com check-in à tarde, o check-out só pode ser à tarde, à noite ou sem check-out.";
+      }
+      return "Em roteiros de 1 dia, o check-out não pode ser antes do período de check-in.";
+    }
+
+    function validarPeriodosRoteiro(mostrarAviso) {
+      const checkin  = document.getElementById("genCheckin")?.value || "sem";
+      const checkout = document.getElementById("genCheckout")?.value || "sem";
+      const valido = checkoutPermitidoParaRoteiro(checkin, checkout);
+      if (!valido && mostrarAviso) mostrarAvisoPeriodoRoteiro(mensagemPeriodoInvalido(checkin));
+      if (valido) ocultarAvisoPeriodoRoteiro();
+      return valido;
+    }
+
+    function atualizarRestricoesPeriodoRoteiro(mostrarAviso) {
+      const checkin = document.getElementById("genCheckin")?.value || "sem";
+      const checkoutAtual = document.getElementById("genCheckout")?.value || "sem";
+      const dias = getDiasGeracaoRoteiro();
+      const checkoutSelector = document.getElementById("checkoutSelector");
+      let temBloqueioCheckout = false;
+
+      checkoutSelector?.querySelectorAll(".period-btn").forEach(btn => {
+        const valor = btn.dataset.value;
+        const bloquear = dias === 1 && checkin !== "sem" && valor !== "sem"
+          && (ORDEM_PERIODOS_ROTEIRO[valor] || 0) < (ORDEM_PERIODOS_ROTEIRO[checkin] || 0);
+        if (bloquear) temBloqueioCheckout = true;
+        btn.disabled = bloquear;
+        btn.setAttribute("aria-disabled", bloquear ? "true" : "false");
+        btn.title = bloquear ? mensagemPeriodoInvalido(checkin) : "";
+      });
+
+      if (!checkoutPermitidoParaRoteiro(checkin, checkoutAtual)) {
+        selecionarPeriodoRoteiro("checkoutSelector", "sem");
+        if (mostrarAviso) mostrarAvisoPeriodoRoteiro(mensagemPeriodoInvalido(checkin));
+        return;
+      }
+
+      if (mostrarAviso && temBloqueioCheckout) {
+        mostrarAvisoPeriodoRoteiro(mensagemPeriodoInvalido(checkin));
+      } else {
+        ocultarAvisoPeriodoRoteiro();
+      }
+    }
+
+    window.atualizarRestricoesPeriodoRoteiro = atualizarRestricoesPeriodoRoteiro;
+
     document.querySelectorAll("#checkinSelector .period-btn, #checkoutSelector .period-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const selector = btn.closest(".period-selector");
-        selector.querySelectorAll(".period-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const hiddenId = selector.id === "checkinSelector" ? "genCheckin" : "genCheckout";
-        document.getElementById(hiddenId).value = btn.dataset.value;
+        const valor = btn.dataset.value;
+        if (selector.id === "checkoutSelector") {
+          const checkin = document.getElementById("genCheckin")?.value || "sem";
+          if (!checkoutPermitidoParaRoteiro(checkin, valor)) {
+            mostrarAvisoPeriodoRoteiro(mensagemPeriodoInvalido(checkin));
+            return;
+          }
+        }
+        selecionarPeriodoRoteiro(selector.id, valor);
+        atualizarRestricoesPeriodoRoteiro(selector.id === "checkinSelector");
       });
     });
+    atualizarRestricoesPeriodoRoteiro(false);
 
     let passoAtivo = "passo1";
 
@@ -1247,6 +1347,7 @@
         erroEl.style.display = "";
         return;
       }
+      if (!validarPeriodosRoteiro(true)) return;
       erroEl.style.display = "none";
 
       if (!modoEdicao) {

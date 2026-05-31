@@ -106,9 +106,23 @@
       background: #fff7ed; border-color: #f97316; color: #f97316;
       box-shadow: 0 0 0 3px rgba(249,115,22,.12);
     }
+    .period-btn:disabled {
+      opacity: .45; cursor: not-allowed; border-color: #cbd5e1; color: #94a3b8;
+      box-shadow: none;
+    }
+    .period-btn:disabled:hover { border-color: #cbd5e1; color: #94a3b8; }
+    .period-warning {
+      display: flex; align-items: flex-start; gap: 8px;
+      margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+      background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412;
+      font-size: .82rem; font-weight: 600;
+    }
     html[data-theme="dark"] .period-btn { border-color: #334155; color: #94a3b8; }
     html[data-theme="dark"] .period-btn:hover { border-color: #f97316; color: #f97316; }
     html[data-theme="dark"] .period-btn.active { background: #1e293b; border-color: #f97316; color: #f97316; }
+    html[data-theme="dark"] .period-btn:disabled { border-color: #334155; color: #64748b; opacity: .52; }
+    html[data-theme="dark"] .period-btn:disabled:hover { border-color: #334155; color: #64748b; }
+    html[data-theme="dark"] .period-warning { background: rgba(124, 45, 18, .28); border-color: #9a3412; color: #fdba74; }
 
     #miniMapaPasso3Box { border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 24px; background: #f8fafc; }
     #miniMapaPasso3Box .mapa-titulo { font-weight: 700; font-size: .88rem; color: #475569; margin-bottom: 10px; }
@@ -312,6 +326,10 @@
                 <button type="button" class="period-btn" data-value="tarde"><i class="bi bi-sun-fill"></i>Tarde</button>
                 <button type="button" class="period-btn" data-value="noite"><i class="bi bi-moon-stars-fill"></i>Noite</button>
                 <button type="button" class="period-btn active" data-value="sem"><i class="bi bi-dash-circle"></i>Sem check-out</button>
+              </div>
+              <div id="periodoRoteiroAviso" class="period-warning" role="alert" aria-live="polite" style="display:none;">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span></span>
               </div>
               <input type="hidden" id="genCheckout" value="sem">
             </div>
@@ -598,6 +616,9 @@
         var n = Math.min(Math.max(parseInt(val) || 1, 1), 30);
         document.getElementById('genDias').value = n;
         document.getElementById('genDiasLabel').textContent = n === 1 ? '1 dia' : n + ' dias';
+        if (typeof window.atualizarRestricoesPeriodoRoteiro === 'function') {
+          window.atualizarRestricoesPeriodoRoteiro(true);
+        }
       };
       document.addEventListener('DOMContentLoaded', function () {
         var btn = document.getElementById('genDiasBtn');
