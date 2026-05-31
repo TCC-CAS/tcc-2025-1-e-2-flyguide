@@ -979,10 +979,12 @@ function _renderLocalCardMR(l, idx, isDark) {
       <div style="flex:1;min-width:0;">
         <div style="font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(l.nome || "Local")}</div>
         ${l.endereco ? `<div style="font-size:.72rem;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(l.endereco)}</div>` : ""}
-        ${window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : "tourist_attraction")]) : ""}
         ${l.observacoes ? `<div style="font-size:.72rem;color:${corLabel};">${escapeHtml(l.observacoes)}</div>` : ""}
-        ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="font-size:.7rem;color:#f97316;text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-top:3px;font-weight:700;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
-        <span id="mr-rating-lr-${vid}" data-mr-rating-id="mr-rating-lr-${vid}" data-mr-rating-nome="${escapeHtml(l.nome || '')}" data-mr-rating-pid="${escapeHtml(l.placeId || '')}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px;">
+          ${window.placeCategoryBadgeHtml && (l.tipo || l.nome) ? window.placeCategoryBadgeHtml([l.tipo || (window.inferPlaceType ? window.inferPlaceType(l.nome) : "tourist_attraction")]) : ""}
+          <span id="mr-rating-lr-${vid}" data-mr-rating-id="mr-rating-lr-${vid}" data-mr-rating-nome="${escapeHtml(l.nome || '')}" data-mr-rating-pid="${escapeHtml(l.placeId || '')}" style="display:none;font-size:.7rem;font-weight:700;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:999px;align-items:center;gap:3px;"></span>
+          ${mapsUrl ? `<a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener" style="font-size:.7rem;color:#f97316;text-decoration:none;display:inline-flex;align-items:center;gap:3px;font-weight:700;"><i class="bi bi-map"></i>Ver no Maps</a>` : ""}
+        </div>
       </div>
       <div style="display:flex;gap:4px;flex-shrink:0;">
         <button class="btn btn-sm btn-outline-secondary" data-edit-vinculo-mr="${vid}"><i class="bi bi-pencil"></i></button>
@@ -1913,7 +1915,32 @@ function renderLocaisEditAI() {
 
   lista.querySelectorAll("[data-ai-del]").forEach(btn => {
     btn.addEventListener("click", () => {
-      btn.closest("[data-ai-item]")?.remove();
+      const item = btn.closest("[data-ai-item]");
+      if (!item) return;
+
+      const nome   = item.querySelector("[data-ai-nome]")?.value?.trim() || "";
+      const perEl  = item.closest("[data-ai-per]");
+      const perKey = perEl?.getAttribute("data-ai-per") || "";
+      const diaEl  = item.closest("[data-ai-dia-idx]");
+      const diaNum = parseInt(diaEl?.getAttribute("data-dia") || "0");
+
+      item.remove();
+
+      if (_roteiroObjEdit?.sugestoes && nome && diaNum) {
+        const diaObj = _roteiroObjEdit.sugestoes.find(d => (d.dia || 0) === diaNum);
+        if (diaObj) {
+          if (diaObj.periodos?.[perKey]) {
+            diaObj.periodos[perKey] = diaObj.periodos[perKey].filter(
+              i => (i.nome || "").trim().toLowerCase() !== nome.toLowerCase()
+            );
+          } else if (Array.isArray(diaObj.locais)) {
+            diaObj.locais = diaObj.locais.filter(
+              i => (i.nome || "").trim().toLowerCase() !== nome.toLowerCase()
+            );
+          }
+        }
+      }
+
       _atualizarContadoresAIVisiveis(lista);
       _renderMiniMapaPasso3(lista);
     });
@@ -2966,6 +2993,10 @@ document.getElementById("btnAdicionarLocalEdit")?.addEventListener("click", asyn
 
     const vinculo = await resVinculo.json();
     if (obs && !vinculo.observacoes) vinculo.observacoes = obs;
+    if (!vinculo.tipo     && _localSelecionadoEdit?.tipo)    vinculo.tipo    = _localSelecionadoEdit.tipo;
+    if (!vinculo.placeId  && _localSelecionadoEdit?.placeId) vinculo.placeId = _localSelecionadoEdit.placeId;
+    if (!vinculo.nome     && _localSelecionadoEdit?.nome)    vinculo.nome    = _localSelecionadoEdit.nome;
+    if (!vinculo.endereco && _localSelecionadoEdit?.endereco) vinculo.endereco = _localSelecionadoEdit.endereco;
     _locaisEdit.push(vinculo);
     renderLocaisEdit();
 
